@@ -1,0 +1,84 @@
+.settings-container{
+    display: flex;
+    background-color: #fff;
+    border: 1px solid #d3d3d3;
+    overflow: hidden;
+}
+.tab-container{
+    width: 250px;
+    min-width: 180px;
+    background-color: #fff;
+    min-height: 60vh;
+    border-right: 1px solid #d3d3d3;
+}
+.filterDiv {
+    display: none;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9e7e7;
+}
+.item-textarea{
+    max-width: 800px;
+}
+.item-text{
+    max-width: 400px;
+}
+.item-text-large{
+    max-width: 800px;
+}
+.input-desc{
+    display: block;
+    color: #919191;
+    padding: 2px;
+    font-weight: 300;
+}
+.settings-data{
+    padding: 10px;
+    width: 100%;
+}
+.filter-tab{
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    background-color: #ffffff;
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #f1f0f0;
+    transition: none;
+    font-size: 15px;
+}
+.filter-tab i{
+    padding-right: 5px;
+    width: 33px;
+}
+.filter-tab:hover{
+    background-color: #ebebeb;
+}
+.filter-tab:-webkit-any-link:focus-visible {
+    outline-offset: 0px;
+}
+.filter-tab.actived{
+    width: 100%;
+    background-color: #1f2937;
+    padding: 10px;
+    color: #f0f0f0;
+    border: none;
+    font-weight: 500;
+}
+.show {
+  display: block;
+}
+@media screen and (max-width:700px) {
+    .filter-tab{
+        text-align: center;
+    }
+    .filter-tab span{
+        display: none;
+    }
+    .tab-container{
+        width: 50px;
+        min-width: 50px;
+    }
+    #filter_form h2{
+        font-size: 20px;
+    }
+}

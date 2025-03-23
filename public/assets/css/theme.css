@@ -1,0 +1,4 @@
+:root {
+    theme-primary-color: <?=CONFIG::getGlobalSetting('primary_color');?>;
+    
+  }

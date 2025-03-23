@@ -1,0 +1,57 @@
+<!DOCTYPE html>  
+
+<html lang="en">
+<head>
+  <?php include(VIEWS_PATH.DS.'partials/admin/includes/head.html');?> 
+</head>
+<body> 
+  <?php if(Session::get('username') && Session::get('admin_access')==true){ ?>
+      <!--Main Menu--> 
+    <?php include(VIEWS_PATH.DS.'partials/admin/main-menu.html'); ?>
+    <!--Main Content-->
+    <main class="admin-content content <?=Session::get('admin_access')?'':'m-0';?>" style="padding: 0;">
+      <!--Top Bar-->
+      <div class="top-bar">
+        <?php include(VIEWS_PATH.DS.'partials/admin/top-bar.html'); ?>
+      </div>
+      <!--Content Area-->
+      <div class="content-area">
+        <?php if(Session::hasFlash()){?>
+          <div class="alert admin-alert alert-<?=Session::flashType(); ?> alert-dismissible fade show" role="alert">
+            <?=Session::Flash(); ?>
+            <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <?php } ?>
+        
+        <?=$data['content']; ?>
+      </div>
+
+      <!--Footer Area-->
+      
+      <footer class="bg-white px-5 py-4 mt-3 footer-bottom">
+        <?php include(VIEWS_PATH.DS.'partials/admin/footer.html');?>
+      </footer>
+      
+
+    </main>
+
+  <?php } else { ?>
+        <!--Main Content-->
+        <main class="admin-content content <?=Session::get('admin_access')?'':'m-0';?>" style="padding: 0;">
+          <!--Content Area-->
+          <div class="content-area">
+            <?php if(Session::hasFlash()){?>
+              <div class="alert admin-alert alert-<?=Session::flashType(); ?> alert-dismissible fade show" role="alert">
+                <?=Session::Flash(); ?>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            <?php } ?>
+            <?=$data['content']; ?>
+          </div>
+        </main>
+  <?php } ?>
+
+  <!-- Imported Scripts-->
+  <?php if(Session::get('admin_access')){include(VIEWS_PATH.DS.'partials/admin/includes/scripts.html');} ?>
+</body>
+</html>

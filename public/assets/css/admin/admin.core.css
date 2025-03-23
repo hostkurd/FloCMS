@@ -1,0 +1,50 @@
+:root {
+    --admin-border-color: #dbdbdb;
+}
+.admin-content {
+    overflow: hidden;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    transition: all 0.3s;
+} 
+.admin-content .content-area{
+    padding: 0 1rem;
+} 
+.admin-alert{
+    left: 50%;
+    transform: translate(-50%, 10%);
+    z-index: 99;
+}
+.top-bar{
+    background-color: #fff;
+    border-bottom: 1px solid var(--admin-border-color);
+}
+.sidebar.contracted .sidebar-inner{
+    overflow: hidden;
+}
+footer{
+    border-top:1px solid var(--admin-border-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-content  {
+        transition: none;
+    }
+}
+@media (min-width: 768px) {
+    .sidebar.contracted + .admin-content  {
+        margin-left: 95px;
+    }
+}
+@media (min-width: 992px) {
+    .admin-content  {
+        margin-left: 260px;
+    }
+    .admin-content .content-area{
+        flex-grow: 1;
+    }
+}
+@media (max-width: 768px) {
+
+}

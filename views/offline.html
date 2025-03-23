@@ -1,0 +1,76 @@
+<style>
+    .container{
+        display: flex;
+        background-color: #fff;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+    .block-container{
+        width: 90vw;
+        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15vh;
+    }
+    .block-container img{
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    .block-container h1{
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+    .description{
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        margin: 0;
+        font-size: 1.2rem;
+    }
+    .contact-text{
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        margin-top: 40px;
+        font-size: 0.9rem !important;
+        padding: 10px;
+        border-radius: 5px;
+        line-height: 25px;
+    }
+    .contact-text span{
+        font-weight: 700;
+        margin: 0 7px;
+    }
+    @media only screen and (max-width: 700px) {
+        .block-container h1 {font-size: 1.4rem;}
+        .block-container p{font-size: 1rem;}
+    }
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" href="<?=SITE_URI;?>/css/admin/admin.min.css" rel="stylesheet">
+    <title><?=Config::get('Site_Name');?></title>
+    <link rel="shortcut icon" href="<?=imgPath;?>/fav/favicon-16x16.png">
+</head>
+<body>
+
+    <div class="container">
+        <div class="block-container">
+            <img src="<?=imgPath;?>/illustrations/offline.svg" alt="404 not found">
+            <h1><?=config::getsetting('offline_mode_title');?></h1>
+            <p class="text-center description"><?=config::getsetting('offline_mode_text');?></p>
+            <p class="contact-text">
+                <span>Phone:</span><?=config::getsetting('phone');?>
+                <span>email:</span><?=config::getsetting('email');?>
+            </p>
+
+        </div>
+    </div>
+</body>
+</html>

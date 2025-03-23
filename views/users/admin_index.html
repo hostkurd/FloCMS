@@ -1,0 +1,159 @@
+<style>
+    .disabled{
+        color: #a0a0a0 !important;
+    }
+</style>
+<!--Content Element-->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <h2 class="h4">All Users</h2>
+        <p class="mb-0">List of all Website users and admins.</p>
+    </div>
+</div>
+
+<div class="table-settings mb-4">
+    <div class="row align-items-center justify-content-between">
+        <div class="col col-md-6 col-lg-3 col-xl-4">
+            <?php
+                $searchFunction = "searchUsers";
+                $title = "Search using name, email and Phone";
+                include(VIEWS_PATH.DS.'partials/admin/form-elements/search-box.html'); 
+            ?>
+        </div>
+        <div class="col-4 col-md-2 col-xl-4 ps-md-0 text-end">
+            <div class="btn-toolbar mb-2 mb-md-0 float-end">
+                <a href="<?=SITE_URI;?>/admin/users/add" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+                    <i class="<?=ADD_ICON;?> me-2"></i> Add New User
+                </a>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<div class="table-settings mb-4">
+    <div class="row justify-content-between align-items-center">
+        <div class="col-9 col-lg-8 d-md-flex">
+            <select name="user-status" class="form-select fmxw-200 d-none d-md-inline" aria-label="Message select example 2" disabled>
+                <option selected="selected">All</option>
+                <option value="1">Active</option>
+                <option value="2">Inactive</option>
+                <option value="3">Pending</option>
+                <option value="3">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-3 col-lg-4 d-flex justify-content-end">
+            <div class="btn-group">
+                <div class="dropdown me-1">
+                    <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
+                        <i class="fa-sharp-duotone fa-solid fa-sliders-up fa-xl"></i><span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end pb-0">
+                        <span class="small ps-3 fw-bold text-dark">Show</span> 
+                        <a class="dropdown-item d-flex align-items-center" href="#">10 <i class="fa-sharp fa-solid fa-check ms-auto"></i></a>
+                        <a class="dropdown-item fw-bold" href="#">20</a> 
+                        <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
+                        <i class="fa-sharp-duotone fa-solid fa-gear fa-xl"></i> <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-xs dropdown-menu-end pb-0">
+                        <span class="small ps-3 fw-bold text-dark">Show</span> 
+                        <a class="dropdown-item d-flex align-items-center fw-bold" href="#">10 <i class="fa-sharp fa-solid fa-check ms-auto"></i></a>
+                        <a class="dropdown-item fw-bold" href="#">20</a> 
+                        <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-body shadow border-0 table-wrapper table-responsive">
+    <div class="d-flex mb-3">
+        <select name="mass-edit" class="form-select fmxw-200" aria-label="Message select example" disabled>
+            <option selected="selected">Bulk Action</option>
+            <option value="1">Send Email</option>
+            <option value="2">Change Group</option>
+            <option value="3">Delete User</option>
+        </select> <button class="btn btn-sm px-3 btn-secondary ms-3" disabled>Apply</button>
+    </div>
+
+    <table class="table user-table table-hover align-items-center">
+        <thead>
+            <tr>
+                <th class="border-bottom">
+                    <div class="form-check dashboard-check">
+                        <input class="form-check-input" type="checkbox" value="" id="userCheck55" onclick="checkAll(this)"> 
+                        <label class="form-check-label" for="userCheck55"></label>
+                    </div>
+                </th>
+                <th class="border-bottom">Name</th>
+                <th class="border-bottom">Date Created</th>
+                <th class="border-bottom">Role</th>
+                <th class="border-bottom">Verified</th>
+                <th class="border-bottom">Status</th>
+                <th class="border-bottom">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($data['users'] as $user){ ?>
+            <tr>
+                <td>
+                    <div class="form-check dashboard-check">
+                        <input class="form-check-input" type="checkbox" id="userCheck<?=$user['id'];?>"> 
+                        <label class="form-check-label" for="userCheck1"></label>
+                    </div>
+                </td>
+                <td><a href="#" class="d-flex align-items-center"><img src="<?=$user['image']?SITE_URI.DS.$user['image']:imgPath.'/profile.jpg'; ?>" class="avatar rounded-circle me-3" alt="Avatar">
+                    <div class="d-block"><span class="fw-bold"><?=$user['full_name']; ?></span>
+                        <div class="small text-gray"><?=$user['email']; ?></div></div></a></td>
+                <td><span class="fw-normal"><?=$user['created_at']; ?></span></td>
+                <td><span class="fw-normal"><?=$data['userRole'][$user['role']]; ?></span></td>
+                <td><span class="fw-normal d-flex align-items-center">
+                    <i class="fa-sharp fa-solid fa-<?=$user['is_verified']?'circle-check text-success':'clock text-purple';?> me-2"></i> <?=$data['verifyTypes'][$user['verify_type']];?> </span>
+                </td>
+                <td><span class="fw-normal text-<?=$data['statusColors'][$user['status']];?>"><?=$data['userStatus'][$user['status']];?></span></td>
+                <td>
+                    <a href="<?=SITE_URI.'/admin/users/edit/'.$user['id']; ?>" class="btn btn-sm btn-gray-100" title="Edit Member"><i class="<?=EDIT_ICON;?>"></i></a>
+
+                    <a href="#" onclick="ConfirmDelete('users', <?=$user['id'];?> , 'website user','delete')" class="btn btn-sm btn-gray-200 me-1" title="Delete User">
+                        <i class="<?=DELETE_ICON;?>"></i>
+                    </a>
+                    <!-- More Action Button -->
+                    <div class="btn-group">
+                        <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa-sharp fa-solid fa-ellipsis fa-xl"></i> 
+                            <span class="visually-hidden">Toggle Dropdown</span></button>
+                        <div class="dropdown-menu dashboard-dropdown dropdown-menu-start mt-2 py-1">
+                            <a class="dropdown-item d-flex align-items-center <?=$user['is_verified']=='1'?'disabled':'';?>" href="#" onclick="usersClass.verifyUser('<?=$user['token'];?>')"><i class="fa-sharp fa-solid fa-badge-check me-2 text-success"></i> Manual Verify </a>
+                            <a class="dropdown-item d-flex align-items-center" href="<?=SITE_URI.DS.ACTIVE_LANG_PATH;?>admin/users/edit/<?=$user['id'];?>"><i class="fa-sharp fa-solid fa-eye me-2 text-primary"></i> View Details </a>
+                            <?php if($user['status']!='3'){?>
+                                <a class="dropdown-item d-flex align-items-center" href="#" onclick="usersClass.suspendUser('<?=$user['id'];?>' , 'suspend')"><i class="fa-sharp fa-solid fa-shield-xmark me-2 text-danger"></i> Suspend</a>
+                            <?php }else{ ?>
+                                <a class="dropdown-item d-flex align-items-center" href="#" onclick="usersClass.suspendUser('<?=$user['id'];?>', 'unsuspend')"><i class="fa-sharp fa-solid fa-shield-slash me-2 text-warning"></i> Unsuspend</a>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+    <?=$data['pagination']; ?>
+</div>
+
+<script src="<?=jsPath;?>/admin/helpers/usersHelper.js"></script>
+<script>
+    function checkAll(bx) {
+        var cbs = document.getElementsByTagName('input');
+        for(var i=0; i < cbs.length; i++) {
+            if(cbs[i].type == 'checkbox') {
+            cbs[i].checked = bx.checked;
+            }
+        }
+    }
+    const usersClass = new UsersHelper({});
+</script> 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" href="<?=cssPath;?>/admin/admin.min.css" rel="stylesheet">
+    <title>Database Error - <?=Config::get('Site_Name');?></title>
+</head>
+<style>
+    .errorbox{
+        border: 1px solid #dddddd;
+        display: block;
+        background-color: #f3f3f3;
+        border-radius: 5px;
+    }
+</style>
+<body>
+    <main>
+        <section class="vh-100 d-flex justify-content-center">
+            <div class="container" style="padding-top: 10vh;">
+                <div class="row">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="card">
+                            <div class="card-header py-2">
+                                <h4 class="my-1">No Data</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <img class="img-fluid" style="display: inline-block;width: 100px;" src="<?=SITE_URI;?>/img/illustrations/dberror.svg" alt="404 not found">
+                                    <div style="display: inline-block;max-width:550px;">
+                                        <p class="my-4" ><b>Database Error </b>has been occured, please check your configuration or contact Webmaster.</p>
+                                        <span class="p-2 w-100 errorbox">it seems there is no data passed, if you this this is mistake please contact administrator.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
