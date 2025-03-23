@@ -4,7 +4,7 @@
 //echo "This is flo cms command line";
 require_once __DIR__ . '/vendor/flo/flo-cli/autoload.php';
 
-if (isset($argv[1])){
-    $text = new Data($argv[1]);
-    echo $text -> displayData();
+if (isset($argv)){
+    $gate = new Gate($argv);
+    echo $gate -> Execute();
 }
