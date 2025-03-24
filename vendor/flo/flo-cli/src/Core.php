@@ -9,11 +9,10 @@ Class Core{
     public function __construct($command)
     {
         $this->Command = $command;
-        $data = json_decode(file_get_contents(__DIR__."/data.json"), true);
-        $this->TextData[] = $data['cli-data'];
-        $this->TextData = $this->TextData[0]['dummy-texts'];
+        $jsonData = json_decode(file_get_contents(__DIR__."/data.json"), true);
+        $this->TextData = $jsonData['cli-data']['dummy-texts'];
+        $this->HelpData = $jsonData['cli-data']['help-strings'];
 
-        $this->HelpData[] = $data['cli-data']['help-strings'];
         $this->Colors = new Colors();
     }
 
@@ -57,7 +56,7 @@ Class Core{
         }
 
         if($this->Command[2] == '--help'){
-            $text =  $this->HelpData[0]['create-view'];
+            $text =  $this->HelpData['create-view'];
             return print_r($text);
         }
 
