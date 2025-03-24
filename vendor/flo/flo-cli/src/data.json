@@ -1,11 +1,11 @@
 {
     "cli-data":{
-        "dummy-texts":[
+        "dummy-texts":
             {
                 "controller-text":"<?php/nclass controller",
                 "model-text":"<?php/nclass model",
                 "view-text":"<?php/nclass view"
             }
-        ]
+        
     }
 }

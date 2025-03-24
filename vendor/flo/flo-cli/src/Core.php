@@ -8,7 +8,9 @@ Class Core{
     public function __construct($fileName)
     {
         $this->FileName = $fileName;
-        $this->TextData = json_decode(file_get_contents(__DIR__."/data.json"), true);
+        $data = json_decode(file_get_contents(__DIR__."/data.json"), true);
+        $this->TextData[] = $data['cli-data'];
+        $this->TextData = $this->TextData[0]['dummy-texts'];
     }
 
     private function ControllerText(){
@@ -29,7 +31,7 @@ class '.$this->FileName.'Controller extends Controller{
     }
     public function CreateController(){
         //echo __DIR__;
-        print_r($this->TextData);
+        print_r($this->TextData['controller-text']);
         // $colors = new Colors();
         // $file = fopen('controllers/' . $this->FileName .".controller.php", "w") or die("Unable to open file!");
         // if(fwrite($file, $this->ControllerText())){
