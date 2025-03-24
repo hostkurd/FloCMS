@@ -24,4 +24,12 @@ Class Help{
             echo $value->Param . " ". $value->Description . "\r\n";
         }
     }
+
+    public function HelpStrings():array{
+        $colors = new Colors();
+        return [
+            "create-view"=> $colors->getColoredString('How to use create view command:', 'green','black') . "\nCreate View Command accepts two arguement (view-name and controller-name) \nThe Command should be Writen as follow\nphp flo create:view page-name controller-name\nfor example: 'php flo create:view index pages' which index is the view of pages controller http://website.com/pages/index",
+            "create-controller"=> $colors->getColoredString('How to use create Controller command:', 'green','black') . "\nCreate Controller Command accepts one arguement (controller-name) \nThe Command should be Writen as follow\nphp flo create:controller page-name controller-name\nfor example: 'php flo create:view index pages' which index is the view of pages controller http://website.com/pages/index"
+            ];
+    }
 }

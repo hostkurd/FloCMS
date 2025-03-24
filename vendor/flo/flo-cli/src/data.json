@@ -1,11 +1,14 @@
 {
     "cli-data":{
         "dummy-texts":
-            {
-                "controller-text":"<?php/nclass controller",
-                "model-text":"<?php/nclass model",
-                "view-text":"<?php/nclass view"
-            }
-        
+        {
+            "controller-text":"<?php\nclass %sController extends Controller{\n\tpublic function __construct(array $data = array())\n\t{\n\t\tparent::__construct($data);\n\t\t$this->model = new PagesMode();\n\t}\n\tpublic function index(){\n\t\t$this->data['title'] = 'Pages Index Title';\n\t}\n}",
+            "model-text":"<?php\nclass %sModel extends Model{\n\n}",
+            "view-text":"<?php/nclass view"
+        },
+        "help-strings":{
+            "create-view":"Create View Command accepts two arguement (view-name and controller-name) \nThe Command should be Writen as follow\nphp flo create:view page-name controller-name\nfor example: 'php flo create:view index pages' which index is the view of pages controller http://website.com/pages/index",
+            "create-controller":"Create Controller Command accepts one arguement (controller-name) \nThe Command should be Writen as follow\nphp flo create:controller controller-name\nfor example: 'php flo create:controller pages' which pages is a controller http://website.com/pages"
+        }
     }
 }

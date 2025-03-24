@@ -1,43 +1,74 @@
 <?php
 Class Core{
-    private $ControllerFile;
-    private $ModelFile;
-    private $TextData;
-    private $FileName;
 
-    public function __construct($fileName)
+    private $TextData;
+    private $HelpData;
+    private $Command;
+    private $Colors;
+
+    public function __construct($command)
     {
-        $this->FileName = $fileName;
+        $this->Command = $command;
         $data = json_decode(file_get_contents(__DIR__."/data.json"), true);
         $this->TextData[] = $data['cli-data'];
         $this->TextData = $this->TextData[0]['dummy-texts'];
+
+        $this->HelpData[] = $data['cli-data']['help-strings'];
+        $this->Colors = new Colors();
     }
 
-    private function ControllerText(){
-        return '<?php
-class '.$this->FileName.'Controller extends Controller{
-    public function __construct(array $data = array())
-    {
-        parent::__construct($data);
-        $this->model = new PagesModel();
-    }
-
-    public function index(){ 
-        $this->data[\'title\'] = \'Pages Index Title\';
-    }
-}';
-
-
-    }
     public function CreateController(){
+        if(!isset($this->Command[2])){
+            return $this->Colors->getColoredString('Warning:', 'white','red') . "Controller name is required, please enter valid controller name with the command.";
+        }
+        $fileName = $this->Command[2];
         //echo __DIR__;
-        print_r($this->TextData['controller-text']);
-        // $colors = new Colors();
-        // $file = fopen('controllers/' . $this->FileName .".controller.php", "w") or die("Unable to open file!");
-        // if(fwrite($file, $this->ControllerText())){
-        //     return $colors->getColoredString('Info:', 'white','blue')."Controller has been Created Successfully.";
-        //     fclose($file);
-        // };
+        $text = sprintf($this->TextData['controller-text'],ucfirst($fileName));
+        // print_r($this->TextData['controller-text']);
         
+         $file = fopen('controllers/' . $fileName .".controller.php", "w") or die("Unable to open file!");
+         if(fwrite($file, $text)){
+             return $this->Colors->getColoredString('Info:', 'white','blue')."Controller has been Created Successfully.";
+             fclose($file);
+         };
+        
+    }
+
+    public function CreateModel(){
+        if(!isset($this->Command[2])){
+            return $this->Colors->getColoredString('Warning:', 'white','red') . "Model name is required, please enter valid Model name with the command.";
+        }
+        $fileName = $this->Command[2];
+        //echo __DIR__;
+        $text = sprintf($this->TextData['model-text'],ucfirst($fileName));
+        // print_r($this->TextData['controller-text']);
+        
+         $file = fopen('models/' . $fileName .".model.php", "w") or die("Unable to open file!");
+         if(fwrite($file, $text)){
+             return $this->Colors->getColoredString('Info:', 'white','blue')."Model has been Created Successfully.";
+             fclose($file);
+         };
+    }
+
+    public function CreateView(){
+        $help = new Help();
+        if(!isset($this->Command[2])){
+            return $this->Colors->getColoredString('Warning:', 'white','red') . "View name and route is required, please enter valid View name with the command.";
+        }
+
+        if($this->Command[2] == '--help'){
+            $text =  $this->HelpData[0]['create-view'];
+            return print_r($text);
+        }
+
+        if(!isset($this->Command[3])){
+            return $this->Colors->getColoredString('Warning:', 'white','red') . "View route is required, please enter valid route for the View.";
+        }
+
+        $fileName = $this->Command[2];
+        $route =  $this->Command[3];
+
+
+
     }
 }

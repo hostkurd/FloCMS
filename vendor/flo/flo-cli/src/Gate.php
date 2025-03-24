@@ -11,26 +11,29 @@ final class Gate
     }
 
     public function Execute(){
-        $colors = new Colors();
+        //$colors = new Colors();
+        $Core = new Core($this->Command);
         $num_params = count($this->Command);
         if($num_params<2){
-            return $colors->getColoredString('Info:', 'white','blue')."Flo CLI Version 1.0\nFloCMS Command line interface.";
+            return "Flo CLI Version 1.0\nFloCMS Command line interface.";
         }
         
         switch($this->Command[1]){
             case '--v':
                 return 'Version 1.8';
                 break;
-            case 'create:Model':
-                return 'Create Model Command';
-                break;
             case '--help':
                 $Help = new Help();
                 return print_r($Help -> HelpData(), true);
                 break;
             case 'create:controller':
-                $Core = new Core($this->Command[2]);
                 return $Core -> CreateController();
+                break;
+            case 'create:model':
+                return $Core -> CreateModel();
+                break;
+            case 'create:view':
+                return $Core -> CreateView();
                 break;
             default:
                 return "Command not valid \r\nRun \"php flo --help\" to view available FloCMS Commands.";
