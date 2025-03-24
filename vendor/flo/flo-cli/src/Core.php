@@ -3,6 +3,7 @@ Class Core{
 
     private $TextData;
     private $HelpData;
+    private $AllCommands;
     private $Command;
     private $Colors;
 
@@ -12,7 +13,8 @@ Class Core{
         $jsonData = json_decode(file_get_contents(__DIR__."/data.json"), true);
         $this->TextData = $jsonData['cli-data']['dummy-texts'];
         $this->HelpData = $jsonData['cli-data']['help-strings'];
-
+        $this->AllCommands = $jsonData['cli-data']['all-commands'];
+        
         $this->Colors = new Colors();
     }
 
@@ -50,14 +52,14 @@ Class Core{
     }
 
     public function CreateView(){
-        $help = new Help();
         if(!isset($this->Command[2])){
             return $this->Colors->getColoredString('Warning:', 'white','red') . "View name and route is required, please enter valid View name with the command.";
         }
 
         if($this->Command[2] == '--help'){
+            $title = $this->Colors->getColoredString('How to Use Create View command:', 'green','black');
             $text =  $this->HelpData['create-view'];
-            return print_r($text);
+            return sprintf($text, $title);
         }
 
         if(!isset($this->Command[3])){
@@ -66,8 +68,9 @@ Class Core{
 
         $fileName = $this->Command[2];
         $route =  $this->Command[3];
+    }
 
-
-
+    public function ShowAllCommands(){
+        return print_r($this->AllCommands, true);
     }
 }
