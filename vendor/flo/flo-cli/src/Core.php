@@ -70,7 +70,10 @@ Class Core{
         $route =  $this->Command[3];
     }
 
-    public function ShowAllCommands(){
-        return print_r($this->AllCommands, true);
+    public function ShowAllCommands():void{
+        foreach($this->AllCommands as $key => $value){
+            print_r($key ." :\t ". $value ."\n");
+        }
+         
     }
 }
