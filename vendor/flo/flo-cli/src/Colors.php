@@ -51,14 +51,4 @@
 
 			return $colored_string;
 		}
-
-		// Returns all foreground color names
-		public function getForegroundColors() {
-			return array_keys($this->foreground_colors);
-		}
-
-		// Returns all background color names
-		public function getBackgroundColors() {
-			return array_keys($this->background_colors);
-		}
 	}
