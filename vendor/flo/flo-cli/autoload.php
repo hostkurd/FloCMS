@@ -1,5 +1,4 @@
 <?php
-
 spl_autoload_register(function($class){
 
     $prefix = '';//'App\\';
@@ -19,3 +18,5 @@ spl_autoload_register(function($class){
         require $file;
     }
 });
+
+

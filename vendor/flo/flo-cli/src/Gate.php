@@ -11,9 +11,10 @@ final class Gate
     }
 
     public function Execute(){
+        $colors = new Colors();
         $num_params = count($this->Command);
         if($num_params<2){
-            return "\033[32m"."Flo CLI "."\033[37m"."Version 1.0\r\nFloCMS Command line interface.";
+            return $colors->getColoredString('Info:', 'white','blue')."Flo CLI Version 1.0\nFloCMS Command line interface.";
         }
         
         switch($this->Command[1]){

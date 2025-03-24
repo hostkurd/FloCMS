@@ -2,12 +2,13 @@
 Class Core{
     private $ControllerFile;
     private $ModelFile;
-    private $ViewFile;
+    private $TextData;
     private $FileName;
 
     public function __construct($fileName)
     {
         $this->FileName = $fileName;
+        $this->TextData = json_decode(file_get_contents(__DIR__."/data.json"), true);
     }
 
     private function ControllerText(){
@@ -23,10 +24,18 @@ class '.$this->FileName.'Controller extends Controller{
         $this->data[\'title\'] = \'Pages Index Title\';
     }
 }';
+
+
     }
     public function CreateController(){
-        $file = fopen('controllers/' . $this->FileName .".controller.php", "w") or die("Unable to open file!");
-        fwrite($file, $this->ControllerText());
-        fclose($file);
+        //echo __DIR__;
+        print_r($this->TextData);
+        // $colors = new Colors();
+        // $file = fopen('controllers/' . $this->FileName .".controller.php", "w") or die("Unable to open file!");
+        // if(fwrite($file, $this->ControllerText())){
+        //     return $colors->getColoredString('Info:', 'white','blue')."Controller has been Created Successfully.";
+        //     fclose($file);
+        // };
+        
     }
 }
