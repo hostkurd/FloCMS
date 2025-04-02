@@ -3,7 +3,6 @@
 Class View{
     protected $data;
     protected $path;
-    protected $cache;
 
     public static function getDefaultViewPath(){
         $router = App::getRouter();
@@ -28,7 +27,15 @@ Class View{
     }
 
     public function render(){
-        return TemplateEngine::CreateView($this->path, $this->data);
+        $data = $this->data;
+
+        ob_start();
+        include $this->path;
+        $content = ob_get_clean();
+
+        return $content;
+
+        //return TemplateEngine::CreateView($this->path, $this->data);
     }
 
 }

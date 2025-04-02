@@ -24,7 +24,7 @@ class TemplateEngine{
         return $contentss;
     }
 
-    public static function CreateView($path, $data = []){
+    public static function CreateView($path = null, $data = []){
         $router = App::getRouter();
         $controller_dir = $router->getController();
         $template_name = $router->getController().'_'.$router->getMethodPrefix().$router->getAction();//.'.html';
@@ -35,7 +35,21 @@ class TemplateEngine{
         $contents = self::Generate($path);
 
         file_put_contents($cacheFile, $contents);
+
         return $cacheFile;
 
+    }
+
+    public static function GenerateTemplate($data){
+        // Engine Rules
+        $data = preg_replace('/{{\s*(.+?)\s*}}/','<?=$1; ?>',$data);
+        $data = preg_replace('/@if\(\s*(.+?)\s*\)/','<?php if($1): ?>',$data);
+        $data = str_replace('@endif','<?php endif; ?>',$data);
+        $data = preg_replace('/@foreach\{{\s*(.+?)\s*\}}/','<?php foreach($1): ?>',$data);
+        $data = str_replace('@endforeach','<?php endforeach; ?>',$data);
+        $data = preg_replace('/@config\(\s*(.+?)\s*\)/','<?=Config::get($1);?>',$data);
+
+        //echo $result;
+        return $data;
     }
 }

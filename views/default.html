@@ -6,11 +6,11 @@
 <meta name="description" content="Marjan company located in northern iraq - Kurdistan.">
 <meta name="keywords" content="lighting, Electrical Boards, light fixture, kurdistan, SPYAL iraq, Lighting Technology">
 <meta name="author" content="HostKurd">
-<title>@config('Site_Name')</title>
+<title><?=Config::get('Site_Name');?></title>
 <link rel="shortcut icon" href="<?=imgPath;?>/favicon/favicon-16x16.png">
 
-<link rel="stylesheet" href="{{ cssPath }}/style.css">
-<link rel="stylesheet" href="{{ cssPath }}/flo-core.css">
+<link rel="stylesheet" href="<?=cssPath;?>/style.css">
+<link rel="stylesheet" href="<?=cssPath;?>/flo-core.css">
 
 <!--Fontawesome CSS Files-->
 <link rel="stylesheet" href="<?=fontPath;?>/fontawesome/css/all.css">
@@ -19,18 +19,17 @@
 <link rel="stylesheet" href="<?=fontPath;?>/fontawesome/css/sharp-solid.css">
 
 <!-- Important Javascript Libraries -->
-<script src="{{ jsPath }}/config.js"></script>
+<script src="<?=jsPath;?>/config.js"></script>
 
 <?php if(LANG::isRTL()){;?>
-<link rel="stylesheet" href="{{ cssPath }}/style.rtl.css">
+<link rel="stylesheet" href="<?=cssPath;?>/style.rtl.css">
 <?php } ?>
 
-<?=isIndexPage?'<link rel="stylesheet" href="'.cssPath.'/slider.css">':'';?>
 
 <style type="text/css">img[onload^="SVGInject("]{visibility:hidden;}</style>
 
 </head>
 <body>
-  {{ $content }}
+<?=$data['content']; ?>
 </body>
 </html>

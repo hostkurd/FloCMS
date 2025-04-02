@@ -3,7 +3,7 @@
 // Please Edit this file before installing the Script
 // Copyright c2024 HostKurd Company
 
-Define('SITE_URI','https://marjanenergy.com');
+Define('SITE_URI','http://localhost/flocms');
 Define('API_URI','https://flocms.com/api/');
 
 Define('DS',DIRECTORY_SEPARATOR);
