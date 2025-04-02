@@ -54,7 +54,7 @@ class App{
                 $layout_path = VIEWS_PATH.DS.$layout.'.html';
                 $layout_view_object = new View(compact('content'),$layout_path);
                 
-                echo $layout_view_object->render();
+                echo $layout_view_object->renderFinal();
                 
             }else{
                 //Display 404 Error Page

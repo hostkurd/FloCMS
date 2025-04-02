@@ -41,6 +41,7 @@ class TemplateEngine{
     }
 
     public static function GenerateTemplate($data){
+        extract($data);
         // Engine Rules
         $data = preg_replace('/{{\s*(.+?)\s*}}/','<?=$1; ?>',$data);
         $data = preg_replace('/@if\(\s*(.+?)\s*\)/','<?php if($1): ?>',$data);

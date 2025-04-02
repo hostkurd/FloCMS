@@ -26,6 +26,7 @@ Class View{
         $this->data = $data;
     }
 
+
     public function render(){
         $data = $this->data;
 
@@ -37,5 +38,19 @@ Class View{
 
         //return TemplateEngine::CreateView($this->path, $this->data);
     }
+
+    public function renderFinal(){
+        $data = TemplateEngine::GenerateTemplate($this->data);
+
+        ob_start();
+        include $this->path;
+        $content = ob_get_clean();
+
+        return $content;
+
+        //return TemplateEngine::CreateView($this->path, $this->data);
+    }
+
+
 
 }
