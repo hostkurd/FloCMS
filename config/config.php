@@ -1,7 +1,7 @@
 <?php
-    Config::set('Site_Name', 'Marjan Energy Company');
-    Config::set('Site_Name_Admin', 'Marjan Admin Panel');
-    Config::set('primary_email', 'info@marjanenergy.com');
+    Config::set('Site_Name', 'FLOCMS');
+    Config::set('Site_Name_Admin', 'Flo CMS Console');
+    Config::set('primary_email', 'info@flocms.com');
     // Non Constant Variables
     Define ('isSubDomain', true);
 

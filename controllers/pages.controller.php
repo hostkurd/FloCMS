@@ -7,7 +7,13 @@ class PagesController extends Controller{
     }
 
     public function index(){ 
-        $this->data['title'] = 'Pages Index Title';
+        // $this->data['title'] = 'Pages Index Title';
+        // $this->data['temp'] = 'THis is Temp';
+
+        $this->data=[
+            'title'=> 'This is Page Title',
+            'temp'=> 'this is temp'
+        ];
     }
 
 }
