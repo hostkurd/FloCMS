@@ -6,13 +6,13 @@
 Define('SITE_URI','http://localhost/flocms');
 Define('API_URI','https://flocms.com/api/');
 
-Define('DS',DIRECTORY_SEPARATOR);
-Define('ROOT',dirname(dirname(__FILE__)));
 
+
+/**
+ * Important!
+ * Do not Edit the Following Settings
+ */
 Define('VIEWS_PATH',ROOT.DS.'views');
-//Define('SITE_URI','https://shanashil.co');
-
-// Main Directories
 Define('assetPath', SITE_URI.'/assets');
 Define('cssPath', SITE_URI.'/assets/css');
 Define('jsPath', SITE_URI.'/assets/js');
@@ -32,3 +32,28 @@ Define('editorConfig', SITE_URI.'/vendor/ckeditor/editor.js');
 Define('uploadHelper', jsPath.'/admin/helpers/uploadHelper.js');
 Define('multiUploadHelper', jsPath.'/admin/helpers/multiUploadHelper.js');
 Define('layoutHelper', jsPath.'/admin/helpers/layoutHelper.js');
+
+Define('ACTIVE_LANG',$router->getLanguage());
+Define('EnglishPath',$router->changeLang('en'));
+
+// Detecting Main Index Page
+Define('CurControl', $router->getController());
+Define('CurAction', $router->getAction());
+Define('isIndexPage',(CurControl == 'pages' && CurAction=='index' ? true : false));
+
+Define('LANG_SUFFIX', ACTIVE_LANG != 'en'?'_'.ACTIVE_LANG:'');
+
+//Active Language Definition
+IF ($router->getLanguage() == Config::get('default_language')){
+    Define('ACTIVE_LANG_PATH','');
+}else{
+    Define('ACTIVE_LANG_PATH',ACTIVE_LANG.'/');
+}
+
+// Check if is Admin or not
+if ($router->getMethodPrefix() =='admin_'){
+    Define('IS_ADMIN',true);
+}else{
+    Define('IS_ADMIN',false);
+}
+
