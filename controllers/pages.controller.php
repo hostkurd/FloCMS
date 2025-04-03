@@ -7,13 +7,10 @@ class PagesController extends Controller{
     }
 
     public function index(){ 
-        $this->data['title'] = 'Pages Index Title';
-        $this->data['temp'] = 'THis is Temp';
-
-        // $this->data=[
-        //     'title'=> 'This is Page Title',
-        //     'temp'=> 'this is temp'
-        // ];
+        $this->data=[
+            'title'=> 'The Most lightweight PHP Framework',
+            'test'=> 'This is Test Parameter'
+        ];
     }
 
 }

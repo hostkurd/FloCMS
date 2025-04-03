@@ -1,9 +1,15 @@
-<div>Index Page - {{ $title }}</div>
-
-@if(2!=2)
-sdfg sd fgsdf gsdf
-@endif
-<div class="text-center">
-@lang('website.title')
+<div class="flo-wrapper">
+    <div class="flo-card width-500">
+        <div class="header">
+            <span class="text-logo">FloCMS</span> - {{ $title }}
+        </div>
+        <div class="body">
+            <div class="content">
+                <h2 class="m-0">Instruction</h2>
+                <p class="m-0">You can Edit this Page...</p>
+                <p class="m-0">Go to Views/Pages/index.html</p>
+            </div>
+        </div>
+    </div>
 </div>
-<?php echo 'Env'.getenv('SHELL'); ?>
+
