@@ -7,49 +7,42 @@ class TemplateEngine{
        
     }
 
-    protected static function Generate($path){
-
-        $contentss = file_get_contents($path);
-        echo '<br>'.$contentss.'<br>';
-        return;
-        // Engine Rules
-        $content = preg_replace('/{{\s*(.+?)\s*}}/','<?=$1; ?>',$contentss);
-        $content = preg_replace('/@if\(\s*(.+?)\s*\)/','<?php if($1): ?>',$contentss);
-        $content = str_replace('@endif','<?php endif; ?>',$contentss);
-        $content = preg_replace('/@foreach\{{\s*(.+?)\s*\}}/','<?php foreach($1): ?>',$contentss);
-        $content = str_replace('@endforeach','<?php endforeach; ?>',$contentss);
-        $content = preg_replace('/@config\(\s*(.+?)\s*\)/','<?=Config::get($1);?>',$contentss);
-
-        //echo $result;
-        return $contentss;
-    }
-
-    public static function CreateView($path = null, $data = []){
+    /**
+     * CreateView
+     * 
+     * @param mixed $path
+     * @param array $data
+     * @return string
+     */
+    public static function CreateView($path, $data = []){
         $router = App::getRouter();
         $controller_dir = $router->getController();
         $template_name = $router->getController().'_'.$router->getMethodPrefix().$router->getAction();//.'.html';
 
-        extract($data);
+        // Get Content of the view file
+        $content = file_get_contents($path);
+        // 
+        $content = self::Decode($content);
 
+        //Cache File Path
         $cacheFile = VIEWS_PATH.DS.'cache'.DS.$template_name.'.php';
-        $contents = self::Generate($path);
-
-        file_put_contents($cacheFile, $contents);
-
+        // Save Data to Cache File
+        file_put_contents($cacheFile, $content);
+        // Return Cache file
         return $cacheFile;
-
     }
 
-    public static function GenerateTemplate($data){
-        extract($data);
+    public static function Decode($data){
         // Engine Rules
         $data = preg_replace('/{{\s*(.+?)\s*}}/','<?=$1; ?>',$data);
         $data = preg_replace('/@if\(\s*(.+?)\s*\)/','<?php if($1): ?>',$data);
         $data = str_replace('@endif','<?php endif; ?>',$data);
-        $data = preg_replace('/@foreach\{{\s*(.+?)\s*\}}/','<?php foreach($1): ?>',$data);
+        $data = preg_replace('/@foreach\(\s*(.+?)\s*\)/','<?php foreach($1): ?>',$data);
         $data = str_replace('@endforeach','<?php endforeach; ?>',$data);
         $data = preg_replace('/@config\(\s*(.+?)\s*\)/','<?=Config::get($1);?>',$data);
+        $data = preg_replace('/@lang\(\s*(.+?)\s*\)/','<?=__($1); ?>',$data);
 
+            //print_r($data);
         //echo $result;
         return $data;
     }

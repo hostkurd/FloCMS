@@ -26,31 +26,28 @@ Class View{
         $this->data = $data;
     }
 
-
     public function render(){
         $data = $this->data;
 
         ob_start();
         include $this->path;
         $content = ob_get_clean();
-
         return $content;
-
-        //return TemplateEngine::CreateView($this->path, $this->data);
     }
 
-    public function renderFinal(){
-        $data = TemplateEngine::GenerateTemplate($this->data);
+    public function renderView(){
+        $data = $this->data;
+
+        // Convert the array key to variables
+        extract($data);
+
+        $viewPath = TemplateEngine::CreateView($this->path, $this->data);
 
         ob_start();
-        include $this->path;
+        include $viewPath;
         $content = ob_get_clean();
-
         return $content;
-
-        //return TemplateEngine::CreateView($this->path, $this->data);
     }
-
 
 
 }

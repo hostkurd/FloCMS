@@ -49,12 +49,13 @@ class App{
             if (method_exists($controller_object, $controller_method)){
                 $view_path = $controller_object->$controller_method();
                 $view_object = new View($controller_object->getData(),$view_path);
-                $content = $view_object->render();
+                $content = $view_object->renderView();
+                
                 //Render The Page
                 $layout_path = VIEWS_PATH.DS.$layout.'.html';
                 $layout_view_object = new View(compact('content'),$layout_path);
-                
-                echo $layout_view_object->renderFinal();
+
+                echo $layout_view_object->render(); 
                 
             }else{
                 //Display 404 Error Page
