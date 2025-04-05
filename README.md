@@ -10,7 +10,27 @@
 ## About FloCMS
 FloCMS is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. FLoCMS takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- Simple, fast routing engine.
-- Auto Creating Routes for Controller
-- Own CLI to simplify the development process.
+**Table of Contents**
+- [Features](#features)
+- [Installation](#installation)
 
+## Features
+
+- **Easy Routing**: FloCMS Offers easy and fast routing engine.
+- **Caching**: Multi backends for session and cache storage.
+- **Template Engine**: With Flo Template Engine you can use PHP Codes easy inside templates.
+- **Multilingual**: Powerfull Multilingual skeleton gives you ability to create a multilingual website.
+
+## Installation
+
+To Create a new project, install it via Composer:
+
+```bash
+composer create-project hostkurd/flocms
+```
+
+# Security Vulnerabilities
+If you discover a security vulnerability within FLoCMS, please send an e-mail to Dev Team via [dev@flocms.com](mailto:dev@flocms.com). All security vulnerabilities will be promptly addressed.
+
+## License
+The FloCMS framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
