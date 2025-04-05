@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/user-attachments/assets/7a77391e-e9c7-4aad-8ce1-e31baf16b4c2">
+<img src="https://github.com/user-attachments/assets/a3a90a19-a7d6-4709-99ab-0e60308ff6f5">
 </p>
 <p align="center">
 <a href="https://packagist.org/packages/hostkurd/flocms"><img src="https://img.shields.io/packagist/dt/hostkurd/flocms" alt="Total Downloads"></a>
