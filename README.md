@@ -1,8 +1,9 @@
 # flocms
+
  FloCMS is a light weight PHP Framework Developed by HostKurd
 
-
 <p align="center">
+![flo-logo](https://github.com/user-attachments/assets/7a77391e-e9c7-4aad-8ce1-e31baf16b4c2)
 <a href="https://packagist.org/packages/hostkurd/flocms"><img src="https://img.shields.io/packagist/dt/hostkurd/flocms" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/hostkurd/flocms"><img src="https://img.shields.io/packagist/v/hostkurd/flocms" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/hostkurd/flocms"><img src="https://img.shields.io/packagist/l/hostkurd/flocms" alt="License"></a>
