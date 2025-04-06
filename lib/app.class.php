@@ -15,7 +15,7 @@ class App{
     public static function Run($uri){
         //echo self::$router->getRoute();
         self::$router = new Router($uri);
-        self::$db = new DB(getenv('DB_HOST'),getenv('DB_USERNAME'),getenv('DB_PASSWORD'),getenv('DB_DATABASE'));
+        //self::$db = new DB(getenv('DB_HOST'),getenv('DB_USERNAME'),getenv('DB_PASSWORD'),getenv('DB_DATABASE'));
 
         Lang::load(self::$router->getLanguage());
 

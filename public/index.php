@@ -3,7 +3,7 @@
     Define('ROOT',dirname(dirname(__FILE__)));
     Define('DS',DIRECTORY_SEPARATOR);
 
-    require_once (ROOT."/vendor/autoload.php");
+    //require_once (ROOT."/vendor/autoload.php");
     require_once (ROOT.'/lib/init.php');
     
 
