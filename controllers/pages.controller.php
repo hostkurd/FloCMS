@@ -9,7 +9,8 @@ class PagesController extends Controller{
     public function index(){ 
         $this->data=[
             'title'=> 'The Most lightweight PHP Framework',
-            'test'=> 'This is Test Parameter'
+            'test'=> 'This is Test Parameter',
+            'users'=>$this->model->getUsers()
         ];
     }
 

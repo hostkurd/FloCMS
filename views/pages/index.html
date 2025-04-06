@@ -8,6 +8,9 @@
                 <h2 class="m-0">Instruction</h2>
                 <p class="m-0">You can Edit this Page...</p>
                 <p class="m-0">Go to Views/Pages/index.html</p>
+                @foreach($users as $user)
+                <p class="m-0">UserName is: {{ $user->name }} Job Title: {{ $user->job }}</p>
+                @endforeach
             </div>
         </div>
     </div>
