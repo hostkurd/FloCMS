@@ -5,7 +5,9 @@ interface RuleInterface
     public function passes ($value):bool;
     public function message ($attribute):string;
 }
-
+/**
+ * Rules for Validation
+ */
 class RequiredRule implements RuleInterface
 {
     public function passes ($value):bool
@@ -116,7 +118,9 @@ class InRule implements RuleInterface
         return "$attribute should be ( $this->rawData ).";
     }
 }
-
+/**
+ * Validation Exception Class
+ */
 class ValidationException extends Exception
 {
     protected array $errors;
@@ -132,6 +136,9 @@ class ValidationException extends Exception
     }
 }
 
+/**
+ * Validator Class
+ */
 class Validator
 {
     protected static $ruleMap = [
@@ -140,7 +147,7 @@ class Validator
         'integer' => IntegerRule::class,
         'min' => MinRule::class,
         'max' => MaxRule::class,
-        'in' => InRule::class,
+        'in' => InRule::class
     ];
 
     public static function validate(array $data = [], array $rules = [])
