@@ -75,7 +75,7 @@ class MaxRule implements RuleInterface
     protected $max;
 
     public function __construct($max){
-        $this->min = $max;
+        $this->max = $max;
     }
 
 
@@ -92,6 +92,28 @@ class MaxRule implements RuleInterface
     public function message ($attribute):string
     {
         return "$attribute must not exceed $this->max character or value.";
+    }
+}
+
+class InRule implements RuleInterface
+{
+    protected $rawData;
+    protected $valueArray;
+
+    public function __construct($valueArray){
+
+        $this->rawData = $valueArray;
+        $this->valueArray = explode(',',$valueArray);
+    }
+
+    public function passes ($value):bool
+    {
+        return in_array($value, $this->valueArray);
+    }
+
+    public function message ($attribute):string
+    {
+        return "$attribute should be ( $this->rawData ).";
     }
 }
 
@@ -117,7 +139,8 @@ class Validator
         'string' => StringRule::class,
         'integer' => IntegerRule::class,
         'min' => MinRule::class,
-        'max' => MaxRule::class
+        'max' => MaxRule::class,
+        'in' => InRule::class,
     ];
 
     public static function validate(array $data = [], array $rules = [])

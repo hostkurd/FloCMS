@@ -9,20 +9,27 @@
                 <f3>
                     <?php
                         $data = [
-                            'name'=>'john',
-                            'age'=>25
+                            'name'=>'josdsddaad',
+                            'age'=>'25'
                         ];
 
                         $rules = [
-                        'name' => 'required|string',
-                        'age'=>'reuired|string'
+                        'name' => 'required|string|min:3|max:12',
+                        'age'=>'reuired|string|in:25,26,27'
                         ];
+
                     try{
                         Validator::validate($data, $rules);
                         echo "passed!";
                     }
                     catch(ValidationException $e){
-                        echo $e->getMessage().'\n';
+                        echo $e->getMessage() ."<br>";
+
+                        foreach($e->getErrors() as $field => $errors){
+                            foreach($errors as $error){
+                                echo "$field: $error <br>";
+                            }
+                        }
                     }
                         
                     ?>
