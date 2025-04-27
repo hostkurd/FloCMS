@@ -6,6 +6,28 @@
         <div class="body">
             <div class="content">
                 <h2 class="m-0">Instruction</h2>
+                <f3>
+                    <?php
+                        $data = [
+                            'name'=>'john',
+                            'age'=>25
+                        ];
+
+                        $rules = [
+                        'name' => 'required|string',
+                        'age'=>'reuired|string'
+                        ];
+                    try{
+                        Validator::validate($data, $rules);
+                        echo "passed!";
+                    }
+                    catch(ValidationException $e){
+                        echo $e->getMessage().'\n';
+                    }
+                        
+                    ?>
+
+                </f3>
                 <p class="m-0">You can Edit this Page...</p>
                 <p class="m-0">Go to Views/Pages/index.html</p>
                 @foreach($users as $user)
