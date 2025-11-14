@@ -41,7 +41,7 @@ Class View{
         // Convert the array key to variables
         extract($data);
 
-        $viewPath = TemplateEngine::CreateView($this->path, $this->data);
+        $viewPath = TemplateEngine::CreateView($this->path);
 
         ob_start();
         include $viewPath;
