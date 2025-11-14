@@ -31,9 +31,9 @@
 
     // Database paramaters
     Config::set('db.host','localhost');
-    Config::set('db.user','zhyar_sarmad');
-    Config::set('db.pass','3132547Kh@');
-    Config::set('db.db_name','zhyar_marjan');
+    Config::set('db.user','');
+    Config::set('db.pass','');
+    Config::set('db.db_name','');
 
     Config::set('salt','Amadyxy%$25@ccx');
 
