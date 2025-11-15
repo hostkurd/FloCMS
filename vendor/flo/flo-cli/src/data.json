@@ -3,9 +3,10 @@
     {
         "dummy-texts":
         {
-            "controller-text":"<?php\nclass %sController extends Controller{\n\tpublic function __construct(array $data = array())\n\t{\n\t\tparent::__construct($data);\n\t\t$this->model = new PagesMode();\n\t}\n\tpublic function index(){\n\t\t$this->data['title'] = 'Pages Index Title';\n\t}\n}",
+            "controller-text":"<?php\nclass %sController extends Controller{\n\tpublic function __construct(array $data = array())\n\t{\n\t\tparent::__construct($data);\n\t\t$this->model = new %sModel();\n\t}\n}",
             "model-text":"<?php\nclass %sModel extends Model{\n\n}",
-            "view-text":"<?php/nclass view"
+            "view-text":"<div class=\"flo-wrapper\">\n\t<p> This is %s Page </p> \n</div>",
+            "method-text":"public function %s(){\n\t\t$this->data['title'] = 'Index Page Title';\n\t}"
         },
         "help-strings":{
             "create-view":"\n%s \nCreate View Command accepts two arguement (view-name and controller-name) \nThe Command should be Writen as follow\nphp flo create:view page-name controller-name\nfor example: 'php flo create:view index pages' which index is the view of pages controller http://website.com/pages/index. \n\n",
