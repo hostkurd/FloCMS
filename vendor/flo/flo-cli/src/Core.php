@@ -32,7 +32,6 @@ Class Core{
          }else{
             return $this->Colors->getColoredString('Warning:', 'white','red')."Controller already Exist.";
          }
-        
     }
 
     public function CreateModel(){
@@ -73,16 +72,14 @@ Class Core{
         }
         
         $path = 'views/'.$controler.'/' . $fileName .".html";
-        $text = sprintf($this->TextData['view-text'],ucfirst($fileName));
-
-        
+        $text = sprintf($this->TextData['view-text'],ucfirst($fileName), ucfirst($controler));
 
         if($this->CreateFile($path, $text)){
             echo $this->Colors->getColoredString('Info:', 'white','blue')."View file has been Created Successfully.";
          }else{
             echo $this->Colors->getColoredString('Warning:', 'white','red')."View file already Exist.";
+            return;
          }
-
 
         $controllerPath = 'controllers/' . $controler .'.controller.php';
         $methodText = sprintf($this->TextData['method-text'],ucfirst($fileName));  
@@ -91,8 +88,6 @@ Class Core{
         } catch (Exception $th) {
             echo $th;
         } 
-        
-        return true;
     }
 
     protected function CreateFile($file, $content){
@@ -126,7 +121,7 @@ Class Core{
         // Insert method before the last "}"
         $newContent =
             substr($content, 0, $pos) .
-            "\n\n    " . trim($methodCode) . "\n" .
+            "\n    " . trim($methodCode) . "\n" .
             "}\n";
 
         // Write updated file
