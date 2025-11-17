@@ -71,7 +71,7 @@ class Router{
         $routes = Config::get('routes');
         $this->route=Config::get('default_route');
         $this->method_prefix = isset($routes[$this->route]) ? $routes[$this->route] : '';
-        $this->language = Config::get('default_language');
+        $this->language = Env::get('DEFAULT_LANG');;
         $this->controller = Config::get('default_controller');
         $this->action = Config::get('default_action');
 
@@ -84,7 +84,7 @@ class Router{
         //array_shift($path_parts);
         //array_shift($path_parts);
         // For Sub domain Only, for root delete this
-        if(isSubDomain == true){
+        if(Env::get('IS_SUBDOMAIN') == true){
             array_shift($path_parts);
         }
        

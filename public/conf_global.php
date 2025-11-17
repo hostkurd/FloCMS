@@ -3,8 +3,8 @@
 // Please Edit this file before installing the Script
 // Copyright c2024 HostKurd Company
 
-Define('SITE_URI','http://localhost/flocms');
-Define('API_URI','https://flocms.com/api/');
+Define('SITE_URI', Env::get('APP_URL'));
+Define('API_URI',Env::get('API_URL'));
 
 
 

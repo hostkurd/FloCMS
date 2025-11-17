@@ -10,6 +10,8 @@
 
     $router = new Router($_SERVER['REQUEST_URI']);
 
+    // Load Environment Variables
+    Env::load(dirname(dirname(__FILE__)).'\.env'); 
     //Load Global Configuration
     include(dirname(dirname(__FILE__)).'\public\conf_global.php');
     

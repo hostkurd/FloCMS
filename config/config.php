@@ -1,9 +1,4 @@
 <?php
-    Config::set('Site_Name', 'FLOCMS');
-    Config::set('Site_Name_Admin', 'Flo CMS Console');
-    Config::set('primary_email', 'info@flocms.com');
-    // Non Constant Variables
-    Define ('isSubDomain', true);
 
     // Supported Languages
     Config::set('languages',array('en', 'ar', 'ku'));
@@ -21,28 +16,16 @@
 
     // Defaults, Set default values
     Config::set('default_route','default');
-    Config::set('default_language','en');
-    Config::set('default_admin_lang','en');
     Config::set('default_controller','pages');
     Config::set('default_action','index');
 
     // if Website is in the root directory this shoud be false
-
-
-    // Database paramaters
-    Config::set('db.host','localhost');
-    Config::set('db.user','');
-    Config::set('db.pass','');
-    Config::set('db.db_name','');
 
     Config::set('salt','Amadyxy%$25@ccx');
 
     // Display
     Config::set('LIMIT_PER_PAGE',25);
     Config::set('LIMIT_PER_PAGE_FRONT',13);
-
-    Config::set('APP_NAME','FloCMS Framework'); 
-    Config::set('APP_VER','1.3'); 
 
     // UserGroups which has access to Admin Panel
     Config::set('admin_access_roles',array('1', '2', '3'));
