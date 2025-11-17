@@ -84,16 +84,18 @@ class Router{
 
         $path_parts=explode('/',$path);
 
-        // convert basepath to an array
+         // convert basepath to an array
         $base_parts=explode('/',$basePath);
         // Checks whether the basepath is clean or not 
         // For example if script placed inside a subfolder
         // this will help to get ride of subfolders
-        while (count($base_parts) != 0) {
-            // Array shift path parts
-            array_shift($path_parts);
-            // Array shift base parts
-            array_shift($base_parts);
+        if(count($base_parts) != 0){
+            while (count($base_parts) != 0) {
+                // Array shift path parts
+                array_shift($path_parts);
+                // Array shift base parts
+                array_shift($base_parts);
+            }
         }
        
 

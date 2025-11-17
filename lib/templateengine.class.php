@@ -87,6 +87,9 @@ class TemplateEngine{
         $data = preg_replace('/@config\(\s*(.+?)\s*\)/', '<?=Config::get($1); ?>', $data);
         $data = preg_replace('/@lang\(\s*(.+?)\s*\)/', '<?=__($1); ?>', $data);
 
+        // Environment Variables
+        $data = preg_replace('/@env\(\s*(.+?)\s*\)/', '<?=Env::get($1);?>', $data);
+
         return $data;
     }
 }
