@@ -66,8 +66,10 @@ class Router{
 
     public function __construct($uri)
     {
-       $this->uri=urldecode(trim($uri,'/'));
-       //Get Defaults Data
+        $basePath = trim(dirname($_SERVER['SCRIPT_NAME']), '/public/'); // ex: 'flocms'
+
+        $this->uri=urldecode(trim($uri,'/'));
+        //Get Defaults Data
         $routes = Config::get('routes');
         $this->route=Config::get('default_route');
         $this->method_prefix = isset($routes[$this->route]) ? $routes[$this->route] : '';
@@ -81,11 +83,17 @@ class Router{
         $path=$uri_parse[0];
 
         $path_parts=explode('/',$path);
-        //array_shift($path_parts);
-        //array_shift($path_parts);
-        // For Sub domain Only, for root delete this
-        if(Env::get('IS_SUBDOMAIN') == true){
+
+        // convert basepath to an array
+        $base_parts=explode('/',$basePath);
+        // Checks whether the basepath is clean or not 
+        // For example if script placed inside a subfolder
+        // this will help to get ride of subfolders
+        while (count($base_parts) != 0) {
+            // Array shift path parts
             array_shift($path_parts);
+            // Array shift base parts
+            array_shift($base_parts);
         }
        
 
