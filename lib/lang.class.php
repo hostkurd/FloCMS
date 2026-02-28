@@ -3,22 +3,39 @@
 class Lang{
     protected static $data;
 
-    public static function load($lang_code){
-        $lang_file_path = ROOT.DS.'lang'.DS.strtolower($lang_code).'.php';
+    public static function load($lang): void
+    {
+        $lang = $lang ?: 'en';
 
-        if (file_exists($lang_file_path)){
-            self::$data = include ($lang_file_path);
-        }else{
-            echo'Language file not found.';
+        $file = ROOT . '/lang/' . $lang . '.php';
+        if (!file_exists($file)) {
+            $file = ROOT . '/lang/en.php'; // fallback
         }
+
+        $data = include $file;
+
+        // Ensure array
+        self::$data = is_array($data) ? $data : [];
     }
 
-    public static function get($key,$default_value=''){
-        return isset(self::$data[strtolower($key)]) ? self::$data[strtolower($key)] : $default_value;
+    public static function get($key, $default_value = '')
+    {
+        if (!is_array(self::$data)) {
+            return $default_value;
+        }
+
+        $key = strtolower($key);
+        return self::$data[$key] ?? $default_value;
     }
 
-    public static function isRTL(){
-        $dir = self::$data['lng.dir'];
-        return ($dir=='rtl') ? true : false;;
+    public static function isRTL(): bool
+    {
+        // if language not loaded yet, default LTR
+        if (!is_array(self::$data)) {
+            return false;
+        }
+
+        $dir = self::$data['lng.dir'] ?? 'ltr';
+        return strtolower($dir) === 'rtl';
     }
 }

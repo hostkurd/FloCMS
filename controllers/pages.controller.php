@@ -10,7 +10,7 @@ class PagesController extends Controller{
         $this->data=[
             'title'=> 'The Most lightweight PHP Framework',
             'test'=> 'This is Test Parameter',
-            'users'=>$this->model->getUsers()
+            //'users'=>$this->model->getUsers()
         ];
     }
 

@@ -3,7 +3,7 @@
 class App{
 
     protected static $router;
-    public static $db;
+    public static $db = null;
     /**
      * @return mixed
      */
@@ -12,23 +12,49 @@ class App{
         return self::$router;
     }
 
+        // --- NEW: Lazy DB getter ---
+    public static function db(): ?Database
+    {
+        if (self::$db instanceof Database) {
+            return self::$db;
+        }
+
+        // If framework not installed / no DB config, just return null
+        if (!self::hasDbConfig()) {
+            return null;
+        }
+
+        try {
+            $pdo = new PDO(
+                'mysql:host=' . Config::get('db.host', 'localhost') .
+                ';dbname=' . Config::get('db.name') . ';charset=' . Config::get('db.charset', 'utf8mb4'),
+                Config::get('db.user'),
+                Config::get('db.pass'),
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_TIMEOUT => 2,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                ]
+            );
+
+            self::$db = new Database($pdo);
+            return self::$db;
+
+        } catch (PDOException $e) {
+            // Option B (recommended): throw a friendly exception for DB pages only
+            throw new PDOException('Database connection failed. Check DB config.');
+        }
+    }
+
+    private static function hasDbConfig(): bool
+    {
+        // adjust keys if your config uses different names
+        return (bool) (Config::get('db.name') && Config::get('db.user'));
+    }
+
     public static function Run($uri)
     {
         self::$router = new Router($uri);
-
-        // DB
-        $pdo = new PDO(
-            'mysql:host=' . Config::get('dbHost', 'localhost') .
-            ';dbname=' . Config::get('dbName') . ';charset=utf8mb4',
-            Config::get('dbUser'),
-            Config::get('dbPass'),
-            [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_TIMEOUT => 2,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]
-        );
-        self::$db = new Database($pdo);
 
         // Language
         Lang::load(self::$router->getLanguage());

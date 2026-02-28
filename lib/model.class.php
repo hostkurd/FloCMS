@@ -2,10 +2,14 @@
 
 class Model{
     
-    protected $db;
+    protected Database $db;
 
     public function __construct(){
-        $this->db = App::$db;
+        $db = App::db(); // lazy connect happens here
+        if (!$db) {
+            throw new Exception('Database is not configured.');
+        }
+        $this->db = $db;
     }
 
     public function pagingArray($pageId, $limit, $total){

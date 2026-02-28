@@ -16,11 +16,12 @@ ErrorHandler::register();
 define('SITE_URI', Env::get('APP_URL'));
 define('API_URI', Env::get('API_URL'));
 
-Config::set('languages', explode(',', Env::get('LANGUAGES')));
-Config::set('dbName', Env::get('DB_NAME'));
-Config::set('dbUser', Env::get('DB_USERNAME'));
-Config::set('dbPass', Env::get('DB_PASSWORD'));
-Config::set('dbHost', Env::get('DB_HOST', 'localhost'));
+// Database Parameters
+Config::set('db.host', Env::get('DB_HOST', 'localhost'));
+Config::set('db.name', Env::get('DB_NAME', null));
+Config::set('db.user', Env::get('DB_USERNAME', null));
+Config::set('db.pass', Env::get('DB_PASSWORD', null));
+Config::set('db.charset', Env::get('DB_CHARSET', 'utf8mb4'));
 
 $router = new Router($_SERVER['REQUEST_URI']);
 

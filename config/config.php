@@ -15,11 +15,10 @@
     Config::set('default_route','default');
     Config::set('default_controller','pages');
     Config::set('default_action','index');
+    Config::set('languages', explode(',', Env::get('LANGUAGES')));
     Config::set('default_language',Env::get('DEFAULT_LANG'));
 
-
     // if Website is in the root directory this shoud be false
-
     Config::set('salt','Amadyxy%$25@ccx');
 
     // Display
