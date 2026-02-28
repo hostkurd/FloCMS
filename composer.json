@@ -14,5 +14,8 @@
         }
     ],
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require": {
+        "samayo/bulletproof": "5.0.*"
+    }
 }
