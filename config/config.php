@@ -18,8 +18,12 @@
     Config::set('languages', explode(',', Env::get('LANGUAGES')));
     Config::set('default_language',Env::get('DEFAULT_LANG'));
 
-    // if Website is in the root directory this shoud be false
-    Config::set('salt','Amadyxy%$25@ccx');
+    // Database Parameters
+    Config::set('db.host', Env::get('DB_HOST', 'localhost'));
+    Config::set('db.name', Env::get('DB_NAME', null));
+    Config::set('db.user', Env::get('DB_USERNAME', null));
+    Config::set('db.pass', Env::get('DB_PASSWORD', null));
+    Config::set('db.charset', Env::get('DB_CHARSET', 'utf8mb4'));
 
     // Display
     Config::set('LIMIT_PER_PAGE',25);

@@ -2,7 +2,7 @@
     "name": "hostkurd/flocms",
     "description": "FloCMS is a light weight PHP Framework Developed by HostKurd",
     "type": "project",
-    "license": "GPL-3.0-or-later",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Hostkurd\\Flocms\\": "src/"

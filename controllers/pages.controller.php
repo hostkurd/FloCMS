@@ -3,7 +3,9 @@ class PagesController extends Controller{
     public function __construct(array $data = array())
     {
         parent::__construct($data);
-        $this->model = new PagesModel();
+        
+        //Warning: Database should be configured in order to use Model
+        //$this->model = new PagesModel();
     }
 
     public function index(){ 

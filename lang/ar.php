@@ -2,7 +2,7 @@
 
 return array(
     // Language Directives    
-    'lng.dir'=>'ltr',
+    'lng.dir'=>'rtl',
     'lng.ku'=>'الکردیة',
     'lng.ar'=>'العربیة',
     'lng.en'=>'انجلیزی',

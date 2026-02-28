@@ -7,22 +7,16 @@
 <meta name="keywords" content="PHP Framework, FLOCMS, Flo PHP, HOstKurd">
 <meta name="author" content="HostKurd">
 <title><?=Env::get('SITE_NAME');?></title>
-<link rel="shortcut icon" href="<?=imgPath;?>/favicon/favicon-16x16.png">
+<link rel="shortcut icon" href="<?=SITE_URI;?>/assets/img/favicon/favicon-16x16.png">
 
-<link rel="stylesheet" href="./assets/css/style.css">
-<link rel="stylesheet" href="<?=cssPath;?>/flo-core.css">
-
-<!--Fontawesome CSS Files-->
-<!-- <link rel="stylesheet" href="<?=fontPath;?>/fontawesome/css/all.css">
-<link rel="stylesheet" href="<?=fontPath;?>/fontawesome/css/sharp-light.css">
-<link rel="stylesheet" href="<?=fontPath;?>/fontawesome/css/sharp-regular.css">
-<link rel="stylesheet" href="<?=fontPath;?>/fontawesome/css/sharp-solid.css"> -->
+<link rel="stylesheet" href="<?=SITE_URI;?>/assets/css/style.css">
+<link rel="stylesheet" href="<?=SITE_URI;?>/assets/css/flo-core.css">
 
 <!-- Important Javascript Libraries -->
 <script src="<?=jsPath;?>/config.js"></script>
 
 <?php if(LANG::isRTL()){;?>
-<link rel="stylesheet" href="<?=cssPath;?>/style.rtl.css">
+<link rel="stylesheet" href="<?=SITE_URI;?>/assets/css/style.rtl.css">
 <?php } ?>
 
 
