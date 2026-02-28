@@ -1,1 +1,16 @@
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+# Block script execution in uploads.
+<FilesMatch "\.(php|phtml|php3|php4|php5|phps|cgi|pl|asp|aspx|js|sh)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Prevent directory listing
 Options -Indexes

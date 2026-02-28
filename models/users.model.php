@@ -1,168 +1,230 @@
 <?php
-class UsersModel extends Model{
 
-    public function save($data, $token, $id=null){
-        $fullname = $this->db->escape($data['fullname']);
-        $email = $this->db->escape($data['email']);
-        $phone = str_replace(' ', '', $this->db->escape($data['phone']));
-        $gender = $this->db->escape($data['gender']);
-        $address = $this->db->escape($data['address']);
-        $login = $this->db->escape($data['login']);
-        $password = $this->db->escape($data['password']);
-        $role = $this->db->escape($data['role']);
-        $imagePath = $this->db->escape($data['imagePath']);
-
-        $hash = md5(Config::get('salt').$password);
-
-        if (!$id){
-        $sql = "insert into users
-                      set   full_name = '{$fullname}',
-                            login='{$login}',
-                            password='{$hash}',
-                            email = '{$email}',
-                            image = '{$imagePath}',
-                            address = '{$address}',
-                            phone = '{$phone}',
-                            gender = '{$gender}',
-                            role='{$role}',
-                            status='2',
-                            is_verified = '0',
-                            token = '{$token}'";
-            }else{
-        $sql = "update users
-                  set   full_name = '{$fullname}',
-                        login='{$login}',
-                        ". (!empty($password)?"password = '{$hash}',":"")."
-                        email = '{$email}',
-                        ". ($imagePath?"image = '{$imagePath}',":"")."
-                        address = '{$address}',
-                        phone = '{$phone}',
-                        gender = '{$gender}',
-                        role='{$role}' Where id = {$id}";
-        }
-
-        return $this->db->query($sql);
-
+class UsersModel extends Model
+{
+    /**
+     * Hash passwords using PHP's modern password API.
+     */
+    private function hashPassword(string $plain): string
+    {
+        return password_hash($plain, PASSWORD_DEFAULT);
     }
 
-    public function getByLogin($login){
-        $login = $this->db->escape($login);
-        $sql = "select * from users where login='{$login}' limit 1";
-        $result = $this->db->query($sql);
-        if (isset($result[0])){
-            return $result[0];
-        }
-        return false;
+    /**
+     * Verify a plain password against a stored hash.
+     */
+    public function verifyPassword(string $plain, string $hash): bool
+    {
+        return password_verify($plain, $hash);
     }
 
-    public function getByEmail($email){
-        $email = $this->db->escape($email);
-        $sql = "select * from users where email='{$email}' limit 1";
-        $result = $this->db->query($sql);
-        if (isset($result[0])){
-            return $result[0];
-        }
-        return false;
+    private function objToArray(?object $row)
+    {
+        return $row ? (array) $row : false;
     }
 
-    public function updateUser($data, $email){
-    $password = $this->db->escape($data['password']);
-    $login = $this->db->escape($data['login']);
-    $hash = md5(Config::get('salt').$password);
-        $sql = "update users
-                      set login='{$login}',
-                          password='{$hash}'
-                      where email = '{$email}'";
-        return $this->db->query($sql);
-
+    private function objsToArrays(array $rows): array
+    {
+        return array_map(fn ($r) => (array) $r, $rows);
     }
 
-    public function listUsers($limit, $pageid =1, $keyword = null){
-        $pageid = (int)$pageid;
+    public function save($data, $token, $id = null)
+    {
+        $fullname  = trim((string)($data['fullname'] ?? ''));
+        $email     = trim((string)($data['email'] ?? ''));
+        $phone     = str_replace(' ', '', (string)($data['phone'] ?? ''));
+        $gender    = (string)($data['gender'] ?? '');
+        $address   = (string)($data['address'] ?? '');
+        $login     = trim((string)($data['login'] ?? ''));
+        $password  = (string)($data['password'] ?? '');
+        $role      = (int)($data['role'] ?? 0);
+        $imagePath = (string)($data['imagePath'] ?? '');
 
-        // Fetching Where Parameters
-        $parameters = [];
-        $paramText = "";
-        if($keyword != null){array_push($parameters,"full_name like '%{$keyword}%' or email like '%{$keyword}%' or phone like '%{$keyword}%' ");}
-        if (count($parameters) > 0){
-            $params = implode(' and ', $parameters);
-            $paramText = "where ". $params;
+        // INSERT
+        if ($id === null) {
+            if ($password === '') {
+                // You can also throw an exception if your app expects it
+                return false;
+            }
+
+            $insert = [
+                'full_name'   => $fullname,
+                'login'       => $login,
+                'password'    => $this->hashPassword($password),
+                'email'       => $email,
+                'image'       => $imagePath,
+                'address'     => $address,
+                'phone'       => $phone,
+                'gender'      => $gender,
+                'role'        => $role,
+                'status'      => 2,
+                'is_verified' => 0,
+                'token'       => (string)$token,
+            ];
+
+            return $this->db->table('users')->insert($insert);
         }
 
-        $offset = ($pageid-1) * $limit;
-        $sql = "select * from users {$paramText} ORDER By id DESC limit {$limit} Offset {$offset} ";
-        $result = $this->db->query($sql);
-        if ($result){
-            return $this->db->query($sql);
-        }else{
+        // UPDATE
+        $id = (int)$id;
+
+        $update = [
+            'full_name' => $fullname,
+            'login'     => $login,
+            'email'     => $email,
+            'address'   => $address,
+            'phone'     => $phone,
+            'gender'    => $gender,
+            'role'      => $role,
+        ];
+
+        // Only update password if provided
+        if ($password !== '') {
+            $update['password'] = $this->hashPassword($password);
+        }
+
+        if ($imagePath !== '') {
+            $update['image'] = $imagePath;
+        }
+
+        return $this->db->table('users')->where('id', '=', $id)->update($update);
+    }
+
+    public function getByLogin($login)
+    {
+        $row = $this->db->table('users')->where('login', '=', (string)$login)->first();
+        return $this->objToArray($row);
+    }
+
+    public function getByEmail($email)
+    {
+        $row = $this->db->table('users')->where('email', '=', (string)$email)->first();
+        return $this->objToArray($row);
+    }
+
+    /**
+     * Login helper: verify using password_verify only.
+     * Call this from your controller.
+     */
+    public function authenticate(string $login, string $plainPassword)
+    {
+        $user = $this->getByLogin($login);
+        if (!$user) return false;
+
+        $hash = (string)($user['password'] ?? '');
+        if ($hash === '') return false;
+
+        if (!$this->verifyPassword($plainPassword, $hash)) {
             return false;
         }
 
+        // Optional: rehash if PHP updates default algorithm/cost
+        if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+            $newHash = $this->hashPassword($plainPassword);
+            $this->db->table('users')->where('id', '=', (int)$user['id'])->update([
+                'password' => $newHash
+            ]);
+            $user['password'] = $newHash;
+        }
+
+        return $user; // return user array on success
     }
-    public function getByID($id){
+
+    public function updateUser($data, $email)
+    {
+        $login    = trim((string)($data['login'] ?? ''));
+        $password = (string)($data['password'] ?? '');
+
+        $update = ['login' => $login];
+
+        if ($password !== '') {
+            $update['password'] = $this->hashPassword($password);
+        }
+
+        return $this->db->table('users')->where('email', '=', (string)$email)->update($update);
+    }
+
+    public function listUsers($limit, $pageid = 1, $keyword = null)
+    {
+        $pageid = max(1, (int)$pageid);
+        $limit  = max(1, (int)$limit);
+        $offset = ($pageid - 1) * $limit;
+
+        $q = $this->db->table('users')
+            ->orderBy('id', 'DESC')
+            ->limit($limit)
+            ->offset($offset);
+
+        if ($keyword !== null && trim((string)$keyword) !== '') {
+            $kw = '%' . trim((string)$keyword) . '%';
+
+            $q->where('full_name', 'LIKE', $kw)
+              ->orWhere('email', 'LIKE', $kw)
+              ->orWhere('phone', 'LIKE', $kw);
+        }
+
+        $rows = $q->get();
+        return $this->objsToArrays($rows);
+    }
+
+    public function getByID($id)
+    {
         $id = (int)$id;
-        $sql = "Select * from users where id='{$id}' limit 1";
-        $result =  $this->db->query($sql);
-        return isset($result[0])?$result[0]:false;
+        $row = $this->db->table('users')->where('id', '=', $id)->first();
+        return $this->objToArray($row);
     }
 
-    public function delete($id){
+    public function delete($id): bool
+    {
         $id = (int)$id;
-        $sql = "Delete from users where id={$id}";
-        return $this->db->query($sql);
+        return $this->db->table('users')->where('id', '=', $id)->delete();
     }
 
-    public  function getTotal(){
-        $sql = "select count(*) 'total_rows' from users";
-        return $this->db->query($sql)[0]['total_rows'];
+    public function getTotal(): int
+    {
+        return $this->db->table('users')->count();
     }
 
-    public function isUserTokenExist($token){
-        $sql = "Select * from users where token = '{$token}'";
-        $result = $this->db->query($sql);
-        if (isset($result[0])){
-            return true;
-        }
-        return false;
+    public function isUserTokenExist($token): bool
+    {
+        $row = $this->db->table('users')->where('token', '=', (string)$token)->first();
+        return (bool) $row;
     }
 
-    public function isUserExist($id){
-        $sql = "Select * from users where id = '{$id}'";
-        $result = $this->db->query($sql);
-        if (isset($result[0])){
-            return true;
-        }
-        return false;
+    public function isUserExist($id): bool
+    {
+        $id = (int)$id;
+        $row = $this->db->table('users')->where('id', '=', $id)->first();
+        return (bool) $row;
     }
 
-    public function verifyUser($token, $verifyType = 'email'){
-        $verify_type = 0;
-        switch($verifyType){
-            case 'email':
-                $verify_type = 1;
-                break;
-            case 'manual':
-                $verify_type = 2;
-                break;
-            default:
-                // Not Verified
-                $verify_type = 0;
-                break;
-        }
+    public function verifyUser($token, $verifyType = 'email'): bool
+    {
+        $verify_type = match ((string)$verifyType) {
+            'email'  => 1,
+            'manual' => 2,
+            default  => 0,
+        };
 
-        $sql = "Update users set is_verified = '1', verify_type = '{$verify_type}', status = '1', token ='' Where token = '{$token}'";
-        return $this->db->query($sql);
+        return $this->db->table('users')
+            ->where('token', '=', (string)$token)
+            ->update([
+                'is_verified' => 1,
+                'verify_type' => $verify_type,
+                'status'      => 1,
+                'token'       => '',
+            ]);
     }
 
-
-    public function suspendUser($id){
-        $sql = "Update users set status = '3' Where id = '{$id}'";
-        return $this->db->query($sql);
+    public function suspendUser($id): bool
+    {
+        $id = (int)$id;
+        return $this->db->table('users')->where('id', '=', $id)->update(['status' => 3]);
     }
 
-    public function unsuspendUser($id){
-        $sql = "Update users set status = '1' Where id = '{$id}'";
-        return $this->db->query($sql);
+    public function unsuspendUser($id): bool
+    {
+        $id = (int)$id;
+        return $this->db->table('users')->where('id', '=', $id)->update(['status' => 1]);
     }
-
 }
