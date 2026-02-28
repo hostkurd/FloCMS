@@ -66,14 +66,17 @@ class Router{
 
     public function __construct($uri)
     {
-        $basePath = trim(dirname($_SERVER['SCRIPT_NAME']), '/public/'); // ex: 'flocms'
-
-        $this->uri=urldecode(trim($uri,'/'));
-        //Get Defaults Data
+       // Normalize URI (remove leading/trailing slashes, decode)
+       // NOTE: When the app is installed in a sub-folder (e.g. http://localhost/artrex),
+       // REQUEST_URI will include that folder (e.g. /artrex/admin/...).
+       // We strip the base path automatically using APP_URL so routing keeps working
+       // both in a domain root and in a subdirectory.
+       $this->uri = urldecode(trim($uri,'/'));
+       //Get Defaults Data
         $routes = Config::get('routes');
         $this->route=Config::get('default_route');
         $this->method_prefix = isset($routes[$this->route]) ? $routes[$this->route] : '';
-        $this->language = Env::get('DEFAULT_LANG');;
+        $this->language = Env::get('DEFAULT_LANG');
         $this->controller = Config::get('default_controller');
         $this->action = Config::get('default_action');
 
@@ -82,24 +85,27 @@ class Router{
         // Get Path data ony like: inc/controller/action
         $path=$uri_parse[0];
 
-        $path_parts=explode('/',$path);
+        $path_parts = explode('/', $path);
 
-         // convert basepath to an array
-        $base_parts=explode('/',$basePath);
-        // Checks whether the basepath is clean or not 
-        // For example if script placed inside a subfolder
-        // this will help to get ride of subfolders
-        if(count($base_parts) != 0){
-            while (count($base_parts) != 0) {
-                // Array shift path parts
-                array_shift($path_parts);
-                // Array shift base parts
-                array_shift($base_parts);
+        // Strip base folder if the app is hosted in a subdirectory.
+        // Example: APP_URL=http://localhost/artrex, REQUEST_URI=/artrex/admin/users
+        // => remove the leading "artrex" segment.
+        $basePath = '';
+        if (class_exists('Env')) {
+            $appUrl = Env::get('APP_URL');
+            if ($appUrl) {
+                $basePath = trim(parse_url($appUrl, PHP_URL_PATH) ?? '', '/');
+            }
+        }
+        if ($basePath !== '') {
+            $baseParts = array_values(array_filter(explode('/', $basePath), 'strlen'));
+            foreach ($baseParts as $part) {
+                if (strtolower((string)current($path_parts)) === strtolower((string)$part)) {
+                    array_shift($path_parts);
+                }
             }
         }
        
-
-
        // Check for admin and language
         if(in_array(strtolower(current($path_parts)),Config::get('languages'))){
             $this->language = strtolower(current($path_parts));
@@ -133,12 +139,13 @@ class Router{
     }
 
     public function changeLang($lang){
-        $controller = self::getController();
-        $action = self::getAction();
-        $params = self::getParams();
+        // Use the current routed parts from this instance
+        $controller = $this->getController();
+        $action = $this->getAction();
+        $params = $this->getParams();
 
        
-        if ($lang == Config::get('default_language')){
+        if ($lang == Env::get('DEFAULT_LANG')){//Config::get('default_language')
             $langP = '';
         }else{
             $langP = '/'.$lang;

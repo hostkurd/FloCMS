@@ -1,43 +1,57 @@
 <?php
 
-class Env {
-    
-    public static function load($filePath)
+class Env
+{
+    public static function load(string $filePath): void
     {
-        if (!file_exists($filePath)) {
-            throw new Exception(".env file not found: $filePath");
+        if (!is_file($filePath)) {
+            throw new RuntimeException(".env file not found: {$filePath}");
         }
 
         $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         foreach ($lines as $line) {
 
+            $line = trim($line);
+
             // Skip comments
-            if (str_starts_with(trim($line), '#')) {
+            if ($line === '' || $line[0] === '#') {
                 continue;
             }
 
-            // Split "KEY=value"
-            $parts = explode('=', $line, 2);
-            if (count($parts) !== 2) {
+            // Split KEY=value
+            if (!str_contains($line, '=')) {
                 continue;
             }
 
-            $key = trim($parts[0]);
-            $value = trim($parts[1]);
+            [$key, $value] = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
 
-            // Remove quotes if any
-            $value = trim($value, "\"'");
+            // Remove surrounding quotes only
+            if (
+                (str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+                (str_starts_with($value, "'") && str_ends_with($value, "'"))
+            ) {
+                $value = substr($value, 1, -1);
+            }
 
-            // Store in global environment
-            $_ENV[$key] = $value;
-            putenv("$key=$value");
+            // Do not override real environment variables
+            if (array_key_exists($key, $_ENV) || getenv($key) !== false) {
+                continue;
+            }
+
+            $_ENV[$key]    = $value;
+            $_SERVER[$key] = $value;
+            putenv("{$key}={$value}");
         }
     }
 
-    public static function get($key, $default = null)
+    public static function get(string $key, mixed $default = null): mixed
     {
-        $value = $_ENV[$key] ?? getenv($key);
+        $value = $_ENV[$key]
+            ?? $_SERVER[$key]
+            ?? getenv($key);
 
         if ($value === false || $value === null) {
             return $default;
@@ -46,24 +60,20 @@ class Env {
         return self::castValue($value);
     }
 
-
-    private static function castValue($value)
+    private static function castValue(string $value): mixed
     {
         $lower = strtolower($value);
 
-        // null
         if ($lower === 'null') return null;
-        // boolean true
-        if ($lower === 'true' || $value === '1') return true;
-        // boolean false
-        if ($lower === 'false' || $value === '0') return false;
+        if ($lower === 'true') return true;
+        if ($lower === 'false') return false;
 
-        // numeric (int or float)
         if (is_numeric($value)) {
-            return strpos($value, '.') !== false ? (float)$value : (int)$value;
+            return str_contains($value, '.')
+                ? (float) $value
+                : (int) $value;
         }
 
-        // default: raw string
         return $value;
     }
 }

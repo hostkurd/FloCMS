@@ -1,8 +1,5 @@
 <?php
 
-    // Supported Languages
-    Config::set('languages',array('en', 'ar', 'ku'));
-
     // Pathes to Bypass Default layout
     Config::set('Standalone_Pages',array('users/verify'));
 
@@ -18,6 +15,8 @@
     Config::set('default_route','default');
     Config::set('default_controller','pages');
     Config::set('default_action','index');
+    Config::set('default_language',Env::get('DEFAULT_LANG'));
+
 
     // if Website is in the root directory this shoud be false
 

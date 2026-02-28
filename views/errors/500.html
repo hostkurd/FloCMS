@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Error</title>
+    <style>
+        body{
+            background-color: #ebeff3;
+        }
+        .wrapper{
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            height: 100vh;
+        }
+        .card{
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid #dddddd;
+            display: block;
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 10vh;
+        }
+        .card-head{
+            border-bottom: 1px solid #dddddd;
+            margin-bottom: 20px;
+        }
+        .card-head h2{
+            margin: 0;
+            margin-bottom: 15px;
+        }
+        .card-body{
+            margin-top: 20px;
+        }
+        .tip{
+            line-height: 30px;
+            font-style: italic;
+            margin: 0;
+            margin-bottom: 15px;
+        }
+        .message{
+            margin: 0;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="card">
+            <div class="card-head">
+                <h2>500 - Internal Server Error</h2>
+            </div>
+            <div class="card-body">
+                <p class="message">An unexpected error occurred while processing your request.</p>
+                <p class="tip">Please enable Debug mode to see the error details.</p>
+                <small>
+                if you have access to the server logs, you can check them for more information about the error. 
+                If you are the administrator of this website, please check your server configuration and error logs to identify and resolve the issue. 
+                If you are a user, please contact the website administrator to report this error and seek assistance. We apologize for the inconvenience and appreciate your understanding. 
+                </small> 
+            </div>
+
+
+        </div>
+        
+    </div>
+    
+    
+</body>
+</html>
+

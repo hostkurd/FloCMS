@@ -3,6 +3,7 @@
 Class View{
     protected $data;
     protected $path;
+    protected $cache;
 
     public static function getDefaultViewPath(){
         $router = App::getRouter();
@@ -31,13 +32,11 @@ Class View{
 
         ob_start();
         include $this->path;
-        $content = ob_get_clean();
-        return $content;
+        return ob_get_clean();
     }
 
     public function renderView(){
         $data = $this->data;
-
         // Convert the array key to variables
         extract($data);
 
@@ -45,9 +44,6 @@ Class View{
 
         ob_start();
         include $viewPath;
-        $content = ob_get_clean();
-        return $content;
+        return ob_get_clean();
     }
-
-
 }

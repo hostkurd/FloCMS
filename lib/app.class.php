@@ -12,67 +12,66 @@ class App{
         return self::$router;
     }
 
-    public static function Run($uri){
-        //echo self::$router->getRoute();
+    public static function Run($uri)
+    {
         self::$router = new Router($uri);
-        //self::$db = new DB(getenv('DB_HOST'),getenv('DB_USERNAME'),getenv('DB_PASSWORD'),getenv('DB_DATABASE'));
 
+        // DB
+        $pdo = new PDO(
+            'mysql:host=' . Config::get('dbHost', 'localhost') .
+            ';dbname=' . Config::get('dbName') . ';charset=utf8mb4',
+            Config::get('dbUser'),
+            Config::get('dbPass'),
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_TIMEOUT => 2,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
+        );
+        self::$db = new Database($pdo);
+
+        // Language
         Lang::load(self::$router->getLanguage());
 
-        $controller_class=ucfirst(str_replace(' ', '', self::$router->getController())).'Controller';
-        $controller_method=strtolower(self::$router->getMethodPrefix().self::$router->getAction());
-
         $layout = self::$router->getRoute();
-        $user_role = Session::get('role');
-        $has_admin_access = Session::get('admin_access');
+        $hasAdminAccess = (bool) Session::get('admin_access');
 
+        $controllerClass  = ucfirst(str_replace(' ', '', self::$router->getController())) . 'Controller';
+        $controllerMethod = strtolower(self::$router->getMethodPrefix() . self::$router->getAction());
 
-        // Check if Admin is not logged in
-        if ($layout=='admin' && $has_admin_access == false){
-            // Redirect to login page
-            if ($controller_method !='admin_login'){
-                Router::redirect(SITE_URI.DS.'admin/users/login/');
-            }
-        }else{
-            // If logged in don't show login page
-            if ($controller_method =='admin_login'){
-                Router::redirect(SITE_URI.DS.'admin/');
-            }
+        // Admin auth gate
+        if ($layout === 'admin' && !$hasAdminAccess && $controllerMethod !== 'admin_login') {
+            Router::redirect(SITE_URI . DS . 'admin/users/login/');
+            return;
+        }
+        if ($layout === 'admin' && $hasAdminAccess && $controllerMethod === 'admin_login') {
+            Router::redirect(SITE_URI . DS . 'admin/');
+            return;
         }
 
-        // Check for controller whether it exists or not
-        if (class_exists($controller_class)){
-            //Calling Function
-            $controller_object = new $controller_class;
-            
-            // Check for method inside controller if exist or not
-            if (method_exists($controller_object, $controller_method)){
-                $view_path = $controller_object->$controller_method();
-                $view_object = new View($controller_object->getData(),$view_path);
-                $content = $view_object->renderView();
-                
-                //Render The Page
-                $layout_path = VIEWS_PATH.DS.$layout.'.html';
-                $layout_view_object = new View(compact('content'),$layout_path);
-
-                echo $layout_view_object->render(); 
-                
-            }else{
-                //Display 404 Error Page
-                $layout_path = VIEWS_PATH.DS.'404.html';
-                //echo"Method Not Found!";
-                $layout_view_object = new View(NULL,$layout_path);
-                //$layout_view_object = new View(compact('content'),$layout_path);
-                echo $layout_view_object->render();
-            }
-        }else{
-            // Display 404 Page if class not exist
-            $layout_path = VIEWS_PATH.DS.'404.html';
-            //echo"Class Not Found!";
-            $layout_view_object = new View(NULL,$layout_path);
-            //$layout_view_object = new View(compact('content'),$layout_path);
-            echo $layout_view_object->render();
+        // Maintenance mode (DB-backed)
+        if (!$hasAdminAccess && $layout !== 'admin' && Config::getSetting('offline_mode') === '1') {
+            $offlinePath = VIEWS_PATH . DS . 'offline.html';
+            echo (new View(null, $offlinePath))->render();
+            return;
         }
 
+        // Controller dispatch
+        if (!class_exists($controllerClass)) {
+            throw new HttpException(404);
+        }
+
+        $controller = new $controllerClass;
+
+        if (!method_exists($controller, $controllerMethod)) {
+            throw new HttpException(404);
+        }
+
+        $viewPath = $controller->$controllerMethod();
+        $content  = (new View($controller->getData(), $viewPath))->renderView();
+
+        $layoutPath = VIEWS_PATH . DS . $layout . '.html';
+        echo (new View(compact('content'), $layoutPath))->render();
     }
+
 }

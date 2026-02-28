@@ -3,10 +3,9 @@
 // Please Edit this file before installing the Script
 // Copyright c2024 HostKurd Company
 
-Define('SITE_URI', Env::get('APP_URL'));
-Define('API_URI',Env::get('API_URL'));
-
-
+Define('CURRENT_CONTROLLER',$router->getController());
+Define('CURRENT_ACTION',$router->getAction());
+Define('IS_INDEX_PAGE',(CURRENT_CONTROLLER == 'pages' && CURRENT_ACTION=='index' ? true : false));
 
 /**
  * Important!
@@ -35,11 +34,6 @@ Define('layoutHelper', jsPath.'/admin/helpers/layoutHelper.js');
 
 Define('ACTIVE_LANG',$router->getLanguage());
 Define('EnglishPath',$router->changeLang('en'));
-
-// Detecting Main Index Page
-Define('CurControl', $router->getController());
-Define('CurAction', $router->getAction());
-Define('isIndexPage',(CurControl == 'pages' && CurAction=='index' ? true : false));
 
 Define('LANG_SUFFIX', ACTIVE_LANG != 'en'?'_'.ACTIVE_LANG:'');
 

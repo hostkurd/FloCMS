@@ -1,20 +1,36 @@
 <?php
+ob_start();
 
-    Define('ROOT',dirname(dirname(__FILE__)));
-    Define('DS',DIRECTORY_SEPARATOR);
-    Define('vendor_autoload',ROOT."/vendor/autoload.php");
+define('ROOT', dirname(dirname(__FILE__)));
+define('DS', DIRECTORY_SEPARATOR);
 
-    if(file_exists(vendor_autoload)){require_once(vendor_autoload);}
-    require_once (ROOT.'/lib/init.php');
-    
+require_once ROOT . '/lib/init.php';
 
-    $router = new Router($_SERVER['REQUEST_URI']);
+// Load Environment Variables (needed for APP_DEBUG)
+Env::load(ROOT . '/.env');
 
-    // Load Environment Variables
-    Env::load(dirname(dirname(__FILE__)).'\.env'); 
-    //Load Global Configuration
-    include(dirname(dirname(__FILE__)).'\public\conf_global.php');
-    
-    session_start();
-    
-    App::Run($_SERVER['REQUEST_URI']);
+// Register global error handler early
+ErrorHandler::register();
+
+// now the rest...
+define('SITE_URI', Env::get('APP_URL'));
+define('API_URI', Env::get('API_URL'));
+
+Config::set('languages', explode(',', Env::get('LANGUAGES')));
+Config::set('dbName', Env::get('DB_NAME'));
+Config::set('dbUser', Env::get('DB_USERNAME'));
+Config::set('dbPass', Env::get('DB_PASSWORD'));
+Config::set('dbHost', Env::get('DB_HOST', 'localhost'));
+
+$router = new Router($_SERVER['REQUEST_URI']);
+
+$vendor = ROOT . "/vendor/autoload.php";
+if (file_exists($vendor)) require_once $vendor;
+
+include ROOT . '/public/conf_global.php';
+
+session_start();
+
+App::Run($_SERVER['REQUEST_URI']);
+
+if (ob_get_level() > 0) ob_end_flush();
