@@ -3,6 +3,12 @@
 // Please Edit this file before installing the Script
 // Copyright c2024 HostKurd Company
 
+use HostKurd\Flocms\Lib\App;
+use HostKurd\Flocms\Lib\Config;
+
+// Get the ONE router used by the framework (created in App::Run())
+$router = App::getRouter();
+
 Define('CURRENT_CONTROLLER',$router->getController());
 Define('CURRENT_ACTION',$router->getAction());
 Define('IS_INDEX_PAGE',(CURRENT_CONTROLLER == 'pages' && CURRENT_ACTION=='index' ? true : false));

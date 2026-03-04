@@ -1,4 +1,7 @@
 <?php
+namespace HostKurd\Flocms\Lib;
+use HostKurd\Flocms\Lib\Config;
+
 class Router{
     protected $uri;
     protected $controller;
@@ -105,7 +108,7 @@ class Router{
                 }
             }
         }
-       
+
        // Check for admin and language
         if(in_array(strtolower(current($path_parts)),Config::get('languages'))){
             $this->language = strtolower(current($path_parts));
@@ -134,8 +137,9 @@ class Router{
         $this->params = $path_parts;
     }
 
-    public static function redirect($location){
-        header("location: $location");
+    public static function redirect(string $location): void {
+        header("Location: $location", true, 302);
+        exit;
     }
 
     public function changeLang($lang){

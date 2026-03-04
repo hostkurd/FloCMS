@@ -1,4 +1,7 @@
 <?php
+namespace HostKurd\Flocms\Models;
+
+use HostKurd\Flocms\Lib\Model;
 
 class PagesModel extends Model{
 

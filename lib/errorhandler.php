@@ -1,4 +1,8 @@
 <?php
+namespace HostKurd\Flocms\Lib;
+use Throwable;
+use ErrorException;
+use PDOException;
 
 class ErrorHandler
 {
@@ -35,6 +39,12 @@ class ErrorHandler
 
     private static function handle(Throwable $e, bool $debug): void
     {
+        App::logger()->error($e->getMessage(), [
+                'type' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                ]);
+
         // Never let the handler throw and cause cascading failures
         try {
             error_log((string) $e);

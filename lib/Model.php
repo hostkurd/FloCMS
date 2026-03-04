@@ -1,4 +1,6 @@
 <?php
+namespace HostKurd\Flocms\Lib;
+use Exception;
 
 class Model{
     

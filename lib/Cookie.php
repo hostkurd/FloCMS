@@ -1,4 +1,5 @@
 <?php
+namespace HostKurd\Flocms\Lib;
 
 class Cookie{
 

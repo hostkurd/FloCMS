@@ -1,4 +1,6 @@
 <?php
+namespace HostKurd\Flocms\Lib;
+use RuntimeException;
 
 class Env
 {

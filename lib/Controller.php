@@ -1,11 +1,18 @@
 <?php
+namespace HostKurd\Flocms\Lib;
+use HostKurd\Flocms\Lib\Http\Request;
+
 class Controller{
 
     protected $data;
     protected $model;
     protected $params;
+    protected Request $request;
 
-
+    public function setRequest(Request $request): void {
+        $this->request = $request;
+    }
+    
     /**
      * @return mixed
      */

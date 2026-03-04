@@ -1,4 +1,9 @@
 <?php
+namespace HostKurd\Flocms\Controllers;
+
+use HostKurd\Flocms\Lib\Controller;
+use HostKurd\Flocms\Models\PagesModel;
+use HostKurd\Flocms\Models\UsersModel;
 
 class UsersController extends Controller
 {

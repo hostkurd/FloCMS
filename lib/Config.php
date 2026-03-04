@@ -1,4 +1,6 @@
 <?php
+namespace HostKurd\Flocms\Lib;
+
 class Config{
 
     public static $settings = array();

@@ -1,5 +1,6 @@
 <?php
-
+namespace HostKurd\Flocms\Lib;
+use Exception;
 interface RuleInterface
 {
     public function passes ($value):bool;

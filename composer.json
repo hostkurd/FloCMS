@@ -1,12 +1,17 @@
 {
     "name": "hostkurd/flocms",
     "description": "FloCMS is a light weight PHP Framework Developed by HostKurd",
-    "type": "project",
+    "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Hostkurd\\Flocms\\": "src/"
-        }
+            "HostKurd\\Flocms\\Lib\\": "lib/",
+            "HostKurd\\Flocms\\Controllers\\": "controllers/",
+            "HostKurd\\Flocms\\Models\\": "models/"
+        },
+        "files": [
+            "lib/Helpers.php"
+        ]
     },
     "authors": [
         {
@@ -16,6 +21,13 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
+        "php": ">=8.0",
+        "psr/log": "^3.0",
         "samayo/bulletproof": "5.0.*"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HostKurd\\Flocms\\Tests\\": "tests/"
+        }
     }
 }

@@ -1,4 +1,7 @@
 <?php
+namespace HostKurd\Flocms\Lib;
+use Exception;
+
 /**
    * TemplateEngine
    * 
