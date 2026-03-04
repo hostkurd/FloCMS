@@ -3,9 +3,6 @@
 use HostKurd\Flocms\Lib\Env;
 use HostKurd\Flocms\Lib\ErrorHandler;
 
-//Start error handling ASAP (must NOT depend on Env inside register)
-ErrorHandler::register();
-
 //Load env (now any exception is handled by ErrorHandler)
 $envfile = ROOT . DS . '.env';
     if (!file_exists($envfile)) {
@@ -19,6 +16,9 @@ $envfile = ROOT . DS . '.env';
             ]);
     }
 Env::load($envfile);
+
+//Start error handling ASAP (must NOT depend on Env inside register)
+ErrorHandler::register();
 
 // Defining Global Variables
 if (!defined('SITE_URI')) define('SITE_URI', rtrim((string)Env::get('APP_URL'), '/'));
