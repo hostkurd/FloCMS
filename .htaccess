@@ -2,8 +2,8 @@
     RewriteEngine on
     
     # Remove www
-    RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-    RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+    # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    # RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
 
     # force ssl
     # RewriteCond     %{SERVER_PORT} ^80$
