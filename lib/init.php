@@ -3,11 +3,22 @@
 use HostKurd\Flocms\Lib\Env;
 use HostKurd\Flocms\Lib\ErrorHandler;
 
-// register environment Variables
-Env::load(ROOT . DS . ".env");
-
-// register Error Handler
+//Start error handling ASAP (must NOT depend on Env inside register)
 ErrorHandler::register();
+
+//Load env (now any exception is handled by ErrorHandler)
+$envfile = ROOT . DS . '.env';
+    if (!file_exists($envfile)) {
+        render_static_page([
+                'template' => ROOT . DS . 'views' . DS . 'errors' . DS . 'file-missing.html',
+                'status'   => 500,
+                'vars'     => [
+                    'message' => 'Error: .env file not found! Please copy .env.example to .env.',
+                    'path' => $envfile,
+                ],
+            ]);
+    }
+Env::load($envfile);
 
 // Defining Global Variables
 if (!defined('SITE_URI')) define('SITE_URI', rtrim((string)Env::get('APP_URL'), '/'));
