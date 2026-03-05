@@ -1,1 +1,9 @@
 /vendor/
+/.env
+/Storage/cache/*
+/views/cache/*
+/Storage/logs/*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
