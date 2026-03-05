@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7aa733024cf19669087340b3b9dbb62d",
+    "content-hash": "afb461bee584319342c3b871a6765624",
     "packages": [
         {
             "name": "hostkurd/flocms-core",
@@ -144,7 +144,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "hostkurd/flocms-core": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
