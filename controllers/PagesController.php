@@ -1,5 +1,5 @@
 <?php
-namespace Flocms\Controllers;
+namespace FloCMS\Controllers;
 
 use FloCMS\Core\Controller;
 use FloCMS\Models\PagesModel;
