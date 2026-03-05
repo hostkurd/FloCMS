@@ -4,8 +4,50 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7aa733024cf19669087340b3b9dbb62d",
+    "content-hash": "8a3f9fc98d6763cfb95c10512b43387d",
     "packages": [
+        {
+            "name": "hostkurd/flocms-cli",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hostkurd/flocms-cli.git",
+                "reference": "0b59a5b8a3c87d68d3549218d82f5266461d4c88"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hostkurd/flocms-cli/zipball/0b59a5b8a3c87d68d3549218d82f5266461d4c88",
+                "reference": "0b59a5b8a3c87d68d3549218d82f5266461d4c88",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "bin": [
+                "bin/flo"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FloCMS\\CLI\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "HostKurd"
+                }
+            ],
+            "description": "Command line interface for FloCMS",
+            "support": {
+                "issues": "https://github.com/hostkurd/flocms-cli/issues",
+                "source": "https://github.com/hostkurd/flocms-cli"
+            },
+            "time": "2026-03-05T13:04:53+00:00"
+        },
         {
             "name": "hostkurd/flocms-core",
             "version": "v1.0.2",
@@ -26,20 +68,21 @@
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "FloCMS\\Core\\": "src/"
-                },
                 "files": [
                     "src/Helpers.php"
-                ]
+                ],
+                "psr-4": {
+                    "FloCMS\\Core\\": "src/"
+                }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "FloCMS core framework package",
             "support": {
-                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.2",
-                "issues": "https://github.com/hostkurd/flocms-core/issues"
+                "issues": "https://github.com/hostkurd/flocms-core/issues",
+                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.2"
             },
             "time": "2026-03-05T10:18:38+00:00"
         },
@@ -147,12 +190,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0"
+        "php": "^8.0"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
