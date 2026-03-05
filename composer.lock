@@ -4,41 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "afb461bee584319342c3b871a6765624",
+    "content-hash": "7aa733024cf19669087340b3b9dbb62d",
     "packages": [
         {
             "name": "hostkurd/flocms-core",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "3663838ed255b91474cbc01c97b2b680d22fc6d0"
+                "reference": "1627b021bd0f91e3805db6c1023ae91411236e65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/3663838ed255b91474cbc01c97b2b680d22fc6d0",
-                "reference": "3663838ed255b91474cbc01c97b2b680d22fc6d0",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/1627b021bd0f91e3805db6c1023ae91411236e65",
+                "reference": "1627b021bd0f91e3805db6c1023ae91411236e65",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1",
-                "psr/log": "^3.0"
+                "psr/log": "^1.1 || ^2.0 || ^3.0"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "FloCMS\\Core\\": "src/"
-                }
+                },
+                "files": [
+                    "src/Helpers.php"
+                ]
             },
             "license": [
                 "MIT"
             ],
             "description": "FloCMS core framework package",
             "support": {
-                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.0",
+                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.1",
                 "issues": "https://github.com/hostkurd/flocms-core/issues"
             },
-            "time": "2026-03-05T08:09:42+00:00"
+            "time": "2026-03-05T08:31:30+00:00"
         },
         {
             "name": "psr/log",
@@ -144,9 +147,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "hostkurd/flocms-core": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
