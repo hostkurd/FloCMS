@@ -7,10 +7,7 @@
         "psr-4": {
             "HostKurd\\Flocms\\Controllers\\": "controllers/",
             "HostKurd\\Flocms\\Models\\": "models/"
-        },
-        "files": [
-            "lib/Helpers.php"
-        ]
+        }
     },
     "authors": [
         {
