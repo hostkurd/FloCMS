@@ -18,7 +18,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.0",
-        "hostkurd/flocms-core": "@dev",
+        "hostkurd/flocms-core": "^1.0",
         "samayo/bulletproof": "5.0.*"
     },
     "repositories": [
