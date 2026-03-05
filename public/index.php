@@ -8,6 +8,9 @@ define('DS', DIRECTORY_SEPARATOR);
 $vendor = ROOT . "/vendor/autoload.php";
 if (file_exists($vendor)) require_once $vendor;
 
+// Load app bootstrap (env + config + error handler)
+require ROOT . '/Config/bootstrap.php';
+
 // Framework bootstrap
 require_once ROOT . '/lib/init.php';
 
