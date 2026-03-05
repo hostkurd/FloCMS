@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "hostkurd/flocms-core",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "1627b021bd0f91e3805db6c1023ae91411236e65"
+                "reference": "dc82472c8d8effbf8408d2ef8dfbb480f2d8fd62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/1627b021bd0f91e3805db6c1023ae91411236e65",
-                "reference": "1627b021bd0f91e3805db6c1023ae91411236e65",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/dc82472c8d8effbf8408d2ef8dfbb480f2d8fd62",
+                "reference": "dc82472c8d8effbf8408d2ef8dfbb480f2d8fd62",
                 "shasum": ""
             },
             "require": {
@@ -38,10 +38,10 @@
             ],
             "description": "FloCMS core framework package",
             "support": {
-                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.1",
+                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.2",
                 "issues": "https://github.com/hostkurd/flocms-core/issues"
             },
-            "time": "2026-03-05T08:31:30+00:00"
+            "time": "2026-03-05T10:18:38+00:00"
         },
         {
             "name": "psr/log",
@@ -147,12 +147,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }
