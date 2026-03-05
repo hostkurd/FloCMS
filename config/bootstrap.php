@@ -5,11 +5,16 @@ use FloCMS\Core\Env;
 use FloCMS\Core\ErrorHandler;
 
 $envfile = ROOT . DS . '.env';
-if (!file_exists($envfile)) {
-    http_response_code(500);
-    echo ".env not found. Copy .env.example to .env";
-    exit;
-}
+    if (!file_exists($envfile)) {
+        render_static_page([
+                'template' => ROOT . DS . 'views' . DS . 'errors' . DS . 'file-missing.html',
+                'status'   => 500,
+                'vars'     => [
+                    'message' => 'Error: .env file not found! Please copy .env.example to .env.',
+                    'path' => $envfile,
+                ],
+            ]);
+    }
 Env::load($envfile);
 
 // Register Error Handler
