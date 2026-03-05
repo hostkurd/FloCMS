@@ -1,7 +1,7 @@
 <?php
-namespace HostKurd\Flocms\Models;
+namespace FloCMS\Models;
 
-use HostKurd\Flocms\Lib\Model;
+use FloCMS\Core\Model;
 
 class PagesModel extends Model{
 
