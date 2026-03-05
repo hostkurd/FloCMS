@@ -32,5 +32,5 @@ if (!defined('API_URI'))  define('API_URI',  rtrim((string)Env::get('API_URL'), 
 
 
 // backward-compatibility aliases (optional; remove later)
-require_once __DIR__ . DS . "includes" . DS  . "compat.php";
+require_once ROOT . DS . "includes" . DS  . "compat.php";
 require_once ROOT . DS . "config" . DS . "config.php";

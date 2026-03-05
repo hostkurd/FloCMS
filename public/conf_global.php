@@ -3,8 +3,8 @@
 // Please Edit this file before installing the Script
 // Copyright c2024 HostKurd Company
 
-use HostKurd\Flocms\Lib\App;
-use HostKurd\Flocms\Lib\Config;
+use FloCMS\Core\App;
+use FloCMS\Core\Config;
 
 // Get the ONE router used by the framework (created in App::Run())
 $router = App::getRouter();
