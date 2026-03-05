@@ -4,8 +4,42 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0735ad93ed491ee4db4767d7535988b6",
+    "content-hash": "7aa733024cf19669087340b3b9dbb62d",
     "packages": [
+        {
+            "name": "hostkurd/flocms-core",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hostkurd/flocms-core.git",
+                "reference": "3663838ed255b91474cbc01c97b2b680d22fc6d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/3663838ed255b91474cbc01c97b2b680d22fc6d0",
+                "reference": "3663838ed255b91474cbc01c97b2b680d22fc6d0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "psr/log": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FloCMS\\Core\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "FloCMS core framework package",
+            "support": {
+                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.0",
+                "issues": "https://github.com/hostkurd/flocms-core/issues"
+            },
+            "time": "2026-03-05T08:09:42+00:00"
+        },
         {
             "name": "psr/log",
             "version": "3.0.2",
