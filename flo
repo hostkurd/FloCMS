@@ -1,8 +1,6 @@
+#!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/vendor/flo/flo-cli/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-if (isset($argv)){
-    $gate = new Gate($argv);
-    $gate -> Execute();
-}
+passthru('php vendor/bin/flo '.implode(' ', array_slice($argv,1)));
