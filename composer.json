@@ -1,35 +1,42 @@
 {
-    "name": "hostkurd/flocms",
-    "description": "FloCMS is a light weight PHP Framework Developed by HostKurd",
-    "type": "project",
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "FloCMS\\Controllers\\": "controllers/",
-            "FloCMS\\Models\\": "models/"
-        }
-    },
-    "authors": [
-        {
-            "name": "HostKurd"
-        }
-    ],
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "require": {
-        "php": ">=8.0",
-        "hostkurd/flocms-core": "^1.0",
-        "samayo/bulletproof": "5.0.*"
-    },
-    "repositories": [
-        {
-        "type": "vcs",
-        "url": "https://github.com/hostkurd/flocms-core"
-        }
-    ],
-    "autoload-dev": {
-        "psr-4": {
-            "HostKurd\\Flocms\\Tests\\": "tests/"
-        }
+  "name": "hostkurd/flocms",
+  "description": "FloCMS is a light weight PHP Framework Developed by HostKurd",
+  "type": "project",
+  "license": "MIT",
+
+  "autoload": {
+    "psr-4": {
+      "FloCMS\\Controllers\\": "controllers/",
+      "FloCMS\\Models\\": "models/"
     }
+  },
+
+  "authors": [
+    {
+      "name": "HostKurd"
+    }
+  ],
+
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+
+  "require": {
+    "php": "^8.0",
+    "hostkurd/flocms-core": "^1.0",
+    "samayo/bulletproof": "5.0.*"
+  },
+
+  "scripts": {
+    "post-create-project-cmd": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+      "@php -r \"is_dir('storage') || mkdir('storage', 0755);\"",
+      "@php -r \"is_dir('storage/logs') || mkdir('storage/logs', 0755, true);\""
+    ]
+  },
+
+  "autoload-dev": {
+    "psr-4": {
+      "HostKurd\\Flocms\\Tests\\": "tests/"
+    }
+  }
 }
