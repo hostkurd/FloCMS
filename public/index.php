@@ -1,4 +1,6 @@
 <?php
+use FloCMS\Core\App;
+
 ob_start();
 
 define('ROOT', dirname(dirname(__FILE__)));
@@ -11,11 +13,8 @@ if (file_exists($vendor)) require_once $vendor;
 // Load app bootstrap (env + config + error handler)
 require ROOT . '/Config/bootstrap.php';
 
-// Framework bootstrap
-require_once ROOT . '/lib/init.php';
-
 session_start();
 
-\HostKurd\Flocms\Lib\App::Run($_SERVER['REQUEST_URI']);
+App::Run($_SERVER['REQUEST_URI']);
 
 if (ob_get_level() > 0) ob_end_flush();

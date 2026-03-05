@@ -20,12 +20,10 @@ Env::load($envfile);
 // Register Error Handler
 ErrorHandler::register();
 
-// Controller namespace for resolver (core will read this)
-define('APP_CONTROLLER_NAMESPACE', 'FloCMS\\Controllers');
 
 // Paths (core can read these too)
-define('APP_VIEWS_PATH', ROOT . DS . 'Views');
-define('APP_STORAGE_PATH', ROOT . DS . 'Storage');
+define('APP_VIEWS_PATH', ROOT . DS . 'views');
+define('APP_STORAGE_PATH', ROOT . DS . 'storage');
 
 
 // Defining Global Variables
