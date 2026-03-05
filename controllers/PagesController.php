@@ -1,8 +1,8 @@
 <?php
 namespace HostKurd\Flocms\Controllers;
 
-use HostKurd\Flocms\Lib\Controller;
-use HostKurd\Flocms\Models\PagesModel;
+use FloCMS\Core\Controller;
+use FloCMS\Models\PagesModel;
 //use HostKurd\Flocms\Models\UsersModel;
 
 class PagesController extends Controller{
