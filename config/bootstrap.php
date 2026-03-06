@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use FloCMS\Core\Env;
 use FloCMS\Core\ErrorHandler;
+use FloCMS\Core\AppUrlValidator;
 
 $envfile = ROOT . DS . '.env';
     if (!file_exists($envfile)) {
