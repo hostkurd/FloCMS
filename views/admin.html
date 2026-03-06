@@ -16,12 +16,12 @@
       </div>
       <!--Content Area-->
       <div class="content-area">
-        <?php if(Session::hasFlash()){?>
-          <div class="alert admin-alert alert-<?=Session::flashType(); ?> alert-dismissible fade show" role="alert">
-            <?=Session::Flash(); ?>
-            <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        <?php } ?>
+        <?php if (\FloCMS\Core\Session::hasFlash()): ?>
+            <?php $flash = \FloCMS\Core\Session::getFlash(); ?>
+            <div class="alert alert-<?= htmlspecialchars($flash['type']) ?>">
+                <?= $flash['message'] ?>
+            </div>
+        <?php endif; ?>
         
         <?=$data['content']; ?>
       </div>

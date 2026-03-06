@@ -1,332 +1,450 @@
 <?php
+
 namespace FloCMS\Controllers;
 
+use FloCMS\Core\Config;
 use FloCMS\Core\Controller;
-use FloCMS\Models\PagesModel;
+use FloCMS\Core\Env;
+use FloCMS\Core\Router;
+use FloCMS\Core\Session;
 use FloCMS\Models\UsersModel;
 
 class UsersController extends Controller
 {
-    protected $limit_per_page = 10;
-    protected $user_statuses = array(1 => 'Active', 2 => 'Pending', 3 => 'Suspended');
-    protected $user_roles = array(0 => 'User', 1 => 'Editor', 2 => 'Admin', 3 => 'Super Admin');
-    protected $status_colors = array(1 => 'success', 2 => 'purple', 3 => 'danger');
-    protected $verify_types = array(0 => 'Not Verified', 1 => 'Email', 2 => 'Manual');
+    protected int $limit_per_page = 10;
 
-    // UserGroups which has access to Admin Panel
-    // 0: user | 1: Editor | 2: Admin | 3: Super Admin
-    protected $admin_access_roles = array('1', '2', '3');
+    protected array $user_statuses = [
+        1 => 'Active',
+        2 => 'Pending',
+        3 => 'Suspended',
+    ];
 
-    public function __construct(array $data = array())
+    protected array $user_roles = [
+        0 => 'User',
+        1 => 'Editor',
+        2 => 'Admin',
+        3 => 'Super Admin',
+    ];
+
+    protected array $status_colors = [
+        1 => 'success',
+        2 => 'purple',
+        3 => 'danger',
+    ];
+
+    protected array $verify_types = [
+        0 => 'Not Verified',
+        1 => 'Email',
+        2 => 'Manual',
+    ];
+
+    // User groups which have access to admin panel
+    protected array $admin_access_roles = ['1', '2', '3'];
+
+    public function __construct(array $data = [])
     {
         parent::__construct($data);
         $this->model = new UsersModel();
     }
 
-    public function admin_login()
+    public function admin_login(): void
     {
         if (Session::get('isloggedin')) {
             if (!Session::get('admin_access')) {
                 Session::setFlash(
-                    '<strong>You are Logged in!</strong><br>Your account does not has permition to access this area, please <a href="' . SITE_URI . '/admin/users/logout">Logout</a> from Here.',
+                    '<strong>You are already logged in.</strong><br>Your account does not have permission to access this area. Please <a href="' . SITE_URI . '/admin/users/logout">logout</a> first.',
                     'warning'
                 );
+            } else {
+                Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/');
+                return;
             }
+
+            return;
         }
 
-        if ($_POST && !empty($_POST['email']) && !empty($_POST['password'])) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
 
-            if (Session::get('isloggedin')) {
+        $email = trim((string) ($_POST['email'] ?? ''));
+        $pass  = (string) ($_POST['password'] ?? '');
+
+        if ($email === '' || $pass === '') {
+            Session::setFlash('Email and password are required.', 'danger');
+            return;
+        }
+
+        $user = $this->model->getByEmail($email);
+
+        if (!$user) {
+            Session::setFlash('Login failed. Email or password is incorrect.', 'danger');
+            return;
+        }
+
+        $hash = (string) ($user['password'] ?? '');
+
+        if ($hash === '' || !$this->model->verifyPassword($pass, $hash)) {
+            Session::setFlash('Login failed. Email or password is incorrect.', 'danger');
+            return;
+        }
+
+        // Rehash password if needed
+        if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+            $newHash = password_hash($pass, PASSWORD_DEFAULT);
+            $this->model->rehashPassword((int) $user['id'], $newHash);
+            $user['password'] = $newHash;
+        }
+
+        $status = (int) ($user['status'] ?? 0);
+
+        switch ($status) {
+            case 0:
+                Session::setFlash('Login failed.<br>Your account has not been activated.', 'warning');
+                return;
+
+            case 1:
+                session_regenerate_id(true);
+
+                Session::set('admin_access', false);
+                Session::set('role', $user['role'] ?? null);
+                Session::set('username', $user['login'] ?? null);
+                Session::set('email', $user['email'] ?? null);
+                Session::set('fullname', $user['fullname'] ?? '');
+                Session::set('isloggedin', true);
+
+                if (in_array((string) ($user['role'] ?? ''), $this->admin_access_roles, true)) {
+                    Session::set('admin_access', true);
+                }
+
+                Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/');
+                return;
+
+            case 2:
                 Session::setFlash(
-                    'You are Logged in Before!<br>Your are logged in before please <a href="' . SITE_URI . '/admin/users/logout">Logout</a> before try to login again.'
+                    '<strong>Login failed.</strong><br>Your account is pending verification. Please verify your email address.',
+                    'info'
                 );
                 return;
-            }
 
-            $email = trim((string)$_POST['email']);
-            $pass  = (string)$_POST['password'];
-
-            // Get user by email first
-            $user = $this->model->getByEmail($email);
-
-            if (!$user) {
-                Session::setFlash('Login Failed, User email or password is incorrect.', 'danger');
+            case 3:
+                Session::setFlash(
+                    '<strong>Login failed.</strong><br>Your account has been <strong>suspended</strong>. Please contact the website administrator for more information.',
+                    'danger'
+                );
                 return;
-            }
 
-            // Verify password using new hashing
-            // (verifyPassword is in the new model; or you can call $this->model->authenticate($login,...))
-            $hash = (string)($user['password'] ?? '');
-            if ($hash === '' || !$this->model->verifyPassword($pass, $hash)) {
-                Session::setFlash('Login Failed, User email or password is incorrect.', 'danger');
+            default:
+                Session::setFlash('Login failed.<br>Unknown account status.', 'danger');
                 return;
-            }
-
-            // Optional: rehash if needed (if you kept this in your model authenticate, you can remove this block)
-            if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
-                $newHash = password_hash($pass, PASSWORD_DEFAULT);
-                $this->model->db->table('users')->where('id', '=', (int)$user['id'])->update([
-                    'password' => $newHash
-                ]);
-                $user['password'] = $newHash;
-            }
-
-            // Status handling (keeping your original messages/flow)
-            $status = (int)($user['status'] ?? 0);
-
-            switch ($status) {
-                case 0:
-                    Session::setFlash('Login Failed!<br>Your Account has not been Activated.');
-                    break;
-
-                case 1:
-                    Session::set('admin_access', false);
-                    Session::set('role', $user['role']);
-                    Session::set('username', $user['login']);
-                    Session::set('email', $user['email']); // IMPORTANT: you use this later in admin_profile
-                    Session::set('isloggedin', true);
-
-                    if (in_array((string)$user['role'], $this->admin_access_roles, true)) {
-                        Session::set('admin_access', true);
-                    }
-
-                    // Set Cookies for two hours (your code uses 24 - keeping same)
-                    Cookie::set('rememberMe', 1, 24);
-                    Cookie::set('email', $user['email'], 24);
-                    Cookie::set('fullname', $user['email'], 24); // NOTE: this looks wrong but kept to match your old behavior
-                    Cookie::set('username', $user['login'], 24);
-
-                    Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/');
-                    break;
-
-                case 2:
-                    // In your original switch, status 2/3 messages looked swapped.
-                    // But I'll keep your EXACT text to avoid changing business logic.
-                    Session::setFlash('<strong>Login Failed!</strong><br>Your Account has been <strong>suspended</strong>, Please Contact Website Administrator for more information.', 'danger');
-                    break;
-
-                case 3:
-                    Session::setFlash('<strong>Login Failed!</strong><br>Your Account is pending Verification, please verify your email address.', 'info');
-                    break;
-
-                default:
-                    Session::setFlash('Login Failed!<br>Unknown account status.', 'danger');
-                    break;
-            }
         }
     }
 
-    public function admin_logout()
+    public function admin_logout(): void
     {
         Session::destroy();
-
-        Cookie::delete('rememberMe');
-        Cookie::delete('fullname');
-        Cookie::delete('username');
-        Cookie::delete('email');
-
-        Router::redirect(SITE_URI . DS . ACTIVE_LANG . '/admin/');
+        Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/');
     }
 
-    public function admin_profile()
+    public function admin_profile(): void
     {
-        $this->data['fullName'] = Cookie::get('fullname');
-        $this->data['userName'] = Cookie::get('username');
-        $this->data['userMail'] = Cookie::get('email');
-        $this->data['userRole'] = $_SESSION['role'] ?? null;
+        $this->data['fullName'] = Session::get('fullname');
+        $this->data['userName'] = Session::get('username');
+        $this->data['userMail'] = Session::get('email');
+        $this->data['userRole'] = Session::get('role');
         $this->data['lang'] = 'en';
 
-        if ($_POST) {
-            $email = $_SESSION['email'] ?? Cookie::get('email');
-
-            if ($email && $this->model->updateUser($_POST, $email)) {
-                Router::redirect(SITE_URI . '/admin/');
-            } else {
-                Session::setFlash('Error Updating profile, Unknown error.');
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
         }
+
+        $email = Session::get('email');
+
+        if ($email && $this->model->updateUser($_POST, $email)) {
+            Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/');
+            return;
+        }
+
+        Session::setFlash('Error updating profile. Unknown error.', 'danger');
     }
 
-    public function admin_add()
+    public function admin_add(): void
     {
-        if ($_POST) {
-            $token = bin2hex(random_bytes(30));
-
-            if ($this->model->save($_POST, $token)) {
-                // Send Verification Email
-                $to = $_POST['email'];
-                $subject = "Verify your account On " . Config::get('Site_Name');
-                $message = '<html>
-                            <head>
-                            <title>Email Verification</title>
-                            </head>
-                            <body>
-                            <div style="width: 100%; text-align: center;font-family: Arial, Helvetica, sans-serif;">
-                            <img src="' . imgPath . '/logo.png">
-                            <h2>Verify your email address</h2>
-                            <p style="max-width: 450px; margin: 20px auto; color: rgb(106, 106, 109) !important; line-height: 22px;font-size: 16px;">
-                                Hello ' . $_POST['fullname'] . ', welcome to ' . Config::get("Site_Name") . ' For your security, we will not create your account until you verify your email address. </p>
-                            <a href="' . SITE_URI . '/users/verify?token=' . $token . '" style="text-decoration: none; font-weight: bold; font-size: 18px; color: rgb(63 120 224) !important;display:block;margin: 40px 0;">Verify your email ›</a>
-                            <p>If the link above not worked Copy this link and paste it in your browser: <br> ' . SITE_URI . '/users/verify?token=' . $token . '</P>
-                            </div>
-                            </body>
-                            </html>';
-                $headers = "MIME-Version: 1.0" . "\r\n";
-                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= "From: " . Env::get('PRIMARY_EMAIL') . "\r\n";
-
-                mail($to, $subject, $message, $headers);
-
-                Router::redirect(SITE_URI . '/admin/users');
-            } else {
-                Session::setFlash('Error Adding user, Unknown error.');
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
         }
+
+        $token = bin2hex(random_bytes(30));
+
+        if (!$this->model->save($_POST, $token)) {
+            Session::setFlash('Error adding user. Unknown error.', 'danger');
+            return;
+        }
+
+        $to = (string) ($_POST['email'] ?? '');
+        $fullName = htmlspecialchars((string) ($_POST['fullname'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $siteName = (string) Config::get('Site_Name');
+        $verifyUrl = SITE_URI . '/users/verify?token=' . urlencode($token);
+
+        $subject = 'Verify your account on ' . $siteName;
+        $message = '<html>
+            <head>
+                <title>Email Verification</title>
+            </head>
+            <body>
+                <div style="width: 100%; text-align: center; font-family: Arial, Helvetica, sans-serif;">
+                    <img src="' . imgPath . '/logo.png" alt="Logo">
+                    <h2>Verify your email address</h2>
+                    <p style="max-width: 450px; margin: 20px auto; color: rgb(106,106,109); line-height: 22px; font-size: 16px;">
+                        Hello ' . $fullName . ', welcome to ' . htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') . '.
+                        For your security, we will not activate your account until you verify your email address.
+                    </p>
+                    <a href="' . $verifyUrl . '" style="text-decoration: none; font-weight: bold; font-size: 18px; color: rgb(63,120,224); display: block; margin: 40px 0;">
+                        Verify your email ›
+                    </a>
+                    <p>
+                        If the link above does not work, copy and paste this link into your browser:<br>
+                        ' . $verifyUrl . '
+                    </p>
+                </div>
+            </body>
+        </html>';
+
+        $headers = "MIME-Version: 1.0\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+        $headers .= "From: " . Env::get('PRIMARY_EMAIL') . "\r\n";
+
+        if (!mail($to, $subject, $message, $headers)) {
+            Session::setFlash('User created, but verification email could not be sent.', 'warning');
+        }
+
+        Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/users');
     }
 
-    public function admin_index()
+    public function admin_index(): void
     {
-        if ($_POST) {
-            if (isset($_POST['keyword'])) {
-                echo json_encode($this->model->listUsers(Config::get('LIMIT_PER_PAGE'), 1, $_POST['keyword']));
-                exit;
-            }
-        } else {
-            $this->data['users'] = $this->model->listUsers($this->limit_per_page, 1);
-            $this->data['pagination'] = $this->model->paginationData(1, Config::get('LIMIT_PER_PAGE'), $this->model->getTotal(), 'users');
-            $this->data['pageID'] = 1;
-            $this->data['userStatus'] = $this->user_statuses;
-            $this->data['statusColors'] = $this->status_colors;
-            $this->data['verifyTypes'] = $this->verify_types;
-            $this->data['userRole'] = $this->user_roles;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['keyword'])) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(
+                $this->model->listUsers(
+                    Config::get('LIMIT_PER_PAGE'),
+                    1,
+                    (string) $_POST['keyword']
+                )
+            );
+            exit;
         }
+
+        $this->data['users'] = $this->model->listUsers($this->limit_per_page, 1);
+        $this->data['pagination'] = $this->model->paginationData(
+            1,
+            Config::get('LIMIT_PER_PAGE'),
+            $this->model->getTotal(),
+            'users'
+        );
+        $this->data['pageID'] = 1;
+        $this->data['userStatus'] = $this->user_statuses;
+        $this->data['statusColors'] = $this->status_colors;
+        $this->data['verifyTypes'] = $this->verify_types;
+        $this->data['userRole'] = $this->user_roles;
     }
 
-    public function admin_edit()
+    public function admin_edit(): void
     {
-        if (isset($this->params[0])) {
-            if ($_POST) {
-                if ($this->model->save($_POST, null, $this->params[0])) {
-                    Router::redirect(SITE_URI . '/admin/users');
-                } else {
-                    Session::setFlash('Error Updating user, Unknown error.');
-                }
-            } else {
-                $this->data = $this->model->getByID($this->params[0]);
-            }
+        if (!isset($this->params[0])) {
+            Session::setFlash('Invalid user ID.', 'danger');
+            return;
         }
+
+        $userId = $this->params[0];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if ($this->model->save($_POST, null, $userId)) {
+                Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/users');
+                return;
+            }
+
+            Session::setFlash('Error updating user. Unknown error.', 'danger');
+            return;
+        }
+
+        $this->data = $this->model->getByID($userId);
     }
 
-    public function admin_delete()
+    public function admin_delete(): void
     {
-        if (isset($this->params[0])) {
-            if ($this->model->delete($this->params[0])) {
-                Router::redirect(SITE_URI . DS . 'admin/users/');
-            } else {
-                Session::setFlash('Invalid ID');
-            }
+        if (!isset($this->params[0])) {
+            Session::setFlash('Invalid ID.', 'danger');
+            return;
         }
+
+        if ($this->model->delete($this->params[0])) {
+            Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/users/');
+            return;
+        }
+
+        Session::setFlash('Invalid ID.', 'danger');
     }
 
-    public function verify()
+    public function verify(): void
     {
-        if (isset($_GET) && isset($_GET['token'])) {
-            $token = $_GET['token'];
-            if ($this->model->isUserTokenExist($token)) {
-                if ($this->model->verifyUser($token)) {
-                    Session::setFlash('<strong>Verification Succeeded!</strong><br>Your Account has been <strong>Verifies</strong>, Please <a href = "' . SITE_URI . '/admin/' . '" >login from here</a>.', 'success');
-                    $this->data['status'] = 'verified';
-                } else {
-                    Session::setFlash('<strong>Verification Failed!</strong><br>we can not verify your account, an unknown error Occured.', 'danger');
-                    $this->data['status'] = 'error';
-                }
-            } else {
-                Session::setFlash('<strong>Verification Failed!</strong><br>Invalid Verification Token, or the token code has been used before.', 'danger');
-                $this->data['status'] = 'invalid';
-            }
-        } else {
-            Session::setFlash('<strong>No Token Applied!</strong><br>No Token has been applied, please supply a valid token for verification purpose.', 'danger');
+        $token = (string) ($_GET['token'] ?? '');
+
+        if ($token === '') {
+            Session::setFlash(
+                '<strong>No token provided.</strong><br>Please supply a valid verification token.',
+                'danger'
+            );
             $this->data['status'] = 'notoken';
+            return;
         }
+
+        if (!$this->model->isUserTokenExist($token)) {
+            Session::setFlash(
+                '<strong>Verification failed.</strong><br>Invalid verification token, or the token has already been used.',
+                'danger'
+            );
+            $this->data['status'] = 'invalid';
+            return;
+        }
+
+        if ($this->model->verifyUser($token)) {
+            Session::setFlash(
+                '<strong>Verification succeeded.</strong><br>Your account has been verified. Please <a href="' . SITE_URI . '/admin/">login here</a>.',
+                'success'
+            );
+            $this->data['status'] = 'verified';
+            return;
+        }
+
+        Session::setFlash(
+            '<strong>Verification failed.</strong><br>We could not verify your account due to an unknown error.',
+            'danger'
+        );
+        $this->data['status'] = 'error';
     }
 
-    public function admin_verify()
+    public function admin_verify(): void
     {
-        if (isset($_POST)) {
-            if (isset($_POST['token'])) {
-                $token = $_POST['token'];
+        header('Content-Type: application/json; charset=utf-8');
 
-                if ($this->model->isUserTokenExist($token)) {
-                    if ($this->model->verifyUser($token, 'manual')) {
-                        $data = array('status' => 'success', 'message' => 'Verification Succeeded. The Account has been Verifies.');
-                        echo json_encode($data);
-                        exit;
-                    } else {
-                        $data = array('status' => 'error', 'message' => 'Unknown error has occured.');
-                        echo json_encode($data);
-                        exit;
-                    }
-                } else {
-                    $data = array('status' => 'error', 'message' => 'Invalid Token! Invalid Verification Token has been applied.');
-                    echo json_encode($data);
-                    exit;
-                }
-            }
-        } else {
-            $data = array('status' => 'error', 'message' => 'This Page is Restricted !');
-            echo json_encode($data);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'This page is restricted.',
+            ]);
             exit;
         }
+
+        $token = (string) ($_POST['token'] ?? '');
+
+        if ($token === '') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'No token was provided.',
+            ]);
+            exit;
+        }
+
+        if (!$this->model->isUserTokenExist($token)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Invalid token. Invalid verification token has been applied.',
+            ]);
+            exit;
+        }
+
+        if ($this->model->verifyUser($token, 'manual')) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Verification succeeded. The account has been verified.',
+            ]);
+            exit;
+        }
+
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Unknown error has occurred.',
+        ]);
+        exit;
     }
 
-    public function admin_suspend()
+    public function admin_suspend(): void
     {
-        if (isset($_POST) && isset($_POST['userid'])) {
-            $id = $_POST['userid'];
+        header('Content-Type: application/json; charset=utf-8');
 
-            if ($this->model->isUserExist($id)) {
-                if (!isset($_POST['action'])) {
-                    $data = array('status' => 'error', 'message' => 'No Action has been Specified.');
-                    echo json_encode($data);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'This page is restricted.',
+            ]);
+            exit;
+        }
+
+        $id = $_POST['userid'] ?? null;
+        $action = $_POST['action'] ?? null;
+
+        if (!$id) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'No user ID was supplied.',
+            ]);
+            exit;
+        }
+
+        if (!$this->model->isUserExist($id)) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'No such user exists in the system.',
+            ]);
+            exit;
+        }
+
+        if (!$action) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'No action has been specified.',
+            ]);
+            exit;
+        }
+
+        switch ($action) {
+            case 'suspend':
+                if ($this->model->suspendUser($id)) {
+                    echo json_encode([
+                        'status' => 'success',
+                        'message' => 'User has been suspended.',
+                    ]);
                     exit;
                 }
 
-                $action = $_POST['action'];
-
-                switch ($action) {
-                    case "suspend":
-                        if ($this->model->suspendUser($id)) {
-                            $data = array('status' => 'success', 'message' => 'User Has been Suspended.');
-                            echo json_encode($data);
-                            exit;
-                        } else {
-                            $data = array('status' => 'error', 'message' => 'Unknown error has occured.');
-                            echo json_encode($data);
-                            exit;
-                        }
-                        break;
-
-                    case "unsuspend":
-                        if ($this->model->unsuspendUser($id)) {
-                            $data = array('status' => 'success', 'message' => 'The user Has been Unblocked Successfully.');
-                            echo json_encode($data);
-                            exit;
-                        } else {
-                            $data = array('status' => 'error', 'message' => 'Unknown error has occured.');
-                            echo json_encode($data);
-                            exit;
-                        }
-                        break;
-                }
-            } else {
-                $data = array('status' => 'error', 'message' => 'No Such User in our system.');
-                echo json_encode($data);
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Unknown error has occurred.',
+                ]);
                 exit;
-            }
-        } else {
-            $data = array('status' => 'error', 'message' => 'This Page is Restricted !');
-            echo json_encode($data);
-            exit;
+
+            case 'unsuspend':
+                if ($this->model->unsuspendUser($id)) {
+                    echo json_encode([
+                        'status' => 'success',
+                        'message' => 'The user has been unblocked successfully.',
+                    ]);
+                    exit;
+                }
+
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Unknown error has occurred.',
+                ]);
+                exit;
+
+            default:
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Invalid action.',
+                ]);
+                exit;
         }
     }
 }
