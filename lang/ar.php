@@ -9,7 +9,8 @@ return array(
 
     'website.title' => 'برنامج فلو',
     'website.desc' => 'فلو هو إطار عمل PHP خفيف الوزن',
-
+    // 404 Page String
+    'page.notfound' => 'الصفحة غير موجودة',
+    'page.notfound.short' => 'الصفحة التي تحاول الوصول إليها غير موجودة'
     // Put Your Translation Phraces
-
 );
