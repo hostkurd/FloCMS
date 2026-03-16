@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15838a46475d50ade68f04dfc8262a64",
+    "content-hash": "5224361103d3fce92c19d2819bfd7d14",
     "packages": [
         {
             "name": "hostkurd/flocms-cli",
@@ -85,6 +85,58 @@
                 "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.3"
             },
             "time": "2026-03-06T22:24:00+00:00"
+        },
+        {
+            "name": "hostkurd/flocms-uploader",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hostkurd/flocms-uploader.git",
+                "reference": "2669dac5040edc391717073e6f5491f21b83de02"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hostkurd/flocms-uploader/zipball/2669dac5040edc391717073e6f5491f21b83de02",
+                "reference": "2669dac5040edc391717073e6f5491f21b83de02",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "suggest": {
+                "aws/aws-sdk-php": "Required only when using the S3 storage driver.",
+                "ext-gd": "Recommended for image processing support.",
+                "ext-imagick": "Recommended for higher-quality image processing support."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FloCMS\\Uploader\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "HostKurd"
+                }
+            ],
+            "description": "Professional file and image upload package for FloCMS with local, private and S3-ready storage drivers.",
+            "keywords": [
+                "flocms",
+                "images",
+                "s3",
+                "storage",
+                "upload",
+                "uploader"
+            ],
+            "support": {
+                "issues": "https://github.com/hostkurd/flocms-uploader/issues",
+                "source": "https://github.com/hostkurd/flocms-uploader/tree/v1.0.0"
+            },
+            "time": "2026-03-16T09:44:34+00:00"
         },
         {
             "name": "psr/log",
