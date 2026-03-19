@@ -8,7 +8,7 @@ use FloCMS\Core\AppUrlValidator;
 $envfile = ROOT . DS . '.env';
     if (!file_exists($envfile)) {
         render_static_page([
-                'template' => ROOT . DS . 'views' . DS . 'errors' . DS . 'file-missing.html',
+                'template' => ROOT . DS . 'templates' . DS . 'default' . DS . 'errors' . DS . 'file-missing.html',
                 'status'   => 500,
                 'vars'     => [
                     'message' => 'Error: .env file not found! Please copy .env.example to .env.',
@@ -30,6 +30,7 @@ if (!defined('API_URI')) {define('API_URI', rtrim((string) Env::get('API_URL'), 
 
 // Paths (core can read these too)
 define('APP_VIEWS_PATH', ROOT . DS . 'views');
+define('APP_TEMPLATES_PATH', ROOT . DS . 'templates');
 define('APP_STORAGE_PATH', ROOT . DS . 'storage');
 
 // backward-compatibility aliases (optional; remove later)

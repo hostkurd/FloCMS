@@ -17,7 +17,10 @@ Define('IS_INDEX_PAGE',(CURRENT_CONTROLLER == 'pages' && CURRENT_ACTION=='index'
  * Important!
  * Do not Edit the Following Settings
  */
-Define('VIEWS_PATH',ROOT.DS.'views');
+Define('VIEWS_PATH', ROOT . DS . 'views');
+Define('TEMPLATES_PATH', ROOT . DS . 'templates');
+define('ACTIVE_TEMPLATE', Env::get('APP_TEMPLATE', 'default'));
+
 Define('assetPath', SITE_URI.'/assets');
 Define('cssPath', SITE_URI.'/assets/css');
 Define('jsPath', SITE_URI.'/assets/js');
