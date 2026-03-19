@@ -97,16 +97,16 @@
         },
         {
             "name": "hostkurd/flocms-core",
-            "version": "v1.0.6",
+            "version": "v1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "6309c68058f7672dcc67d426d4837c615e5a0c25"
+                "reference": "77b58789bb8c9deca727ed151a05eaa3b8e8807a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/6309c68058f7672dcc67d426d4837c615e5a0c25",
-                "reference": "6309c68058f7672dcc67d426d4837c615e5a0c25",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/77b58789bb8c9deca727ed151a05eaa3b8e8807a",
+                "reference": "77b58789bb8c9deca727ed151a05eaa3b8e8807a",
                 "shasum": ""
             },
             "require": {
@@ -129,9 +129,9 @@
             "description": "FloCMS core framework package",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-core/issues",
-                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.6"
+                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.7"
             },
-            "time": "2026-03-19T14:24:02+00:00"
+            "time": "2026-03-19T16:56:30+00:00"
         },
         {
             "name": "hostkurd/flocms-uploader",
