@@ -28,9 +28,7 @@
     <?php else: ?>
 
         <div class="flo-card width-500">
-            <div class="header">
-                <span class="text-logo">FloCMS</span> - {{ $title }}
-            </div>
+            <?= render_partial('header', ['title' => 'The Most lightweight PHP Framework']) ?>
             <div class="body">
                 <div class="content">
                     <h2 class="m-0" style="direction: @lang('lng.dir');">@lang('website.title')</h2>
