@@ -4,8 +4,57 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f4e58975761ad791e209a83317ef5e6",
+    "content-hash": "39934742033903ecd8648a5cedbcc6ee",
     "packages": [
+        {
+            "name": "hostkurd/flocms-api",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hostkurd/flocms-api.git",
+                "reference": "b5acb83afcab0993a1918d4ccb6399ffeba07508"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hostkurd/flocms-api/zipball/b5acb83afcab0993a1918d4ccb6399ffeba07508",
+                "reference": "b5acb83afcab0993a1918d4ccb6399ffeba07508",
+                "shasum": ""
+            },
+            "require": {
+                "hostkurd/flocms-core": "^2.0",
+                "php": "^8.1",
+                "psr/log": "^1.1 || ^2.0 || ^3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5 || ^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "FloCMS\\Api\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "HostKurd"
+                }
+            ],
+            "description": "Optional modern API runtime for Flo Framework: explicit routing, middleware, JSON errors, CORS, authentication contracts, and rate limiting.",
+            "support": {
+                "issues": "https://github.com/hostkurd/flocms-api/issues",
+                "source": "https://github.com/hostkurd/flocms-api/tree/v1.0.0"
+            },
+            "time": "2026-07-25T08:31:01+00:00"
+        },
         {
             "name": "hostkurd/flocms-captcha",
             "version": "v1.0.0",
@@ -97,23 +146,36 @@
         },
         {
             "name": "hostkurd/flocms-core",
-            "version": "v1.0.7",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "77b58789bb8c9deca727ed151a05eaa3b8e8807a"
+                "reference": "e664c06a4ae584bdadd17abdfbb82a59acb97c7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/77b58789bb8c9deca727ed151a05eaa3b8e8807a",
-                "reference": "77b58789bb8c9deca727ed151a05eaa3b8e8807a",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/e664c06a4ae584bdadd17abdfbb82a59acb97c7a",
+                "reference": "e664c06a4ae584bdadd17abdfbb82a59acb97c7a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.1",
+                "ext-pdo": "*",
+                "php": "^8.1",
                 "psr/log": "^1.1 || ^2.0 || ^3.0"
             },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5 || ^11.0"
+            },
+            "suggest": {
+                "ext-pdo_mysql": "Required by the bundled MySQL connection and module state/migration implementations.",
+                "hostkurd/flocms-api": "Adds the explicit API router, middleware pipeline, JSON exception handling, CORS, and rate limiting."
+            },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.0-dev"
+                }
+            },
             "autoload": {
                 "files": [
                     "src/Helpers.php"
@@ -126,29 +188,38 @@
             "license": [
                 "MIT"
             ],
-            "description": "FloCMS core framework package",
+            "authors": [
+                {
+                    "name": "HostKurd"
+                }
+            ],
+            "description": "Core runtime for Flo Framework: application services, HTTP primitives, dependency injection, and modular architecture.",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-core/issues",
-                "source": "https://github.com/hostkurd/flocms-core/tree/v1.0.7"
+                "source": "https://github.com/hostkurd/flocms-core/tree/v2.0.0"
             },
-            "time": "2026-03-19T16:56:30+00:00"
+            "time": "2026-07-25T08:23:32+00:00"
         },
         {
             "name": "hostkurd/flocms-uploader",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-uploader.git",
-                "reference": "2669dac5040edc391717073e6f5491f21b83de02"
+                "reference": "258cc279b22351f8b5a115e3d9fbad4fdf0d6a23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-uploader/zipball/2669dac5040edc391717073e6f5491f21b83de02",
-                "reference": "2669dac5040edc391717073e6f5491f21b83de02",
+                "url": "https://api.github.com/repos/hostkurd/flocms-uploader/zipball/258cc279b22351f8b5a115e3d9fbad4fdf0d6a23",
+                "reference": "258cc279b22351f8b5a115e3d9fbad4fdf0d6a23",
                 "shasum": ""
             },
             "require": {
+                "ext-fileinfo": "*",
                 "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5 || ^11.0"
             },
             "suggest": {
                 "aws/aws-sdk-php": "Required only when using the S3 storage driver.",
@@ -181,9 +252,9 @@
             ],
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-uploader/issues",
-                "source": "https://github.com/hostkurd/flocms-uploader/tree/v1.0.0"
+                "source": "https://github.com/hostkurd/flocms-uploader/tree/v1.1.0"
             },
-            "time": "2026-03-16T09:44:34+00:00"
+            "time": "2026-07-25T08:35:32+00:00"
         },
         {
             "name": "psr/log",
@@ -239,12 +310,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

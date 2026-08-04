@@ -22,10 +22,11 @@
 
   "require": {
     "php": "^8.0",
-    "hostkurd/flocms-core": "^1.0",
+    "hostkurd/flocms-core": "2.0",
     "hostkurd/flocms-cli": "^1.0",
-    "hostkurd/flocms-uploader": "^1.0",
-    "hostkurd/flocms-captcha": "^1.0"
+    "hostkurd/flocms-uploader": "1.1",
+    "hostkurd/flocms-captcha": "^1.0",
+    "hostkurd/flocms-api": "^1.0"
   },
 
   "scripts": {
