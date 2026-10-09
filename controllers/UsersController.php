@@ -2,9 +2,11 @@
 
 namespace FloCMS\Controllers;
 
+use FloCMS\Core\Auth;
 use FloCMS\Core\Config;
 use FloCMS\Core\Controller;
 use FloCMS\Core\Env;
+use FloCMS\Core\HttpException;
 use FloCMS\Core\Router;
 use FloCMS\Core\Session;
 use FloCMS\Models\UsersModel;
@@ -40,6 +42,15 @@ class UsersController extends Controller
 
     // User groups which have access to admin panel
     protected array $admin_access_roles = ['1', '2', '3'];
+
+    // Permission required per action (checked by flocms-core before the action runs)
+    protected array $actionPermissions = [
+        '*'             => 'users.manage',
+        'admin_login'   => null,
+        'admin_logout'  => null,
+        'admin_profile' => null,
+        'verify'        => null,
+    ];
 
     public function __construct(array $data = [])
     {
@@ -174,6 +185,11 @@ class UsersController extends Controller
             return;
         }
 
+        if (!Auth::canAssignRole((int) ($_POST['role'] ?? 0))) {
+            Session::setFlash('You are not allowed to assign that role.', 'danger');
+            return;
+        }
+
         $token = bin2hex(random_bytes(30));
 
         if (!$this->model->save($_POST, $token)) {
@@ -256,9 +272,25 @@ class UsersController extends Controller
             return;
         }
 
-        $userId = $this->params[0];
+        $userId = (int) $this->params[0];
+        $user = $this->model->getByID($userId);
+
+        if (!$user) {
+            Session::setFlash('Invalid user ID.', 'danger');
+            return;
+        }
+
+        if (!Auth::canManageUser((int) ($user['role'] ?? 0))) {
+            throw new HttpException(403);
+        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['role']) && !Auth::canAssignRole((int) $_POST['role'])) {
+                Session::setFlash('You are not allowed to assign that role.', 'danger');
+                $this->data = $user;
+                return;
+            }
+
             if ($this->model->save($_POST, null, $userId)) {
                 Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/users');
                 return;
@@ -268,7 +300,7 @@ class UsersController extends Controller
             return;
         }
 
-        $this->data = $this->model->getByID($userId);
+        $this->data = $user;
     }
 
     public function admin_delete(): void
@@ -276,6 +308,17 @@ class UsersController extends Controller
         if (!isset($this->params[0])) {
             Session::setFlash('Invalid ID.', 'danger');
             return;
+        }
+
+        $user = $this->model->getByID($this->params[0]);
+
+        if (!$user) {
+            Session::setFlash('Invalid ID.', 'danger');
+            return;
+        }
+
+        if (!Auth::canManageUser((int) ($user['role'] ?? 0))) {
+            throw new HttpException(403);
         }
 
         if ($this->model->delete($this->params[0])) {
@@ -392,10 +435,20 @@ class UsersController extends Controller
             exit;
         }
 
-        if (!$this->model->isUserExist($id)) {
+        $user = $this->model->getByID($id);
+
+        if (!$user) {
             echo json_encode([
                 'status' => 'error',
                 'message' => 'No such user exists in the system.',
+            ]);
+            exit;
+        }
+
+        if (!Auth::canManageUser((int) ($user['role'] ?? 0))) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'You are not allowed to manage this user.',
             ]);
             exit;
         }

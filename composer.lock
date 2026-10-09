@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "39934742033903ecd8648a5cedbcc6ee",
+    "content-hash": "1be00e12afc2de6906973f70b9861091",
     "packages": [
         {
             "name": "hostkurd/flocms-api",
@@ -146,16 +146,16 @@
         },
         {
             "name": "hostkurd/flocms-core",
-            "version": "v2.0.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "e664c06a4ae584bdadd17abdfbb82a59acb97c7a"
+                "reference": "af6dc130d8bba37764ba75ac20043393f4a38354"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/e664c06a4ae584bdadd17abdfbb82a59acb97c7a",
-                "reference": "e664c06a4ae584bdadd17abdfbb82a59acb97c7a",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/af6dc130d8bba37764ba75ac20043393f4a38354",
+                "reference": "af6dc130d8bba37764ba75ac20043393f4a38354",
                 "shasum": ""
             },
             "require": {
@@ -173,7 +173,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.0-dev"
+                    "dev-main": "2.1-dev"
                 }
             },
             "autoload": {
@@ -196,9 +196,9 @@
             "description": "Core runtime for Flo Framework: application services, HTTP primitives, dependency injection, and modular architecture.",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-core/issues",
-                "source": "https://github.com/hostkurd/flocms-core/tree/v2.0.0"
+                "source": "https://github.com/hostkurd/flocms-core/tree/v2.1.0"
             },
-            "time": "2026-07-25T08:23:32+00:00"
+            "time": "2026-10-09T20:47:35+00:00"
         },
         {
             "name": "hostkurd/flocms-uploader",
@@ -310,12 +310,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.0"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

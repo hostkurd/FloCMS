@@ -32,3 +32,12 @@
     // UserGroups which has access to Admin Panel
     Config::set('admin_access_roles',array('1', '2', '3'));
             
+
+    // Role => permissions (requires flocms-core 2.1+). Supports 'name', 'prefix.*' and '*'.
+    // Roles: 0 User, 1 Editor, 2 Admin, 3 Super Admin. Roles not listed get no permissions.
+    Config::set('permissions', array(
+        0 => array(),
+        1 => array('content.*'),
+        2 => array('content.*', 'users.manage', 'users.assign_role', 'settings.*'),
+        3 => array('*'),
+    ));

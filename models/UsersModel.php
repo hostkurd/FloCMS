@@ -89,8 +89,12 @@ class UsersModel extends Model
             'address'   => $address,
             'phone'     => $phone,
             'gender'    => $gender,
-            'role'      => $role,
         ];
+
+        // Only change the role when the form sends one; a missing field must not demote the user
+        if (array_key_exists('role', $data)) {
+            $update['role'] = $role;
+        }
 
         if ($password !== '') {
             $update['password'] = $this->hashPassword($password);
