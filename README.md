@@ -29,6 +29,39 @@ To Create a new project, install it via Composer:
 composer create-project hostkurd/flocms
 ```
 
+## Permissions (flocms-core 2.1+)
+
+Admin panel access is controlled by roles and permissions. `config/config.php` maps each role to its permissions:
+
+| Role | Name        | Permissions                                              |
+|------|-------------|----------------------------------------------------------|
+| 0    | User        | none                                                     |
+| 1    | Editor      | `content.*`                                              |
+| 2    | Admin       | `content.*`, `users.manage`, `users.assign_role`, `settings.*` |
+| 3    | Super Admin | `*`                                                      |
+
+Controllers declare the permission each action needs; actions not listed fall back to `'*'`, and `null` means no check:
+
+```php
+protected array $actionPermissions = [
+    '*'           => 'users.manage',
+    'admin_login' => null,
+];
+```
+
+Inside an action, use `Auth::can('settings.edit')` or `Auth::authorize('settings.edit')` (throws 403).
+User management only lets you assign roles up to your own, and only edit, delete or suspend users of a lower role (Super Admins can manage everyone).
+
+### Upgrading an existing site
+
+1. Require `hostkurd/flocms-core` `2.1.0`.
+2. Copy the `permissions` block from `config/config.php`, adjusting it to your roles.
+3. Add `$actionPermissions` to your admin controllers, and copy the `Auth` checks from `controllers/UsersController.php` (`admin_add`, `admin_edit`, `admin_delete`, `admin_suspend`).
+4. Copy `templates/default/errors/403.html` and the `page.forbidden` strings from `lang/*.php`.
+
+Until step 2 is done, the site behaves exactly as before (any role with admin access can do everything).
+Role changes take effect on the user's next login.
+
 # Security Vulnerabilities
 If you discover a security vulnerability within FLoCMS, please send an e-mail to Dev Team via [dev@flocms.com](mailto:dev@flocms.com). All security vulnerabilities will be promptly addressed.
 
