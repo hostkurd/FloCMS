@@ -7,7 +7,8 @@
   "autoload": {
     "psr-4": {
       "FloCMS\\Controllers\\": "controllers/",
-      "FloCMS\\Models\\": "models/"
+      "FloCMS\\Models\\": "models/",
+      "FloCMS\\Support\\": "support/"
     }
   },
 

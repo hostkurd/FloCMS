@@ -14,8 +14,22 @@ Requires `hostkurd/flocms-core` 2.2.0.
   - `templates/default/errors/nodbserver.html` and `dberror.html` are shown for
     database connection errors, with setup hints.
   - `DB_PORT` from `.env` is now used (`Config::set('db.port', ...)`).
+- `.gitignore` used `/Storage/...` (wrong case on Linux), so `storage/cache`
+  and `storage/logs` contents were not ignored.
+
+### Security
+- Suspended, deleted or demoted users lose admin access on their next request
+  instead of at logout (#2). Login stores `user_id` in the session and
+  `config/config.php` sets `auth.user_loader`, so flocms-core reloads role and
+  status on every admin request.
+- Admin login is throttled per IP (20) and per email (5) per 15 minutes using
+  `FloCMS\Api\RateLimit\FileRateLimiter` (state in `storage/cache/login-throttle`).
+  Blocked attempts get HTTP 429. Configure with `login_throttle`; set
+  `TRUSTED_PROXIES` when running behind a reverse proxy.
 
 ### Added
+- `views/users/admin_login.html`: minimal admin login form (the skeleton had none).
+- `support/` directory (`FloCMS\Support\` namespace) with `LoginThrottle`.
 - PHPUnit test suite (`composer test`). Feature tests run the app under PHP's
   built-in server with a fresh `.env` made from `.env.example`.
 

@@ -1,8 +1,9 @@
 /vendor/
 /.env
-/Storage/cache/*
+/storage/cache/*
 /views/cache/*
-/Storage/logs/*
+/storage/logs/*
+!/storage/logs/.gitignore
 .DS_Store
 Thumbs.db
 .idea/

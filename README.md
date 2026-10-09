@@ -79,6 +79,19 @@ site as needed; see `CHANGELOG.md` for the details.
 Models now connect on first query, so controllers that create a model in their
 constructor no longer fail when the database is down until they actually query it.
 
+### Session freshness and login throttling
+1. Add `"FloCMS\\Support\\": "support/"` to `autoload.psr-4` in `composer.json`, copy
+   `support/LoginThrottle.php`, and run `composer dump-autoload`.
+2. In `controllers/UsersController.php` (`admin_login`), copy the `LoginThrottle` block,
+   the `clientIp()` method, `$throttle->clear($email)` and `Session::set('user_id', ...)`.
+3. Copy the `auth.user_loader`, `login_throttle` and `trusted_proxies` settings from
+   `config/config.php`, and add `TRUSTED_PROXIES=` to `.env`.
+4. Copy the `auth.*` strings from `lang/en.php`.
+5. Make sure `storage/cache` is writable and ignored by git (see `.gitignore`).
+
+Users who are logged in when you deploy this are logged out once (their
+session has no `user_id` yet).
+
 ## Running the tests
 
 ```bash
