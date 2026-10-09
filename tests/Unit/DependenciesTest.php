@@ -19,9 +19,12 @@ final class DependenciesTest extends TestCase
         return json_decode((string) file_get_contents(dirname(__DIR__, 2) . '/composer.json'), true)['require'];
     }
 
-    public function testUploaderIsPinnedExactly(): void
+    public function testCoreAndUploaderArePinnedExactly(): void
     {
-        self::assertSame('1.2.0', self::requirements()['hostkurd/flocms-uploader']);
+        $require = self::requirements();
+
+        self::assertSame('2.2.0', $require['hostkurd/flocms-core']);
+        self::assertSame('1.2.0', $require['hostkurd/flocms-uploader']);
     }
 
     public function testUploaderProvidesVideoAndChunkedUploads(): void
