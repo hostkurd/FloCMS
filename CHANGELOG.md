@@ -2,7 +2,8 @@
 
 ## 1.5.0 - Unreleased
 
-Requires `hostkurd/flocms-core` 2.2.0.
+Requires `hostkurd/flocms-core` 2.2.0 and `hostkurd/flocms-uploader` 1.2.0
+(both pinned to exact versions).
 
 ### Fixed
 - A fresh install (`composer create-project`) shows the welcome page instead
@@ -39,6 +40,9 @@ Requires `hostkurd/flocms-core` 2.2.0.
   new in flocms-core 2.2 (#4).
 
 ### Added
+- `hostkurd/flocms-uploader` 1.2.0: `Uploader::video()` (mp4/webm, optional
+  mov and poster image) and chunked, resumable uploads (`->chunked()`) for
+  files above `upload_max_filesize` (#7).
 - `public/api.php` with `api/routes.php`: the recommended API path, built on
   `FloCMS\Api\Kernel` (flocms-api), with JSON errors, security headers, CORS
   (`API_CORS_ORIGINS`) and per-IP rate limiting (`API_RATE_LIMIT`, default 60

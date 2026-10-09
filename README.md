@@ -132,6 +132,12 @@ delete old files such as `views/cache/pages_index.php`. Set
    `templates/default/layouts/admin.html` to your admin layout, copy
    `public/themes/default/js/csrf.js`, and put `@csrf` in every POST form.
 
+### Uploads (flocms-uploader 1.2)
+Require `"hostkurd/flocms-uploader": "1.2.0"`. Video uploads
+(`Uploader::video()`) and chunked uploads (`->chunked()`) are new and opt-in;
+see the uploader README for the `video` and `chunks` config sections. Keep the
+chunk directory outside `public/` (e.g. `storage/uploads/.chunks`).
+
 ## Running the tests
 
 ```bash
