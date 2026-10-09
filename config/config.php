@@ -20,6 +20,7 @@
 
     // Database Parameters
     Config::set('db.host', Env::get('DB_HOST', 'localhost'));
+    Config::set('db.port', Env::get('DB_PORT', 3306));
     Config::set('db.name', Env::get('DB_NAME', null));
     Config::set('db.user', Env::get('DB_USERNAME', null));
     Config::set('db.pass', Env::get('DB_PASSWORD', null));

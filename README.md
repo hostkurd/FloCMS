@@ -62,6 +62,34 @@ User management only lets you assign roles up to your own, and only edit, delete
 Until step 2 is done, the site behaves exactly as before (any role with admin access can do everything).
 Role changes take effect on the user's next login.
 
+## Upgrading to 1.5 (flocms-core 2.2)
+
+FloCMS 1.5 requires `hostkurd/flocms-core` `2.2.0`. Versions are pinned exactly,
+so each site upgrades when you choose. Copy the changes below into an existing
+site as needed; see `CHANGELOG.md` for the details.
+
+### Fresh install without a database
+1. In `composer.json`, require `"hostkurd/flocms-core": "2.2.0"` and run `composer update hostkurd/flocms-core`.
+2. Add `Config::set('db.port', Env::get('DB_PORT', 3306));` to `config/config.php`.
+3. Copy `templates/default/errors/nodbserver.html` and `dberror.html`. They receive
+   `$message`, `$errorCode` and, in debug mode only, `$detail`.
+4. Optional: copy the lazy `model()` helper from `controllers/PagesController.php`
+   and the database card from `views/pages/index.html`.
+
+Models now connect on first query, so controllers that create a model in their
+constructor no longer fail when the database is down until they actually query it.
+
+## Running the tests
+
+```bash
+composer install
+composer test
+```
+
+Tests that need MySQL/MariaDB are skipped unless `FLO_TEST_MYSQL_HOST` is set
+(also `FLO_TEST_MYSQL_PORT`, `_USER`, `_PASS`, `_NAME`; default database
+`flocms_test`).
+
 # Security Vulnerabilities
 If you discover a security vulnerability within FLoCMS, please send an e-mail to Dev Team via [dev@flocms.com](mailto:dev@flocms.com). All security vulnerabilities will be promptly addressed.
 

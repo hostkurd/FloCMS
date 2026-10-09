@@ -34,7 +34,12 @@
       "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
       "@php -r \"is_dir('storage') || mkdir('storage', 0755);\"",
       "@php -r \"is_dir('storage/logs') || mkdir('storage/logs', 0755, true);\""
-    ]
+    ],
+    "test": "phpunit"
+  },
+
+  "require-dev": {
+    "phpunit/phpunit": "^10.5 || ^11.0"
   },
 
   "autoload-dev": {
