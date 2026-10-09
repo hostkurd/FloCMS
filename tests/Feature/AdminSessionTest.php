@@ -105,7 +105,7 @@ final class AdminSessionTest extends TestCase
         // Blocked even with the right password
         $blocked = $this->login('admin@example.com');
         self::assertSame(429, $blocked['status']);
-        self::assertStringContainsString('Too many login attempts', $blocked['body']);
+        self::assertStringContainsString('Too many login attempts. Please try again in 15 minute(s).', $blocked['body']);
         self::assertSame(302, $this->server->get('/admin/users')['status']);
     }
 

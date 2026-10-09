@@ -27,6 +27,10 @@ Requires `hostkurd/flocms-core` 2.2.0.
   Blocked attempts get HTTP 429. Configure with `login_throttle`; set
   `TRUSTED_PROXIES` when running behind a reverse proxy.
 
+### Changed
+- The login throttle message uses `Lang::get()` placeholders (`:minutes`),
+  new in flocms-core 2.2 (#4).
+
 ### Added
 - `views/users/admin_login.html`: minimal admin login form (the skeleton had none).
 - `support/` directory (`FloCMS\Support\` namespace) with `LoginThrottle`.

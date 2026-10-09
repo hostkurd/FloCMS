@@ -96,10 +96,10 @@ class UsersController extends Controller
         if ($wait > 0) {
             http_response_code(429);
             Session::setFlash(
-                str_replace(
-                    ':minutes',
-                    (string) (int) ceil($wait / 60),
-                    Lang::get('auth.throttled', 'Too many login attempts. Please try again in :minutes minute(s).')
+                Lang::get(
+                    'auth.throttled',
+                    'Too many login attempts. Please try again in :minutes minute(s).',
+                    ['minutes' => (int) ceil($wait / 60)]
                 ),
                 'danger'
             );
