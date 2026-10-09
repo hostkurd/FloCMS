@@ -9,7 +9,7 @@
                     <div class="alert alert-<?php Session::flashType(); ?>"><?php Session::flash(); ?></div>
                 <?php endif; ?>
                 <form method="post" action="">
-                    <?= \FloCMS\Core\Csrf::field() ?>
+                    @csrf
                     <p>
                         <label for="email">Email</label><br>
                         <input type="email" id="email" name="email" required autocomplete="username">

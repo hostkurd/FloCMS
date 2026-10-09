@@ -18,6 +18,7 @@ Requires `hostkurd/flocms-core` 2.2.0.
   and `storage/logs` contents were not ignored.
 
 ### Security
+- `.env.example` no longer ships a fixed `APP_KEY` that every site shared (#6).
 - Suspended, deleted or demoted users lose admin access on their next request
   instead of at logout (#2). Login stores `user_id` in the session and
   `config/config.php` sets `auth.user_loader`, so flocms-core reloads role and
@@ -32,10 +33,23 @@ Requires `hostkurd/flocms-core` 2.2.0.
   included (flocms-core 2.2), so OPcache can cache them (#5). The stale
   `views/cache/pages_index.php` is no longer tracked; `views/cache/` is kept
   with its own `.gitignore`.
+- Forms use the `@csrf` directive (flocms-core 2.2); a test checks that
+  every POST form in `views/` and `templates/` has a CSRF field (#6).
 - The login throttle message uses `Lang::get()` placeholders (`:minutes`),
   new in flocms-core 2.2 (#4).
 
 ### Added
+- `public/api.php` with `api/routes.php`: the recommended API path, built on
+  `FloCMS\Api\Kernel` (flocms-api), with JSON errors, security headers, CORS
+  (`API_CORS_ORIGINS`) and per-IP rate limiting (`API_RATE_LIMIT`, default 60
+  per minute). `public/.htaccess` sends `/api/v1/*` there (#6). The legacy
+  `/api/<controller>/<action>` route (`api_` methods, no CSRF check, no
+  authentication) still works but is deprecated.
+- `php flo key:generate [--force]`, also run by `post-create-project-cmd`, so
+  every install gets its own `APP_KEY` (#6).
+- Admin layout: `<meta name="csrf-token">` and `js/csrf.js`, which sends
+  `X-CSRF-TOKEN` with same-origin POST/PUT/PATCH/DELETE requests made with
+  `fetch()` or jQuery (#6).
 - `views/users/admin_login.html`: minimal admin login form (the skeleton had none).
 - `support/` directory (`FloCMS\Support\` namespace) with `LoginThrottle`.
 - PHPUnit test suite (`composer test`). Feature tests run the app under PHP's

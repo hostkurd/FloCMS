@@ -29,6 +29,28 @@ To Create a new project, install it via Composer:
 composer create-project hostkurd/flocms
 ```
 
+## API (recommended: /api/v1)
+
+Build APIs in `api/routes.php`; `public/api.php` serves them under `/api`
+using `hostkurd/flocms-api`:
+
+```php
+return static function (Router $router): void {
+    $router->get('/v1/health', static fn (): array => ['status' => 'ok']);
+    $router->get('/v1/listings/{id}', [ListingsApiController::class, 'show']);
+};
+```
+
+`GET /api/v1/health` returns `{"success":true,"data":{"status":"ok"}}`. Requests get JSON
+errors, security headers, CORS for the origins in `API_CORS_ORIGINS`, and are
+rate limited per IP (`API_RATE_LIMIT` per minute). The API path has no session
+and no CSRF check: protect private routes with
+`FloCMS\Api\Middleware\AuthenticateMiddleware`.
+
+The old `/api/<controller>/<action>` route (methods prefixed `api_`) still
+works, but it skips CSRF checks and has no authentication. It is deprecated;
+move endpoints to `api/routes.php`.
+
 ## Permissions (flocms-core 2.1+)
 
 Admin panel access is controlled by roles and permissions. `config/config.php` maps each role to its permissions:
@@ -97,6 +119,18 @@ Templates are compiled to `views/cache/` automatically. Make sure the web
 server can write to it, keep it out of git (copy `views/cache/.gitignore`), and
 delete old files such as `views/cache/pages_index.php`. Set
 `Config::set('view.cache_path', ...)` to use another directory.
+
+### API, APP_KEY and CSRF
+1. Copy `public/api.php` and `api/routes.php`, and add the `api/v1` rule from
+   `public/.htaccess` above the `index.php` rule. Add `API_CORS_ORIGINS=` and
+   `API_RATE_LIMIT=60` to `.env`.
+2. If your `.env` still has the `APP_KEY` that older skeletons shipped
+   (`base64:YFHTnSHarB6...`), copy the new `flo` file and `support/KeyGenerator.php`,
+   then run `php flo key:generate --force`. Nothing uses `APP_KEY` yet, so
+   replacing it is safe.
+3. Add `<meta name="csrf-token" ...>` and the `js/csrf.js` script from
+   `templates/default/layouts/admin.html` to your admin layout, copy
+   `public/themes/default/js/csrf.js`, and put `@csrf` in every POST form.
 
 ## Running the tests
 

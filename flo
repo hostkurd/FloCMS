@@ -3,10 +3,28 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+$args = array_slice($argv, 1);
+
+// Handled by the skeleton: php flo key:generate [--force]
+if (($args[0] ?? '') === 'key:generate') {
+    $force = in_array('--force', $args, true);
+
+    try {
+        $key = \FloCMS\Support\KeyGenerator::writeToEnv(__DIR__ . '/.env', $force);
+    } catch (\RuntimeException $e) {
+        fwrite(STDERR, $e->getMessage() . PHP_EOL);
+        exit(1);
+    }
+
+    echo $key === null
+        ? 'APP_KEY is already set. Use --force to replace it.' . PHP_EOL
+        : 'APP_KEY set in .env.' . PHP_EOL;
+    exit(0);
+}
+
 $bin = __DIR__ . '/vendor/bin/flo';
 $php = PHP_BINARY;
 
-$args = array_slice($argv, 1);
 $cmd = escapeshellarg($php) . ' ' . escapeshellarg($bin);
 if ($args) {
     $cmd .= ' ' . implode(' ', array_map('escapeshellarg', $args));

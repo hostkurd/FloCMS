@@ -1,5 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine on
+
+    # Recommended API path (flocms-api): /api/v1/... -> api.php
+    RewriteRule ^api/v1(/.*)?$ api.php [L,QSA]
+
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php [PT,L]

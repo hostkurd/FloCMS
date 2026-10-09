@@ -157,7 +157,7 @@ final class AppServer
         $command = [
             PHP_BINARY, '-S', '127.0.0.1:' . $this->port,
             '-t', $this->root . '/public',
-            $this->root . '/public/index.php',
+            __DIR__ . '/router.php',
         ];
 
         $this->process = proc_open(
