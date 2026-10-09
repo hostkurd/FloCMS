@@ -2,6 +2,7 @@
 /.env
 /storage/cache/*
 /views/cache/*
+!/views/cache/.gitignore
 /storage/logs/*
 !/storage/logs/.gitignore
 .DS_Store

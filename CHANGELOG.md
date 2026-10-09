@@ -28,6 +28,10 @@ Requires `hostkurd/flocms-core` 2.2.0.
   `TRUSTED_PROXIES` when running behind a reverse proxy.
 
 ### Changed
+- Views, layouts and partials are compiled once to `views/cache/` and
+  included (flocms-core 2.2), so OPcache can cache them (#5). The stale
+  `views/cache/pages_index.php` is no longer tracked; `views/cache/` is kept
+  with its own `.gitignore`.
 - The login throttle message uses `Lang::get()` placeholders (`:minutes`),
   new in flocms-core 2.2 (#4).
 

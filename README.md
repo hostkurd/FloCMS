@@ -92,6 +92,12 @@ constructor no longer fail when the database is down until they actually query i
 Users who are logged in when you deploy this are logged out once (their
 session has no `user_id` yet).
 
+### Template cache
+Templates are compiled to `views/cache/` automatically. Make sure the web
+server can write to it, keep it out of git (copy `views/cache/.gitignore`), and
+delete old files such as `views/cache/pages_index.php`. Set
+`Config::set('view.cache_path', ...)` to use another directory.
+
 ## Running the tests
 
 ```bash
