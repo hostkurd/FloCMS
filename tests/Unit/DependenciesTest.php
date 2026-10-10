@@ -41,7 +41,7 @@ final class DependenciesTest extends TestCase
      */
     public function testCliPackageIsPinnedExactly(): void
     {
-        self::assertSame('2.0.0', self::requirements()['hostkurd/flocms-cli']);
+        self::assertSame('2.0.1', self::requirements()['hostkurd/flocms-cli']);
     }
 
     public function testApiControllersAreAutoloaded(): void
