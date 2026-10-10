@@ -31,25 +31,58 @@ composer create-project hostkurd/flocms
 
 ## API (recommended: /api/v1)
 
-Build APIs in `api/routes.php`; `public/api.php` serves them under `/api`
-using `hostkurd/flocms-api`:
+`public/api.php` serves the routes in `api/routes.php` under `/api` with
+[hostkurd/flocms-api](https://github.com/hostkurd/flocms-api). Controllers
+and resources live in `api/` (namespace `App\Api\`):
 
 ```php
 return static function (Router $router): void {
-    $router->get('/v1/health', static fn (): array => ['status' => 'ok']);
-    $router->get('/v1/listings/{id}', [ListingsApiController::class, 'show']);
+    $router->version('v1', static function (Router $router): void {
+        $router->get('/health', new HealthController())->name('health');
+
+        $router->post('/contact', [ContactController::class, 'store'])
+            ->middleware('throttle:forms', 'idempotent');
+
+        $router->group('/users', static function (Router $router): void {
+            $router->get('', [UsersController::class, 'index'])->name('index');
+            $router->get('/{id:\d+}', [UsersController::class, 'show'])->name('show');
+        }, ['auth:users.manage'], namePrefix: 'users.');
+    });
 };
 ```
 
-`GET /api/v1/health` returns `{"success":true,"data":{"status":"ok"}}`. Requests get JSON
-errors, security headers, CORS for the origins in `API_CORS_ORIGINS`, and are
-rate limited per IP (`API_RATE_LIMIT` per minute). The API path has no session
-and no CSRF check: protect private routes with
-`FloCMS\Api\Middleware\AuthenticateMiddleware`.
+Every response is JSON with security headers. CORS is enabled for the origins
+in `API_CORS_ORIGINS` (`https://*.example.com` patterns allowed), the locale
+comes from `?lang=` or `Accept-Language`, and requests are rate limited per
+client (`API_RATE_LIMIT` per minute). The API path has no session and no CSRF
+check by default. Route middleware:
 
-The old `/api/<controller>/<action>` route (methods prefixed `api_`) still
-works, but it skips CSRF checks and has no authentication. It is deprecated;
-move endpoints to `api/routes.php`.
+| Middleware | Effect |
+|---|---|
+| `throttle:public`, `throttle:forms`, `throttle:auth` | named rate limits (60/min, 5/min, 10 per 15 min) |
+| `auth`, `auth:users.manage` | a personal access token (`Authorization: Bearer ...`) or the admin session from same-origin JavaScript (with `X-CSRF-TOKEN`), optionally with permissions from `config/config.php` |
+| `idempotent` | retries with the same `Idempotency-Key` header get the first response |
+
+The examples show validation (`ContactController`), pagination with filters
+and sorting, and a resource that keeps the password and token columns out of
+responses (`UsersController`, `UserResource`).
+
+Commands (`php flo api:list`):
+
+```bash
+php flo api:install-schema                     # tables for tokens, API keys, idempotency
+php flo api:token:create 1 "Mobile app"        # prints the token once
+php flo api:routes                             # list routes
+php flo api:docs --out=public/openapi.json     # OpenAPI 3.1 (also at /api/v1/openapi.json when APP_DEBUG=true)
+php flo api:gc                                 # clean up rate-limit and idempotency files (cron)
+```
+
+See the flocms-api README for validation rules, resources, caching, uploads
+and testing your API with `TestClient`.
+
+The old `/api/<controller>/<action>` route (methods prefixed `api_`) skips
+CSRF checks and has no authentication. It is off unless `LEGACY_API=true` is
+set in `.env`; move endpoints to `api/routes.php`.
 
 ## Permissions (flocms-core 2.1+)
 

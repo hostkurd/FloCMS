@@ -1,5 +1,48 @@
 # Changelog
 
+## 1.6.0 - Unreleased
+
+Requires `hostkurd/flocms-api` 1.1.0 (pinned to the exact version, like
+core and uploader) and PHP 8.1.
+
+### Changed
+- `public/api.php` uses flocms-api 1.1 (D3):
+  - Middleware order: security headers, errors, CORS, maintenance mode,
+    locale, rate limit, body limits. Error responses (404, 405, 422, 429,
+    500) now carry security and CORS headers, and CORS preflights are no
+    longer rate limited.
+  - Named rate limits (`throttle:forms`), and `auth` and `idempotent` route
+    middleware.
+  - Strict routing in debug mode; the OpenAPI document at
+    `/api/v1/openapi.json` in debug mode only.
+  - API errors and route warnings are logged to `storage/logs/api.log`.
+- `api/routes.php` has example routes: `UsersController` (authentication
+  with a permission, pagination, filters and sorting, `UserResource`) and
+  `ContactController` (validation, rate limit, idempotency). Controllers
+  autoload from `api/` as `App\Api\`.
+- `GET /api/v1/health` reports the database: `{"status":"ok","db":"ok"}`
+  (or `"not_configured"`), 503 when the database is down.
+- `php flo api:*` runs the flocms-api commands (tokens, API keys, schema,
+  routes, OpenAPI, cleanup).
+- `composer.json` requires PHP `^8.1` (core already did).
+
+### Security
+- The legacy `/api/<controller>/<action>` route, which skips CSRF checks and
+  has no authentication, is now off by default. Set `LEGACY_API=true` in
+  `.env` to keep using `api_` controller methods.
+
+### Upgrading from 1.5
+1. Require `hostkurd/flocms-api` `1.1.0` and `"php": "^8.1"`, add
+   `"App\\Api\\": "api/"` to `autoload.psr-4`, and run `composer update`.
+2. Copy `public/api.php`, `flo` and the `routes` block of `config/config.php`.
+   If you use `api_` controller methods, set `LEGACY_API=true` in `.env`.
+3. Add the new `.env` keys from `.env.example` (`API_MAINTENANCE_ALLOWED_IPS`,
+   `LEGACY_API`).
+4. For tokens, API keys or the database idempotency store, run
+   `php flo api:install-schema`.
+5. Optionally add `php flo api:gc` to cron.
+
+
 ## 1.5.0 - Unreleased
 
 Requires `hostkurd/flocms-core` 2.2.0 and `hostkurd/flocms-uploader` 1.2.0
