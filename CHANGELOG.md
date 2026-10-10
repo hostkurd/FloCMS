@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.2 - 2026-10-10
+
+### Fixed
+- Requires `hostkurd/flocms-cli` 2.0.1, which fixes the hidden password
+  prompt on Windows (`php flo user:create`, `user:password`).
+
 ## 1.7.1 - 2026-10-10
 
 ### Changed

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cef8d560387bbdb0609045f6bacb277",
+    "content-hash": "c5f355a8b797c5444b6a108c3bfedd27",
     "packages": [
         {
             "name": "hostkurd/flocms-api",
@@ -134,16 +134,16 @@
         },
         {
             "name": "hostkurd/flocms-cli",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-cli.git",
-                "reference": "3ad647628e29eaef2eab21b9d6e2669fd57c0c5a"
+                "reference": "19006a8a209bc1c9acf81108c2091e399606d7c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-cli/zipball/3ad647628e29eaef2eab21b9d6e2669fd57c0c5a",
-                "reference": "3ad647628e29eaef2eab21b9d6e2669fd57c0c5a",
+                "url": "https://api.github.com/repos/hostkurd/flocms-cli/zipball/19006a8a209bc1c9acf81108c2091e399606d7c7",
+                "reference": "19006a8a209bc1c9acf81108c2091e399606d7c7",
                 "shasum": ""
             },
             "require": {
@@ -192,7 +192,7 @@
                 "issues": "https://github.com/hostkurd/flocms-cli/issues",
                 "source": "https://github.com/hostkurd/flocms-cli"
             },
-            "time": "2026-10-10T10:35:45+00:00"
+            "time": "2026-10-10T19:58:06+00:00"
         },
         {
             "name": "hostkurd/flocms-core",
