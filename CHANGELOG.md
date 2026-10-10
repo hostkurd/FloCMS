@@ -1,6 +1,21 @@
 # Changelog
 
-## 1.7.0 - Unreleased
+## 1.7.1 - 2026-10-10
+
+### Changed
+- **Welcome page.** New minimal design with the animated FloCMS logo
+  (`templates/default/partials/logo.html`). Its styles are inline, so it
+  still renders when a wrong `APP_URL` breaks theme asset links. The
+  database card is now marked optional.
+
+### Added
+- **One-click APP_URL fix.** On an `APP_URL` mismatch the welcome page offers
+  a button that writes the detected URL to `.env`. It is shown only when
+  `APP_ENV=local`, the request comes from the loopback address and `.env` is
+  writable, and it is protected by CSRF.
+- Logo files `public/themes/default/img/logo.svg` and `logo-text.svg`.
+
+## 1.7.0 - 2026-10-10
 
 Requires `hostkurd/flocms-cli` 2.0.0 and `hostkurd/flocms-api` 1.2.0 (pinned
 to exact versions, like core and uploader).
