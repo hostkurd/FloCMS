@@ -22,6 +22,19 @@ if (($args[0] ?? '') === 'key:generate') {
     exit(0);
 }
 
+// API commands (php flo api:list) come from hostkurd/flocms-api
+if (str_starts_with($args[0] ?? '', 'api:')) {
+    $apiBin = __DIR__ . '/vendor/hostkurd/flocms-api/bin/flo-api';
+    if (!is_file($apiBin)) {
+        fwrite(STDERR, 'hostkurd/flocms-api is not installed. Run composer install.' . PHP_EOL);
+        exit(1);
+    }
+
+    $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($apiBin) . ' ' . implode(' ', array_map('escapeshellarg', $args));
+    passthru($cmd, $exitCode);
+    exit($exitCode);
+}
+
 $bin = __DIR__ . '/vendor/bin/flo';
 $php = PHP_BINARY;
 
