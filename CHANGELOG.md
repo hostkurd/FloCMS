@@ -1,5 +1,76 @@
 # Changelog
 
+## 1.7.0 - Unreleased
+
+Requires `hostkurd/flocms-cli` 2.0.0 and `hostkurd/flocms-api` 1.2.0 (pinned
+to exact versions, like core and uploader).
+
+### Changed
+- **Root launcher.** The `flo` file in the project root is a three-line
+  launcher for the flocms-cli kernel. Every command now comes from
+  `vendor/`, so `composer update` delivers new commands and fixes; sites no
+  longer get "command not found" because of an old `flo` file:
+  - `key:generate` moved into flocms-cli, and `support/KeyGenerator.php` is
+    gone.
+  - The `api:*` commands are registered by flocms-api itself, so nothing is
+    forwarded.
+- **Commands.** `php flo` lists every command, and `php flo help <command>`
+  explains one. Unknown commands suggest the right name and exit with 1.
+- **Application commands.** Classes in `commands/` (`App\Commands`, now
+  autoloaded) are commands. `commands/LoginUnlockCommand.php` adds
+  `php flo login:unlock <email|ip>` for locked-out admins, using
+  `LoginThrottle::unlockIp()`, which is new.
+- **Migrations and seeders.** `database/migrations` and `database/seeders`
+  are used by `php flo make:migration`, `migrate` and `db:seed`. The users
+  table and the API tables are migrations. On a new site, run
+  `php flo migrate`, then `php flo user:create` for the first admin.
+- **Scheduler.** `config/schedule.php` holds the scheduled tasks for
+  `php flo schedule:run`. The built-in tasks are `api:gc`, log rotation and
+  stale chunked uploads.
+- **Maintenance mode.** `php flo down [--message=] [--retry=] [--allow=IP]`
+  writes `storage/framework/down.json`. `public/index.php` then answers 503
+  (`templates/default/errors/503.html`, with `Retry-After`), and so does
+  `public/api.php` (JSON). Allowed IPs keep access, `/api/v1/health` stays
+  up, and `php flo up` brings the site back (`includes/maintenance.php`).
+- `storage/framework/` holds maintenance and scheduler state (git-ignored).
+
+### Fixed
+- `composer create-project` works on PHP 8.1 again. `composer.lock` is
+  resolved for PHP 8.1 (`config.platform.php`), so it locks PHPUnit 10.5
+  instead of 11, which needs PHP 8.2.
+
+### Quality
+- GitHub Actions: PHP 8.1–8.4 on Linux (all tests) and Windows (unit
+  tests), plus MySQL 8.0 and MariaDB 10.11.
+
+### Upgrading from 1.6
+1. **Composer.** In `composer.json`, require `"hostkurd/flocms-cli": "2.0.0"`
+   and `"hostkurd/flocms-api": "1.2.0"`, add `"App\\Commands\\": "commands/"`
+   to `autoload.psr-4`, and run `composer update`.
+2. **Launcher.** Replace the root `flo` file with this one, a one-time
+   step:
+   ```php
+   #!/usr/bin/env php
+   <?php
+   require __DIR__ . '/vendor/autoload.php';
+   exit(FloCMS\CLI\Kernel::handle(__DIR__, $argv));
+   ```
+   Then delete `support/KeyGenerator.php`.
+3. **Maintenance mode.** Copy `includes/maintenance.php` and
+   `templates/default/errors/503.html`, and the maintenance lines of
+   `public/index.php` and `public/api.php`.
+4. **Optional.**
+   - Copy `commands/LoginUnlockCommand.php` and the `unlockIp()` method of
+     `support/LoginThrottle.php`.
+   - Copy `config/schedule.php` and add the cron job:
+     `* * * * * php /path/to/site/flo schedule:run`.
+5. **Check.** Run `php flo doctor` and `php flo migrate` (the API tables are
+   only recorded when they already exist).
+
+Sites created before 1.6 follow the same steps. Until the `flo` file is
+replaced, `composer update` gives them flocms-cli 1.0.5. Its unknown-command
+message points to these steps.
+
 ## 1.6.0 - Unreleased
 
 Requires `hostkurd/flocms-api` 1.1.0 (pinned to the exact version, like

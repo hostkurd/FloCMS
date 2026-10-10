@@ -69,6 +69,15 @@ final class LoginThrottle
         $this->limiter->clear(self::emailKey($email));
     }
 
+    /**
+     * Unlock a client IP right away (`php flo login:unlock <ip>`): the IP
+     * counter otherwise runs until the window ends.
+     */
+    public function unlockIp(string $ip): void
+    {
+        $this->limiter->clear(self::ipKey($ip));
+    }
+
     private static function ipKey(string $ip): string
     {
         return 'login:ip:' . $ip;

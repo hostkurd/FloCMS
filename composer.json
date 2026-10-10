@@ -9,7 +9,8 @@
       "FloCMS\\Controllers\\": "controllers/",
       "FloCMS\\Models\\": "models/",
       "FloCMS\\Support\\": "support/",
-      "App\\Api\\": "api/"
+      "App\\Api\\": "api/",
+      "App\\Commands\\": "commands/"
     }
   },
 
@@ -25,10 +26,10 @@
   "require": {
     "php": "^8.1",
     "hostkurd/flocms-core": "2.2.0",
-    "hostkurd/flocms-cli": "^1.0",
+    "hostkurd/flocms-cli": "2.0.0",
     "hostkurd/flocms-uploader": "1.2.0",
     "hostkurd/flocms-captcha": "^1.0",
-    "hostkurd/flocms-api": "1.1.0"
+    "hostkurd/flocms-api": "1.2.0"
   },
 
   "scripts": {
@@ -48,6 +49,11 @@
   "autoload-dev": {
     "psr-4": {
       "HostKurd\\Flocms\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "8.1.0"
     }
   }
 }

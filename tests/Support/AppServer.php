@@ -121,9 +121,10 @@ final class AppServer
      *
      * @param list<string> $arguments
      * @param array<string, string> $env
+     * @param string $stdin text written to the command's STDIN
      * @return array{exit: int, output: string}
      */
-    public function flo(array $arguments, array $env = []): array
+    public function flo(array $arguments, array $env = [], string $stdin = ''): array
     {
         $process = proc_open(
             [PHP_BINARY, $this->root . '/flo', ...$arguments],
@@ -132,6 +133,7 @@ final class AppServer
             $this->root,
             array_merge(self::baseEnvironment(), $env)
         );
+        fwrite($pipes[0], $stdin);
         fclose($pipes[0]);
         $output = stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
         fclose($pipes[1]);

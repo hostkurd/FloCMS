@@ -40,6 +40,10 @@ session_start();
 // Load app bootstrap
 require ROOT . '/config/bootstrap.php';
 
+// Maintenance mode (php flo down): 503 for everyone but the allowed IPs
+require_once ROOT . '/includes/maintenance.php';
+flo_maintenance_respond(ROOT, (array) \FloCMS\Core\Config::get('trusted_proxies', []));
+
 App::run($_SERVER['REQUEST_URI']);
 
 if (ob_get_level() > 0) {

@@ -31,8 +31,17 @@ final class DependenciesTest extends TestCase
     {
         $require = self::requirements();
 
-        self::assertSame('1.1.0', $require['hostkurd/flocms-api']);
+        self::assertSame('1.2.0', $require['hostkurd/flocms-api']);
         self::assertSame('^8.1', $require['php']);
+    }
+
+    /**
+     * Release 1.7.0: the CLI is pinned too; the root flo launcher only boots
+     * its kernel, so new commands arrive with the pinned version.
+     */
+    public function testCliPackageIsPinnedExactly(): void
+    {
+        self::assertSame('2.0.0', self::requirements()['hostkurd/flocms-cli']);
     }
 
     public function testApiControllersAreAutoloaded(): void
