@@ -52,7 +52,7 @@ final class LauncherTest extends TestCase
         $result = self::flo(['list', '--no-ansi']);
 
         self::assertSame(0, $result['code'], $result['stderr']);
-        foreach (['key:generate', 'make:controller', 'migrate', 'doctor', 'api:key:create', 'api:install-schema'] as $command) {
+        foreach (['key:generate', 'make:controller', 'migrate', 'doctor', 'api:key:create', 'api:install-schema', 'login:unlock'] as $command) {
             self::assertStringContainsString($command, $result['stdout']);
         }
     }

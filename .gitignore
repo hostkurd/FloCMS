@@ -1,6 +1,8 @@
 /vendor/
 /.env
 /storage/cache/*
+/storage/framework/*
+!/storage/framework/.gitignore
 /views/cache/*
 !/views/cache/.gitignore
 /storage/logs/*
