@@ -1,115 +1,184 @@
 <style>
-    .warning{
-        max-width: 600px;
-        margin: auto;
-        background: #fff3cd; 
-        color: #856404; 
-        border: 1px solid #ffeeba; 
-        padding: 15px; 
-        margin-bottom: 20px; 
-        border-radius: 10px;
-    }
-    .warning code, .db-status code{
-        background: rgba(0,0,0,.06);
-        padding: 1px 4px;
-        border-radius: 4px;
-    }
-    .db-status{
-        max-width: 600px;
-        margin: 20px auto;
-        background: #e8f1fb;
-        color: #1d4f7c;
-        border: 1px solid #c7dcf2;
-        padding: 15px;
-        border-radius: 10px;
-        font-family: Arial, Helvetica, sans-serif;
+    /* Self-contained on purpose: when APP_URL is wrong the theme CSS cannot load,
+       and this page has to look right anyway. */
+    html, body { margin: 0; padding: 0; }
+    .flo-welcome {
+        --bg: #f7f9fb;
+        --card: #ffffff;
+        --text: #1f2a37;
+        --muted: #6b7785;
+        --line: #e5eaf0;
+        --brand: #38bbe0;
+        --ok: #1f9d6b;
+        --warn: #b7791f;
+        --warn-bg: #fdf6e7;
+        --info-bg: #eef7fb;
+        min-height: 100vh;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        padding: 48px 16px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         line-height: 1.5;
+        text-align: center;
     }
-    .db-status.unreachable{
-        background: #fff3cd;
-        color: #856404;
-        border-color: #ffeeba;
+    @media (prefers-color-scheme: dark) {
+        .flo-welcome {
+            --bg: #0f151b;
+            --card: #161e26;
+            --text: #e6edf3;
+            --muted: #8b98a5;
+            --line: #26313c;
+            --warn: #e3b341;
+            --warn-bg: #2a2416;
+            --info-bg: #13232c;
+        }
     }
-    .db-status .title{
-        font-size: 1.1rem;
-        margin: 0 0 8px 0;
+    .flo-welcome *, .flo-welcome *::before, .flo-welcome *::after { box-sizing: border-box; }
+
+    .flo-logo { width: 112px; height: auto; animation: flo-float 6s ease-in-out 1.6s infinite; }
+    .flo-logo path {
+        fill: var(--brand);
+        fill-opacity: 0;
+        stroke: var(--brand);
+        stroke-width: 1.2;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        animation: flo-draw 1.4s ease-out forwards, flo-fill .6s ease-out 1s forwards;
     }
-    .db-status ul{
-        margin: 8px 0 0 0;
-        padding-left: 20px;
+    @keyframes flo-draw { to { stroke-dashoffset: 0; } }
+    @keyframes flo-fill { to { fill-opacity: 1; stroke-width: 0; } }
+    @keyframes flo-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @keyframes flo-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .flo-hero { animation: flo-rise .6s ease-out .5s both; }
+    .flo-hero h1 { margin: 14px 0 4px; font-size: 2.25rem; font-weight: 700; letter-spacing: -.02em; }
+    .flo-hero h1 span { color: var(--brand); }
+    .flo-hero .tagline { margin: 0; color: var(--muted); font-size: 1.05rem; }
+    .flo-hero .version {
+        display: inline-block; margin-top: 12px; padding: 2px 10px;
+        border: 1px solid var(--line); border-radius: 999px;
+        color: var(--muted); font-size: .8rem;
     }
-    .db-status .detail{
-        font-family: Consolas, Monaco, monospace;
-        font-size: 12px;
-        margin-top: 8px;
-        word-break: break-word;
+
+    .flo-panel {
+        width: 100%; max-width: 520px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        text-align: left;
+        animation: flo-rise .6s ease-out .7s both;
     }
-    .warning .title{
-        font-size: 1.4rem;
-        font-family: Arial, Helvetica, sans-serif;
-        margin: 0;
-        margin-bottom: 8px;
+    .flo-panel > div { padding: 18px 22px; }
+    .flo-panel > div + div { border-top: 1px solid var(--line); }
+    .flo-panel .title { margin: 0 0 4px; font-size: 1rem; font-weight: 600; }
+    .flo-panel p { margin: 0; color: var(--muted); font-size: .92rem; }
+    .flo-panel ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: .92rem; }
+    .flo-panel code {
+        font-family: ui-monospace, SFMono-Regular, Consolas, Monaco, monospace;
+        font-size: .85em; background: rgba(127,127,127,.12);
+        padding: 1px 5px; border-radius: 4px; color: var(--text);
+    }
+    .flo-panel .start code { display: inline-block; margin-top: 6px; }
+
+    .flo-panel .warning { background: var(--warn-bg); }
+    .flo-panel .warning .title, .flo-panel .db-status.unreachable .title { color: var(--warn); }
+    .flo-panel .db-status.not-configured { background: var(--info-bg); }
+    .flo-panel .db-status .detail {
+        margin-top: 8px; font-family: ui-monospace, Consolas, monospace;
+        font-size: 12px; word-break: break-word; color: var(--muted);
+    }
+    .flo-panel form { margin: 12px 0 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .flo-btn {
+        appearance: none; border: 0; cursor: pointer;
+        background: var(--brand); color: #fff;
+        font: inherit; font-size: .9rem; font-weight: 600;
+        padding: 8px 14px; border-radius: 8px;
+    }
+    .flo-btn:hover { filter: brightness(.95); }
+    .flo-panel .hint { font-size: .8rem; }
+
+    .flo-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; font-size: .9rem; animation: flo-rise .6s ease-out .9s both; }
+    .flo-links a { color: var(--muted); text-decoration: none; }
+    .flo-links a:hover { color: var(--brand); }
+
+    @media (prefers-reduced-motion: reduce) {
+        .flo-welcome * { animation: none !important; }
+        .flo-logo path { fill-opacity: 1; stroke-width: 0; }
     }
 </style>
-<div class="flo-wrapper">
-    <?php if (!empty($appUrlWarning)): ?>
-        <div class="warning">
-            <h2 class="title">Configuration Warning:</h2>
-            
-            <?= htmlspecialchars($appUrlWarning, ENT_QUOTES, 'UTF-8') ?><br><br>
-            Please update <code>APP_URL</code> in your <code>.env</code> file to:<br>
-            <code><?= htmlspecialchars($suggestedAppUrl ?? '', ENT_QUOTES, 'UTF-8') ?></code>
-        </div>
-    <?php else: ?>
 
-        <div class="flo-card width-500">
-            <?= render_partial('header', ['title' => 'The Most lightweight PHP Framework']) ?>
-            <div class="body">
-                <div class="content">
-                    <h2 class="m-0" style="direction: @lang('lng.dir');">@lang('website.title')</h2>
-                    <p class="m-0 pb-10" style="direction: @lang('lng.dir');">@lang('website.desc')</p>
-                    <p class="m-0">You can Edit this Page...</p>
-                    <p class="m-0">Go to Views/Pages/index.html</p>
-                </div>
-                
-            </div>
-        </div>
-    <?php endif; ?>
+<main class="flo-welcome">
+    <svg class="flo-logo" viewBox="0 0 141.73 116.93" role="img" aria-label="FloCMS logo">
+        <path pathLength="1" d="m120.99,55.48c-.66,3.67-1.16,5.64-1.92,8.43-3.62,13.31-12.44,21.58-25.06,26.27-4.52,1.68-9.23,2.6-14.02,3.31,4.83,1.47,9.71.74,14.85-.08-.54,1.24-1.42,1.56-2.1,2.04-12.2,8.6-25.58,11.2-40.11,7.81-1.35-.32-1.97-.3-1.76,1.36.17,1.3.03,2.64-.14,4.14-3.77-5.13-8.71-8.14-15.1-8.72,4.99-1.77,9.84-3.56,14.47-5.88,10.62-5.32,19.96-12.29,27.55-21.49.28-.34.47-.74.71-1.11.17-.21.35-.42.52-.63.33-.24.57-.53.54-.97.1-.1.21-.2.31-.3l-.2-.16-.16.43c-.44.05-.62.39-.81.72-.18.19-.37.38-.55.57-6.58,6.51-13.9,12.01-22.1,16.32-9.69,5.09-19.97,8.32-30.87,9.52-1.51.17-3.02.31-4.54.44-.36.03-.85.04-.84-.48,0-.22.35-.56.6-.63.79-.22,1.61-.32,2.42-.5,9.77-2.2,13.8-13.53,7.61-21.41-.49-.62-1.09-1.18-1.21-2.25,3.24,1.18,5.74,3.2,8.38,4.98.04.02.09.03.13.05-.05,0-.1-.02-.16-.02.15-3.73-.23-7.46.33-11.2,1.25-8.43,4.52-15.93,9.94-22.5.28-.34.59-.67.91-.97.22-.21.47-.48.83-.3.35.17.29.54.25.83-.17,1.32-.39,2.63-.56,3.95-.56,4.33-.13,8.61.73,12.86.04.22.2.42.51,1.02.24-7.55,1.26-14.54,3.1-21.4,1.77-6.59,4.27-12.86,8.18-18.51,6.9-9.97,16.4-14.05,28.3-12.22,15.56,2.39,24.55,12.15,29.04,26.66.83,2.69,1.31,5.48,1.95,8.22.66,3.61.66,7.57,0,11.82Z"/>
+    </svg>
 
-    <?php if (!empty($dbStatus) && !$dbStatus['configured']): ?>
-        <div class="db-status not-configured">
-            <h2 class="title">Database: not configured</h2>
-            This page works without a database. When you need one:
-            <ul>
-                <li>Create a database (e.g. in phpMyAdmin).</li>
-                <li>Set <code>DB_NAME</code>, <code>DB_USERNAME</code> and <code>DB_PASSWORD</code> in your <code>.env</code> file
-                    (XAMPP default: <code>root</code> with an empty password).</li>
-            </ul>
-        </div>
-    <?php elseif (!empty($dbStatus) && !$dbStatus['connected']): ?>
-        <div class="db-status unreachable">
-            <h2 class="title">Database: not reachable</h2>
-            <?= htmlspecialchars((string) $dbStatus['message'], ENT_QUOTES, 'UTF-8') ?>
-            <ul>
-                <?php if ($dbStatus['reason'] === 'server_unavailable'): ?>
-                    <li>Start MySQL/MariaDB (in XAMPP: start <b>MySQL</b> in the Control Panel).</li>
-                    <li>Check <code>DB_HOST</code> and <code>DB_PORT</code> in <code>.env</code>.</li>
-                <?php elseif ($dbStatus['reason'] === 'unknown_database'): ?>
-                    <li>Create the database named in <code>DB_NAME</code>, or correct the name in <code>.env</code>.</li>
+    <div class="flo-hero">
+        <h1>Flo<span>CMS</span></h1>
+        <p class="tagline">The Most lightweight PHP Framework</p>
+        <span class="version">v<?= htmlspecialchars((string) \FloCMS\Core\Env::get('APP_VERSION'), ENT_QUOTES, 'UTF-8') ?></span>
+    </div>
+
+    <section class="flo-panel">
+        <?php if (!empty($appUrlWarning)): ?>
+            <div class="warning">
+                <h2 class="title">APP_URL needs updating</h2>
+                <p><?= htmlspecialchars($appUrlWarning, ENT_QUOTES, 'UTF-8') ?>
+                    Links and theme assets use <code>APP_URL</code>, so they will not load until it matches.</p>
+                <?php if (!empty($canFixAppUrl)): ?>
+                    <form method="post">
+                        @csrf
+                        <input type="hidden" name="action" value="fix_app_url">
+                        <button type="submit" class="flo-btn">Use <?= htmlspecialchars($suggestedAppUrl ?? '', ENT_QUOTES, 'UTF-8') ?></button>
+                        <span class="hint">Updates <code>.env</code> for you (local only).</span>
+                    </form>
                 <?php else: ?>
-                    <li>Check <code>DB_USERNAME</code> and <code>DB_PASSWORD</code> in <code>.env</code>, and that the user can access <code>DB_NAME</code>.</li>
+                    <p style="margin-top:8px">Set <code>APP_URL</code> in your <code>.env</code> file to:
+                        <code><?= htmlspecialchars($suggestedAppUrl ?? '', ENT_QUOTES, 'UTF-8') ?></code></p>
                 <?php endif; ?>
-            </ul>
-            <?php if (!empty($showDbDetail) && !empty($dbStatus['detail'])): ?>
-                <div class="detail"><?= htmlspecialchars((string) $dbStatus['detail'], ENT_QUOTES, 'UTF-8') ?></div>
-            <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($dbStatus) && !$dbStatus['configured']): ?>
+            <div class="db-status not-configured">
+                <h2 class="title">Database: not configured</h2>
+                <p>Optional. This page works without one. When you need it, create a database and set
+                    <code>DB_NAME</code>, <code>DB_USERNAME</code> and <code>DB_PASSWORD</code> in <code>.env</code>
+                    (XAMPP default: <code>root</code>, empty password).</p>
+            </div>
+        <?php elseif (!empty($dbStatus) && !$dbStatus['connected']): ?>
+            <div class="db-status unreachable">
+                <h2 class="title">Database: not reachable</h2>
+                <p><?= htmlspecialchars((string) $dbStatus['message'], ENT_QUOTES, 'UTF-8') ?></p>
+                <ul>
+                    <?php if ($dbStatus['reason'] === 'server_unavailable'): ?>
+                        <li>Start MySQL/MariaDB (in XAMPP: start <b>MySQL</b> in the Control Panel).</li>
+                        <li>Check <code>DB_HOST</code> and <code>DB_PORT</code> in <code>.env</code>.</li>
+                    <?php elseif ($dbStatus['reason'] === 'unknown_database'): ?>
+                        <li>Create the database named in <code>DB_NAME</code>, or correct the name in <code>.env</code>.</li>
+                    <?php else: ?>
+                        <li>Check <code>DB_USERNAME</code> and <code>DB_PASSWORD</code> in <code>.env</code>, and that the user can access <code>DB_NAME</code>.</li>
+                    <?php endif; ?>
+                </ul>
+                <?php if (!empty($showDbDetail) && !empty($dbStatus['detail'])): ?>
+                    <div class="detail"><?= htmlspecialchars((string) $dbStatus['detail'], ENT_QUOTES, 'UTF-8') ?></div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="start">
+            <h2 class="title" style="direction: @lang('lng.dir');">Get started</h2>
+            <p>Edit this page in <code>views/pages/index.html</code></p>
         </div>
-    <?php endif; ?>
-</div>
+    </section>
 
-<div>
-    <form method="post">
-        @csrf
-    </form>
-
-</div>
+    <nav class="flo-links">
+        <a href="https://flocms.com" target="_blank" rel="noopener">Website</a>
+        <a href="https://github.com/hostkurd/flocms" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+</main>
