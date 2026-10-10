@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8a0bce5faa52766877ae867055034bd",
+    "content-hash": "ff577a16c14a5ff2b7aa173c41c46a14",
     "packages": [
         {
             "name": "hostkurd/flocms-api",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-api.git",
-                "reference": "b5acb83afcab0993a1918d4ccb6399ffeba07508"
+                "reference": "e2b53ff75c3f5ce37b922279185c1bda188118bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-api/zipball/b5acb83afcab0993a1918d4ccb6399ffeba07508",
-                "reference": "b5acb83afcab0993a1918d4ccb6399ffeba07508",
+                "url": "https://api.github.com/repos/hostkurd/flocms-api/zipball/e2b53ff75c3f5ce37b922279185c1bda188118bd",
+                "reference": "e2b53ff75c3f5ce37b922279185c1bda188118bd",
                 "shasum": ""
             },
             "require": {
@@ -26,12 +26,20 @@
                 "psr/log": "^1.1 || ^2.0 || ^3.0"
             },
             "require-dev": {
+                "hostkurd/flocms-uploader": "1.2.0",
                 "phpunit/phpunit": "^10.5 || ^11.0"
             },
+            "suggest": {
+                "ext-apcu": "Faster rate limiting with ApcuRateLimiter.",
+                "hostkurd/flocms-uploader": "Uploads through the API (Uploads\\HandlesUploads), 1.2+ for chunked uploads."
+            },
+            "bin": [
+                "bin/flo-api"
+            ],
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.0-dev"
+                    "dev-main": "1.1-dev"
                 }
             },
             "autoload": {
@@ -51,9 +59,9 @@
             "description": "Optional modern API runtime for Flo Framework: explicit routing, middleware, JSON errors, CORS, authentication contracts, and rate limiting.",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-api/issues",
-                "source": "https://github.com/hostkurd/flocms-api/tree/v1.0.0"
+                "source": "https://github.com/hostkurd/flocms-api/tree/v1.1.0"
             },
-            "time": "2026-07-25T08:31:01+00:00"
+            "time": "2026-10-10T07:58:01+00:00"
         },
         {
             "name": "hostkurd/flocms-captcha",
@@ -2079,7 +2087,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": "^8.1"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
