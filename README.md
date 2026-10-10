@@ -29,6 +29,28 @@ To Create a new project, install it via Composer:
 composer create-project hostkurd/flocms
 ```
 
+## API (recommended: /api/v1)
+
+Build APIs in `api/routes.php`; `public/api.php` serves them under `/api`
+using `hostkurd/flocms-api`:
+
+```php
+return static function (Router $router): void {
+    $router->get('/v1/health', static fn (): array => ['status' => 'ok']);
+    $router->get('/v1/listings/{id}', [ListingsApiController::class, 'show']);
+};
+```
+
+`GET /api/v1/health` returns `{"success":true,"data":{"status":"ok"}}`. Requests get JSON
+errors, security headers, CORS for the origins in `API_CORS_ORIGINS`, and are
+rate limited per IP (`API_RATE_LIMIT` per minute). The API path has no session
+and no CSRF check: protect private routes with
+`FloCMS\Api\Middleware\AuthenticateMiddleware`.
+
+The old `/api/<controller>/<action>` route (methods prefixed `api_`) still
+works, but it skips CSRF checks and has no authentication. It is deprecated;
+move endpoints to `api/routes.php`.
+
 ## Permissions (flocms-core 2.1+)
 
 Admin panel access is controlled by roles and permissions. `config/config.php` maps each role to its permissions:
@@ -61,6 +83,71 @@ User management only lets you assign roles up to your own, and only edit, delete
 
 Until step 2 is done, the site behaves exactly as before (any role with admin access can do everything).
 Role changes take effect on the user's next login.
+
+## Upgrading to 1.5 (flocms-core 2.2)
+
+FloCMS 1.5 requires `hostkurd/flocms-core` `2.2.0`. Versions are pinned exactly,
+so each site upgrades when you choose. Copy the changes below into an existing
+site as needed; see `CHANGELOG.md` for the details.
+
+### Fresh install without a database
+1. In `composer.json`, require `"hostkurd/flocms-core": "2.2.0"` and run `composer update hostkurd/flocms-core`.
+2. Add `Config::set('db.port', Env::get('DB_PORT', 3306));` to `config/config.php`.
+3. Copy `templates/default/errors/nodbserver.html` and `dberror.html`. They receive
+   `$message`, `$errorCode` and, in debug mode only, `$detail`.
+4. Optional: copy the lazy `model()` helper from `controllers/PagesController.php`
+   and the database card from `views/pages/index.html`.
+
+Models now connect on first query, so controllers that create a model in their
+constructor no longer fail when the database is down until they actually query it.
+
+### Session freshness and login throttling
+1. Add `"FloCMS\\Support\\": "support/"` to `autoload.psr-4` in `composer.json`, copy
+   `support/LoginThrottle.php`, and run `composer dump-autoload`.
+2. In `controllers/UsersController.php` (`admin_login`), copy the `LoginThrottle` block,
+   the `clientIp()` method, `$throttle->clear($email)` and `Session::set('user_id', ...)`.
+3. Copy the `auth.user_loader`, `login_throttle` and `trusted_proxies` settings from
+   `config/config.php`, and add `TRUSTED_PROXIES=` to `.env`.
+4. Copy the `auth.*` strings from `lang/en.php`.
+5. Make sure `storage/cache` is writable and ignored by git (see `.gitignore`).
+
+Users who are logged in when you deploy this are logged out once (their
+session has no `user_id` yet).
+
+### Template cache
+Templates are compiled to `views/cache/` automatically. Make sure the web
+server can write to it, keep it out of git (copy `views/cache/.gitignore`), and
+delete old files such as `views/cache/pages_index.php`. Set
+`Config::set('view.cache_path', ...)` to use another directory.
+
+### API, APP_KEY and CSRF
+1. Copy `public/api.php` and `api/routes.php`, and add the `api/v1` rule from
+   `public/.htaccess` above the `index.php` rule. Add `API_CORS_ORIGINS=` and
+   `API_RATE_LIMIT=60` to `.env`.
+2. If your `.env` still has the `APP_KEY` that older skeletons shipped
+   (`base64:YFHTnSHarB6...`), copy the new `flo` file and `support/KeyGenerator.php`,
+   then run `php flo key:generate --force`. Nothing uses `APP_KEY` yet, so
+   replacing it is safe.
+3. Add `<meta name="csrf-token" ...>` and the `js/csrf.js` script from
+   `templates/default/layouts/admin.html` to your admin layout, copy
+   `public/themes/default/js/csrf.js`, and put `@csrf` in every POST form.
+
+### Uploads (flocms-uploader 1.2)
+Require `"hostkurd/flocms-uploader": "1.2.0"`. Video uploads
+(`Uploader::video()`) and chunked uploads (`->chunked()`) are new and opt-in;
+see the uploader README for the `video` and `chunks` config sections. Keep the
+chunk directory outside `public/` (e.g. `storage/uploads/.chunks`).
+
+## Running the tests
+
+```bash
+composer install
+composer test
+```
+
+Tests that need MySQL/MariaDB are skipped unless `FLO_TEST_MYSQL_HOST` is set
+(also `FLO_TEST_MYSQL_PORT`, `_USER`, `_PASS`, `_NAME`; default database
+`flocms_test`).
 
 # Security Vulnerabilities
 If you discover a security vulnerability within FLoCMS, please send an e-mail to Dev Team via [dev@flocms.com](mailto:dev@flocms.com). All security vulnerabilities will be promptly addressed.

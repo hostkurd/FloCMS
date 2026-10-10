@@ -8,8 +8,11 @@ use FloCMS\Core\Controller;
 use FloCMS\Core\Env;
 use FloCMS\Core\HttpException;
 use FloCMS\Core\Router;
+use FloCMS\Api\Security\ClientIpResolver;
+use FloCMS\Core\Lang;
 use FloCMS\Core\Session;
 use FloCMS\Models\UsersModel;
+use FloCMS\Support\LoginThrottle;
 
 class UsersController extends Controller
 {
@@ -86,6 +89,23 @@ class UsersController extends Controller
             return;
         }
 
+        // Brute-force protection: checked before the password is looked at
+        $throttle = LoginThrottle::fromConfig();
+        $wait = $throttle->attempt($this->clientIp(), $email);
+
+        if ($wait > 0) {
+            http_response_code(429);
+            Session::setFlash(
+                Lang::get(
+                    'auth.throttled',
+                    'Too many login attempts. Please try again in :minutes minute(s).',
+                    ['minutes' => (int) ceil($wait / 60)]
+                ),
+                'danger'
+            );
+            return;
+        }
+
         $user = $this->model->getByEmail($email);
 
         if (!$user) {
@@ -115,9 +135,11 @@ class UsersController extends Controller
                 return;
 
             case 1:
+                $throttle->clear($email);
                 session_regenerate_id(true);
 
                 Session::set('admin_access', false);
+                Session::set('user_id', (int) $user['id']);
                 Session::set('role', $user['role'] ?? null);
                 Session::set('username', $user['login'] ?? null);
                 Session::set('email', $user['email'] ?? null);
@@ -149,6 +171,17 @@ class UsersController extends Controller
                 Session::setFlash('Login failed.<br>Unknown account status.', 'danger');
                 return;
         }
+    }
+
+    /**
+     * Client IP for login throttling. Behind a reverse proxy, list it in
+     * Config 'trusted_proxies' (TRUSTED_PROXIES in .env) so X-Forwarded-For is used.
+     */
+    private function clientIp(): string
+    {
+        $proxies = array_values(array_filter(array_map('trim', (array) Config::get('trusted_proxies', []))));
+
+        return (new ClientIpResolver($proxies))->resolve($this->request);
     }
 
     public function admin_logout(): void

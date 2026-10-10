@@ -1,9 +1,12 @@
 /vendor/
 /.env
-/Storage/cache/*
+/storage/cache/*
 /views/cache/*
-/Storage/logs/*
+!/views/cache/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
+/.phpunit.cache/

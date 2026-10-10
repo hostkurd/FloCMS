@@ -20,6 +20,7 @@
 
     // Database Parameters
     Config::set('db.host', Env::get('DB_HOST', 'localhost'));
+    Config::set('db.port', Env::get('DB_PORT', 3306));
     Config::set('db.name', Env::get('DB_NAME', null));
     Config::set('db.user', Env::get('DB_USERNAME', null));
     Config::set('db.pass', Env::get('DB_PASSWORD', null));
@@ -41,3 +42,17 @@
         2 => array('content.*', 'users.manage', 'users.assign_role', 'settings.*'),
         3 => array('*'),
     ));
+
+    // Reload role/status from the database on every admin request (requires flocms-core 2.2+),
+    // so suspended or demoted users lose access immediately.
+    Config::set('auth.user_loader', static fn (int $id) => (new \FloCMS\Models\UsersModel())->getByID($id));
+
+    // Admin login brute-force protection (attempts per 15 minutes)
+    Config::set('login_throttle', array(
+        'max_per_ip'    => 20,
+        'max_per_email' => 5,
+        'window'        => 900,
+    ));
+
+    // Reverse proxies whose X-Forwarded-For header is trusted (IPs or CIDR ranges)
+    Config::set('trusted_proxies', array_filter(array_map('trim', explode(',', (string) Env::get('TRUSTED_PROXIES', '')))));

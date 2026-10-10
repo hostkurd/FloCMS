@@ -14,6 +14,9 @@ return array(
     'page.notfound.short' => 'The page you are trying to access could not be found.',
     // 403 Page String
     'page.forbidden' => '403 - Access Denied',
-    'page.forbidden.short' => 'You do not have permission to access this page.'
+    'page.forbidden.short' => 'You do not have permission to access this page.',
+    // Admin login
+    'auth.session_ended' => 'Your session has ended. Please log in again.',
+    'auth.throttled' => 'Too many login attempts. Please try again in :minutes minute(s).',
     // Put Your Translation Phraces
 );

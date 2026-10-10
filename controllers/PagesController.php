@@ -1,19 +1,21 @@
 <?php
 namespace FloCMS\Controllers;
 
+use FloCMS\Core\App;
 use FloCMS\Core\Controller;
 use FloCMS\Models\PagesModel;
 use FloCMS\Core\AppUrlValidator;
 use FloCMS\Core\Env;
-//use HostKurd\Flocms\Models\UsersModel;
 
 class PagesController extends Controller{
-    public function __construct(array $data = array())
+
+    /**
+     * Created on first use, so pages that never query the database (like the
+     * welcome page) work before a database is set up.
+     */
+    protected function model(): PagesModel
     {
-        parent::__construct($data);
-        
-        //Warning: Database should be configured in order to use Model
-        $this->model = new PagesModel();
+        return $this->model ??= new PagesModel();
     }
 
     public function index(){ 
@@ -27,6 +29,10 @@ class PagesController extends Controller{
             $this->data['appUrlWarning'] = $mismatch['message'];
             $this->data['suggestedAppUrl'] = AppUrlValidator::getSuggestedUrl($_SERVER);
         }
+
+        // Shown as a setup card on the welcome page; the driver detail only in debug mode
+        $this->data['dbStatus'] = App::dbStatus();
+        $this->data['showDbDetail'] = Env::get('APP_DEBUG') === true;
         
         // $name = \HostKurd\Flocms\Lib\Input::str($this->request->input('name'));
         // $age  = \HostKurd\Flocms\Lib\Input::int($this->request->input('age'));
