@@ -133,7 +133,7 @@ final class ApiFeaturesTest extends TestCase
         }
     }
 
-    public function testFloForwardsApiCommands(): void
+    public function testFloRunsApiCommands(): void
     {
         $list = self::$server->flo(['api:list']);
         self::assertSame(0, $list['exit'], $list['output']);
