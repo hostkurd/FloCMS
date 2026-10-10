@@ -13,6 +13,8 @@ FloCMS is a web application framework with expressive, elegant syntax. We believ
 **Table of Contents**
 - [Features](#features)
 - [Installation](#installation)
+- [Command line (php flo)](#command-line-php-flo)
+- [API](#api-recommended-apiv1)
 
 ## Features
 
@@ -28,6 +30,58 @@ To Create a new project, install it via Composer:
 ```bash
 composer create-project hostkurd/flocms
 ```
+
+## Command line (php flo)
+
+`php flo` runs [flocms-cli](https://github.com/hostkurd/flocms-cli). The `flo`
+file in the project root only boots the CLI from `vendor/`, so
+`composer update` brings new commands and fixes.
+
+```bash
+php flo                                   # every command, grouped
+php flo help make:controller              # usage, arguments, options, examples
+php flo doctor                            # check the installation (PHP, extensions, permissions, .env, database)
+php flo make:route Blog                   # controller + model + view
+php flo make:migration create_posts_table && php flo migrate
+php flo user:create --role=super-admin    # create the first admin
+php flo down --allow=203.0.113.7 && php flo up
+php flo route:list                        # web and /api/v1 routes with permissions
+```
+
+**Commands by area:**
+
+| Area | Commands |
+|---|---|
+| Generators | `make:controller`, `make:model`, `make:view`, `make:route`, `make:api-controller`, `make:resource`, `make:middleware`, `make:request`, `make:migration`, `make:seeder`, `make:command`, `make:test`, `make:module` (all with `--dry-run` and `--force`); `delete:*` |
+| Database | `migrate`, `migrate:status`, `migrate:rollback`, `migrate:fresh`, `db:seed`, `db:show`, `db:check` |
+| Application | `about`, `doctor`, `key:generate`, `env:check`, `serve`, `down` / `up` |
+| Cache | `cache:clear`, `view:clear`, `optimize`, `optimize:clear` |
+| Inspection | `route:list`, `permission:list` |
+| Users | `user:create`, `user:password`, `user:role`, `user:suspend`, `user:unsuspend`, `user:list`, `login:unlock` |
+| Translations | `lang:missing`, `lang:add` |
+| Scheduler | `schedule:run`, `schedule:list` |
+| Logs | `log:tail`, `log:clear`, `log:rotate`, `storage:check` |
+| API | `api:*`, from flocms-api |
+| Other | `completion` |
+
+**Exit codes:** 0 success, 1 failure, 2 invalid usage. Errors go to STDERR,
+so scripts and cron jobs can rely on them.
+
+**Your own commands.** Classes in `commands/` (namespace `App\Commands`) are
+commands too. `commands/LoginUnlockCommand.php` (`php flo login:unlock
+<email|ip>`) is an example; `php flo make:command` creates a new one.
+
+**Scheduler.** One cron job runs the tasks in `config/schedule.php`. In cPanel,
+use Cron Jobs → Once Per Minute:
+
+```
+* * * * * php /home/USER/site/flo schedule:run >> /dev/null 2>&1
+```
+
+**Maintenance mode.** `php flo down` makes the site and the API answer 503
+until `php flo up`. Pass `--allow=YOUR.IP` to keep access yourself.
+
+See the flocms-cli README for every option.
 
 ## API (recommended: /api/v1)
 
@@ -67,7 +121,7 @@ The examples show validation (`ContactController`), pagination with filters
 and sorting, and a resource that keeps the password and token columns out of
 responses (`UsersController`, `UserResource`).
 
-Commands (`php flo api:list`):
+Commands (`php flo list api`):
 
 ```bash
 php flo api:install-schema                     # tables for tokens, API keys, idempotency
@@ -158,9 +212,9 @@ delete old files such as `views/cache/pages_index.php`. Set
    `public/.htaccess` above the `index.php` rule. Add `API_CORS_ORIGINS=` and
    `API_RATE_LIMIT=60` to `.env`.
 2. If your `.env` still has the `APP_KEY` that older skeletons shipped
-   (`base64:YFHTnSHarB6...`), copy the new `flo` file and `support/KeyGenerator.php`,
-   then run `php flo key:generate --force`. Nothing uses `APP_KEY` yet, so
-   replacing it is safe.
+   (`base64:YFHTnSHarB6...`), run `php flo key:generate --force` (with the
+   1.7 launcher, see the CHANGELOG). Nothing uses `APP_KEY` yet, so replacing
+   it is safe.
 3. Add `<meta name="csrf-token" ...>` and the `js/csrf.js` script from
    `templates/default/layouts/admin.html` to your admin layout, copy
    `public/themes/default/js/csrf.js`, and put `@csrf` in every POST form.

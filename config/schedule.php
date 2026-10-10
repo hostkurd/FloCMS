@@ -12,7 +12,7 @@ use FloCMS\CLI\Scheduling\Schedule;
  */
 return static function (Schedule $schedule): void {
     // Built-in housekeeping: api:gc (stale API rate-limit and idempotency
-    // state), log rotation, and abandoned chunked uploads in storage/uploads/chunks.
+    // state), log rotation, and abandoned chunked uploads in storage/uploads/.chunks.
     $schedule->defaults();
 
     // Your tasks, e.g.:
