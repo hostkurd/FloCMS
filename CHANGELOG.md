@@ -34,6 +34,11 @@ to exact versions, like core and uploader).
   up, and `php flo up` brings the site back (`includes/maintenance.php`).
 - `storage/framework/` holds maintenance and scheduler state (git-ignored).
 
+### Fixed
+- `composer create-project` works on PHP 8.1 again. `composer.lock` is
+  resolved for PHP 8.1 (`config.platform.php`), so it locks PHPUnit 10.5
+  instead of 11, which needs PHP 8.2.
+
 ### Quality
 - GitHub Actions: PHP 8.1–8.4 on Linux (all tests) and Windows (unit
   tests), plus MySQL 8.0 and MariaDB 10.11.

@@ -50,5 +50,10 @@
     "psr-4": {
       "HostKurd\\Flocms\\Tests\\": "tests/"
     }
+  },
+  "config": {
+    "platform": {
+      "php": "8.1.0"
+    }
   }
 }
