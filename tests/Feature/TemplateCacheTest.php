@@ -31,8 +31,8 @@ final class TemplateCacheTest extends TestCase
         sort($compiled);
         self::assertCount(3, $compiled, implode(', ', $compiled));
         self::assertMatchesRegularExpression('/^default_/', $compiled[0]);   // layout
-        self::assertMatchesRegularExpression('/^header_/', $compiled[1]);    // partial
-        self::assertMatchesRegularExpression('/^index_/', $compiled[2]);     // view
+        self::assertMatchesRegularExpression('/^index_/', $compiled[1]);     // view
+        self::assertMatchesRegularExpression('/^logo_/', $compiled[2]);      // partial
 
         $second = $this->server->get('/');
         self::assertSame($first['body'], $second['body']);
