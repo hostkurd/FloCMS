@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.7.2 - 2026-10-10
 
 ### Fixed
 - Requires `hostkurd/flocms-cli` 2.0.1, which fixes the hidden password
