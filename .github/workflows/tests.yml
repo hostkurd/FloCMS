@@ -33,26 +33,12 @@ jobs:
           coverage: none
           tools: composer:v2
 
-      # Exact pins are intended (--no-check-all); the lock is checked below
-      - name: Validate composer.json
-        run: composer validate --strict --no-check-all --no-check-lock
-
-      # Until flocms-cli 2.0.0 and flocms-api 1.2.0 are on Packagist, use their
-      # release branches. Once they are tagged this step does nothing.
-      - name: Use unreleased framework packages
-        shell: bash
-        run: .github/unreleased-packages.sh
+      # Exact pins are intended (--no-check-all)
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict --no-check-all
 
       - name: Install dependencies
-        shell: bash
-        run: |
-          if composer validate --strict --no-check-all --no-check-publish --no-interaction > /dev/null 2>&1; then
-            composer install --no-interaction --no-progress --prefer-dist
-          else
-            composer update --no-interaction --no-progress --prefer-dist
-          fi
-          # The tests check the exact pins in composer.json
-          git checkout -- composer.json
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Lint
         shell: bash
@@ -114,17 +100,8 @@ jobs:
           coverage: none
           tools: composer:v2
 
-      - name: Use unreleased framework packages
-        run: .github/unreleased-packages.sh
-
       - name: Install dependencies
-        run: |
-          if composer validate --strict --no-check-all --no-check-publish --no-interaction > /dev/null 2>&1; then
-            composer install --no-interaction --no-progress --prefer-dist
-          else
-            composer update --no-interaction --no-progress --prefer-dist
-          fi
-          git checkout -- composer.json
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run the tests against ${{ matrix.db.name }}
         env:
