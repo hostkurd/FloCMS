@@ -1,0 +1,136 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, 'release/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  phpunit:
+    name: PHP ${{ matrix.php }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        php: ['8.1', '8.2', '8.3', '8.4']
+
+    steps:
+      - name: Keep LF line endings on Windows
+        run: git config --global core.autocrlf false
+
+      - uses: actions/checkout@v4
+
+      # The extensions FloCMS requires on shared hosting, plus pdo_sqlite and
+      # curl for the tests.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo, pdo_mysql, pdo_sqlite, mbstring, fileinfo, gd, curl
+          coverage: none
+          tools: composer:v2
+
+      # Exact pins are intended (--no-check-all); the lock is checked below
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-all --no-check-lock
+
+      # Until flocms-cli 2.0.0 and flocms-api 1.2.0 are on Packagist, use their
+      # release branches. Once they are tagged this step does nothing.
+      - name: Use unreleased framework packages
+        shell: bash
+        run: .github/unreleased-packages.sh
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if composer validate --strict --no-check-all --no-check-publish --no-interaction > /dev/null 2>&1; then
+            composer install --no-interaction --no-progress --prefer-dist
+          else
+            composer update --no-interaction --no-progress --prefer-dist
+          fi
+          # The tests check the exact pins in composer.json
+          git checkout -- composer.json
+
+      - name: Lint
+        shell: bash
+        run: |
+          php -l flo > /dev/null
+          find api commands config controllers includes models public support tests -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Smoke test the flo launcher
+        shell: bash
+        run: |
+          php flo list > /dev/null
+          php flo api:list > /dev/null
+          set +e
+          php flo no-such-command 2> /dev/null
+          code=$?
+          set -e
+          test "$code" = "1" || { echo "unknown command exited with $code, expected 1"; exit 1; }
+
+      # The feature tests run copies of the site under PHP's built-in server
+      # and symlink vendor/, so Windows runs the unit tests.
+      - name: Run tests
+        if: runner.os == 'Linux'
+        run: vendor/bin/phpunit
+
+      - name: Run unit tests
+        if: runner.os == 'Windows'
+        run: vendor/bin/phpunit --testsuite unit
+
+  mysql:
+    name: ${{ matrix.db.name }} (PHP 8.3)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        db:
+          - { name: 'MariaDB 10.11', image: 'mariadb:10.11' }
+          - { name: 'MySQL 8.0', image: 'mysql:8.0' }
+
+    services:
+      db:
+        image: ${{ matrix.db.image }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MARIADB_ROOT_PASSWORD: root
+          MYSQL_DATABASE: flocms_test
+          MARIADB_DATABASE: flocms_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot || mariadb-admin ping -h 127.0.0.1 -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo, pdo_mysql, pdo_sqlite, mbstring, fileinfo, gd, curl
+          coverage: none
+          tools: composer:v2
+
+      - name: Use unreleased framework packages
+        run: .github/unreleased-packages.sh
+
+      - name: Install dependencies
+        run: |
+          if composer validate --strict --no-check-all --no-check-publish --no-interaction > /dev/null 2>&1; then
+            composer install --no-interaction --no-progress --prefer-dist
+          else
+            composer update --no-interaction --no-progress --prefer-dist
+          fi
+          git checkout -- composer.json
+
+      - name: Run the tests against ${{ matrix.db.name }}
+        env:
+          FLO_TEST_MYSQL_HOST: 127.0.0.1
+          FLO_TEST_MYSQL_PORT: 3306
+          FLO_TEST_MYSQL_USER: root
+          FLO_TEST_MYSQL_PASS: root
+          FLO_TEST_MYSQL_NAME: flocms_test
+        run: vendor/bin/phpunit
