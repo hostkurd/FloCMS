@@ -51,6 +51,7 @@ if (!file_exists($vendor)) {
 require_once $vendor;
 
 require ROOT . '/config/bootstrap.php';
+require_once ROOT . '/includes/maintenance.php';
 
 $debug = Env::get('APP_DEBUG') === true;
 $logger = new Logger(ROOT . '/storage/logs/api.log');
@@ -62,6 +63,7 @@ if (str_ends_with($basePath, '/public')) {
     $basePath = substr($basePath, 0, -7);
 }
 
+$maintenance = flo_maintenance(ROOT);
 $container = new Container();
 $clientIp = new ClientIpResolver(array_values((array) Config::get('trusted_proxies', [])));
 
@@ -114,10 +116,14 @@ $kernel->middleware([
     new SecurityHeadersMiddleware(),
     new ExceptionMiddleware(debug: $debug, logger: $logger),
     new CorsMiddleware($csv(Env::get('API_CORS_ORIGINS', ''))),
+    // `php flo down` (storage/framework/down.json) or the offline_mode setting
     new MaintenanceMiddleware(
-        allowedIps: $csv(Env::get('API_MAINTENANCE_ALLOWED_IPS', '')),
+        isDown: static fn (): bool => $maintenance !== null || (string) Config::getSetting('offline_mode', '0') === '1',
+        allowedIps: array_values(array_unique([...$csv(Env::get('API_MAINTENANCE_ALLOWED_IPS', '')), ...($maintenance['allow'] ?? [])])),
+        retryAfter: $maintenance['retry'] ?? 600,
         clientIp: $clientIp,
-        bypass: static fn (Request $request): bool => str_ends_with($request->path(), '/v1/health')
+        bypass: static fn (Request $request): bool => str_ends_with($request->path(), '/v1/health'),
+        message: $maintenance['message'] ?? 'The site is under maintenance. Please try again later.'
     ),
     new LocaleMiddleware($csv(implode(',', (array) Config::get('languages', []))) ?: ['en'], (string) Config::get('default_language', 'en')),
     new RateLimitMiddleware(
