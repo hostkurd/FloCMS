@@ -47,11 +47,11 @@ final class AppServer
     }
 
     /**
-     * @param array<string, string> $data form fields (POST)
+     * @param array<string, string>|string $data form fields (POST), or a raw body for any method
      * @param array<string, string> $headers
      * @return array{status: int, headers: array<string, string>, body: string}
      */
-    public function request(string $method, string $path, array $data = [], array $headers = []): array
+    public function request(string $method, string $path, array|string $data = [], array $headers = []): array
     {
         $ch = curl_init('http://127.0.0.1:' . $this->port . $path);
         $headerLines = ['Host: localhost'];
@@ -72,7 +72,9 @@ final class AppServer
             CURLOPT_NOPROXY => '*',
         ]);
 
-        if ($method === 'POST') {
+        if (is_string($data)) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        } elseif ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         }
 
@@ -100,6 +102,42 @@ final class AppServer
     public function get(string $path): array
     {
         return $this->request('GET', $path);
+    }
+
+    /**
+     * Send a JSON body.
+     *
+     * @param array<string, mixed> $data
+     * @param array<string, string> $headers
+     * @return array{status: int, headers: array<string, string>, body: string}
+     */
+    public function json(string $method, string $path, array $data, array $headers = []): array
+    {
+        return $this->request($method, $path, (string) json_encode($data), $headers + ['Content-Type' => 'application/json']);
+    }
+
+    /**
+     * Run `php flo ...` in this copy of the skeleton.
+     *
+     * @param list<string> $arguments
+     * @param array<string, string> $env
+     * @return array{exit: int, output: string}
+     */
+    public function flo(array $arguments, array $env = []): array
+    {
+        $process = proc_open(
+            [PHP_BINARY, $this->root . '/flo', ...$arguments],
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $pipes,
+            $this->root,
+            array_merge(self::baseEnvironment(), $env)
+        );
+        fclose($pipes[0]);
+        $output = stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+
+        return ['exit' => proc_close($process), 'output' => (string) $output];
     }
 
     public function forgetCookies(): void

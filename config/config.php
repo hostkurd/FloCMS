@@ -4,12 +4,19 @@
     Config::set('Standalone_Pages',array('users/verify'));
 
     // Routes. Route name => method prefix
-    Config::set('routes',array(
+    $routes = array(
         'default'=>'',
         'admin'=>'admin_',
-        'api'=>'api_',
-        'login'=>'login_'
-    ));
+    );
+    // Legacy /api/<controller>/<action> route (api_ methods). It skips CSRF checks
+    // and has no authentication, so it is off unless LEGACY_API=true in .env.
+    // New APIs belong in api/routes.php (served under /api/v1 by public/api.php).
+    if (Env::get('LEGACY_API') === true) {
+        $routes['api'] = 'api_';
+    }
+    $routes['login'] = 'login_';
+    Config::set('routes', $routes);
+    unset($routes);
 
     // Defaults, Set default values
     Config::set('default_route','default');

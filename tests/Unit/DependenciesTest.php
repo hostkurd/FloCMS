@@ -27,6 +27,21 @@ final class DependenciesTest extends TestCase
         self::assertSame('1.2.0', $require['hostkurd/flocms-uploader']);
     }
 
+    public function testApiPackageIsPinnedExactlyAndPhpMatchesCore(): void
+    {
+        $require = self::requirements();
+
+        self::assertSame('1.1.0', $require['hostkurd/flocms-api']);
+        self::assertSame('^8.1', $require['php']);
+    }
+
+    public function testApiControllersAreAutoloaded(): void
+    {
+        $autoload = json_decode((string) file_get_contents(dirname(__DIR__, 2) . '/composer.json'), true)['autoload']['psr-4'];
+
+        self::assertSame('api/', $autoload['App\\Api\\']);
+    }
+
     public function testUploaderProvidesVideoAndChunkedUploads(): void
     {
         $config = ['disks' => ['public' => ['driver' => 'local', 'root' => sys_get_temp_dir()]]];
