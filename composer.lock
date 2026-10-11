@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c5f355a8b797c5444b6a108c3bfedd27",
+    "content-hash": "fef945c20f2246342f8e1fd27bc00daa",
     "packages": [
         {
             "name": "hostkurd/flocms-api",
@@ -196,16 +196,16 @@
         },
         {
             "name": "hostkurd/flocms-core",
-            "version": "v2.2.0",
+            "version": "v2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "8c00d75c20d1e3e60d4a28606aa98187b9770054"
+                "reference": "ab9ad4b15f6a5ee8617e302833ae6154f3de6b9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/8c00d75c20d1e3e60d4a28606aa98187b9770054",
-                "reference": "8c00d75c20d1e3e60d4a28606aa98187b9770054",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/ab9ad4b15f6a5ee8617e302833ae6154f3de6b9a",
+                "reference": "ab9ad4b15f6a5ee8617e302833ae6154f3de6b9a",
                 "shasum": ""
             },
             "require": {
@@ -246,9 +246,9 @@
             "description": "Core runtime for Flo Framework: application services, HTTP primitives, dependency injection, and modular architecture.",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-core/issues",
-                "source": "https://github.com/hostkurd/flocms-core/tree/v2.2.0"
+                "source": "https://github.com/hostkurd/flocms-core/tree/v2.2.1"
             },
-            "time": "2026-10-10T05:13:54+00:00"
+            "time": "2026-10-11T09:00:16+00:00"
         },
         {
             "name": "hostkurd/flocms-uploader",
@@ -2023,5 +2023,5 @@
     "platform-overrides": {
         "php": "8.1.0"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
