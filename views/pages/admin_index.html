@@ -1,0 +1,22 @@
+<div class="flo-wrapper">
+    <div class="flo-card width-500">
+        <div class="header">
+            <span class="text-logo">FloCMS</span> - Dashboard
+        </div>
+        <div class="body">
+            <div class="content">
+                <?php if (Session::hasFlash()): ?>
+                    <div class="alert alert-<?php Session::flashType(); ?>"><?php Session::flash(); ?></div>
+                <?php endif; ?>
+                <h2>Welcome, {{ $fullName }}</h2>
+                <p>{{ $email }} &middot; {{ $roleName }}</p>
+                <p>
+                    @if($canManageUsers)
+                        <a href="{{ SITE_URI . '/' . ACTIVE_LANG . '/admin/users' }}">Users</a> &middot;
+                    @endif
+                    <a href="{{ SITE_URI . '/' . ACTIVE_LANG . '/admin/users/logout' }}">Log out</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

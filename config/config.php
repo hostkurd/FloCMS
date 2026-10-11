@@ -41,6 +41,14 @@
     Config::set('admin_access_roles',array('1', '2', '3'));
             
 
+    // Role => display name, used by the admin dashboard and user management
+    Config::set('roles', array(
+        0 => 'User',
+        1 => 'Editor',
+        2 => 'Admin',
+        3 => 'Super Admin',
+    ));
+
     // Role => permissions (requires flocms-core 2.1+). Supports 'name', 'prefix.*' and '*'.
     // Roles: 0 User, 1 Editor, 2 Admin, 3 Super Admin. Roles not listed get no permissions.
     Config::set('permissions', array(

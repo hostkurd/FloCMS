@@ -65,6 +65,33 @@ final class AdminSessionTest extends TestCase
         self::assertSame(302, $this->server->get('/admin/users')['status']);
     }
 
+    public function testLoginLandsOnTheAdminDashboard(): void
+    {
+        TestDatabase::addUser($this->pdo, 'admin@example.com', 2);
+
+        $login = $this->login('admin@example.com');
+        self::assertSame(302, $login['status']);
+        self::assertStringEndsWith('/admin/', $login['headers']['location'] ?? '');
+
+        $home = $this->server->get('/admin/');
+        self::assertSame(200, $home['status'], $home['body']);
+        self::assertStringContainsString('Dashboard', $home['body']);
+        self::assertStringContainsString('admin@example.com', $home['body']);
+        self::assertStringContainsString('admin/users"', $home['body']);
+    }
+
+    public function testEditorDashboardHidesUserManagement(): void
+    {
+        TestDatabase::addUser($this->pdo, 'editor@example.com', 1);
+
+        $this->login('editor@example.com');
+        $home = $this->server->get('/admin/');
+
+        self::assertSame(200, $home['status'], $home['body']);
+        self::assertStringContainsString('Editor', $home['body']);
+        self::assertStringNotContainsString('admin/users"', $home['body']);
+    }
+
     public function testDemotedAdminLosesPermissionsOnNextRequest(): void
     {
         $id = TestDatabase::addUser($this->pdo, 'admin@example.com', 2);

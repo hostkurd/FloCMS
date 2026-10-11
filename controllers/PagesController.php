@@ -6,6 +6,9 @@ use FloCMS\Core\Controller;
 use FloCMS\Models\PagesModel;
 use FloCMS\Core\AppUrlValidator;
 use FloCMS\Core\Env;
+use FloCMS\Core\Auth;
+use FloCMS\Core\Config;
+use FloCMS\Core\Session;
 
 class PagesController extends Controller{
 
@@ -78,5 +81,20 @@ class PagesController extends Controller{
         file_put_contents($file, $env, LOCK_EX);
 
         \FloCMS\Core\Router::redirect($url);
+    }
+
+    /**
+     * Admin home (/admin/). Login and logout redirect here, so it has to exist.
+     * Access is checked by flocms-core: only roles in admin_access_roles get here.
+     */
+    public function admin_index(): void
+    {
+        $roles = (array) Config::get('roles', []);
+        $role  = (int) Session::get('role');
+
+        $this->data['fullName'] = (string) (Session::get('fullname') ?: Session::get('email'));
+        $this->data['email']    = (string) Session::get('email');
+        $this->data['roleName'] = (string) ($roles[$role] ?? 'Role ' . $role);
+        $this->data['canManageUsers'] = Auth::can('users.manage');
     }
 }
