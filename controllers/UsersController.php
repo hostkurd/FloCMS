@@ -59,6 +59,7 @@ class UsersController extends Controller
     {
         parent::__construct($data);
         $this->model = new UsersModel();
+        $this->user_roles = (array) Config::get('roles', $this->user_roles);
     }
 
     public function admin_login(): void

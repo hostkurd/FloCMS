@@ -8,7 +8,13 @@
   small dashboard (`views/pages/admin_index.html`) with the signed-in user, their
   role, a link to user management for roles with `users.manage`, and log out.
   To fix an existing site, copy `admin_index()` from
-  `controllers/PagesController.php` and the view.
+  `controllers/PagesController.php`, the view, and the `roles` block from
+  `config/config.php`.
+
+### Changed
+- Role display names live in `config/config.php` (`Config::set('roles', ...)`),
+  next to the permissions. The dashboard and `UsersController` both read them;
+  `UsersController` keeps its built-in names when the setting is missing.
 
 ## 1.7.2 - 2026-10-10
 

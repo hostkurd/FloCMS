@@ -7,6 +7,7 @@ use FloCMS\Models\PagesModel;
 use FloCMS\Core\AppUrlValidator;
 use FloCMS\Core\Env;
 use FloCMS\Core\Auth;
+use FloCMS\Core\Config;
 use FloCMS\Core\Session;
 
 class PagesController extends Controller{
@@ -88,12 +89,12 @@ class PagesController extends Controller{
      */
     public function admin_index(): void
     {
-        $roles = [0 => 'User', 1 => 'Editor', 2 => 'Admin', 3 => 'Super Admin'];
+        $roles = (array) Config::get('roles', []);
         $role  = (int) Session::get('role');
 
         $this->data['fullName'] = (string) (Session::get('fullname') ?: Session::get('email'));
         $this->data['email']    = (string) Session::get('email');
-        $this->data['roleName'] = $roles[$role] ?? 'Unknown';
+        $this->data['roleName'] = (string) ($roles[$role] ?? 'Role ' . $role);
         $this->data['canManageUsers'] = Auth::can('users.manage');
     }
 }
