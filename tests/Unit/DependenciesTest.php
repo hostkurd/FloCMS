@@ -23,7 +23,7 @@ final class DependenciesTest extends TestCase
     {
         $require = self::requirements();
 
-        self::assertSame('2.2.0', $require['hostkurd/flocms-core']);
+        self::assertSame('2.2.1', $require['hostkurd/flocms-core']);
         self::assertSame('1.2.0', $require['hostkurd/flocms-uploader']);
     }
 
