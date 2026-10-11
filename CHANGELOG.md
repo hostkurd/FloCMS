@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.7.3 - Unreleased
+
+### Fixed
+- **Admin home.** Logging in (and logging out) redirects to `/admin/`, which
+  answered 404 because `PagesController` had no `admin_index()`. It is now a
+  small dashboard (`views/pages/admin_index.html`) with the signed-in user, their
+  role, a link to user management for roles with `users.manage`, and log out.
+  To fix an existing site, copy `admin_index()` from
+  `controllers/PagesController.php` and the view.
+
 ## 1.7.2 - 2026-10-10
 
 ### Fixed
