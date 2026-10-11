@@ -23,8 +23,17 @@ final class DependenciesTest extends TestCase
     {
         $require = self::requirements();
 
-        self::assertSame('2.2.1', $require['hostkurd/flocms-core']);
+        self::assertSame('2.2.2', $require['hostkurd/flocms-core']);
         self::assertSame('1.2.0', $require['hostkurd/flocms-uploader']);
+    }
+
+    /**
+     * Release 1.7.5: captcha 1.1.0 makes codes single-use, and is pinned
+     * exactly like the other framework packages.
+     */
+    public function testCaptchaPackageIsPinnedExactly(): void
+    {
+        self::assertSame('1.1.0', self::requirements()['hostkurd/flocms-captcha']);
     }
 
     public function testApiPackageIsPinnedExactlyAndPhpMatchesCore(): void
