@@ -7,12 +7,12 @@
   `tests/Unit/DependenciesTest.php` now match the release (1.7.3 shipped
   with `APP_VERSION=1.7.2` and a test still expecting flocms-core 2.2.0).
   
-  ### Security
+### Security
 - Requires `hostkurd/flocms-core` 2.2.1: only public methods declared on your
   own controllers can be reached from a URL. Existing sites: run
   `composer require hostkurd/flocms-core:2.2.1`.
   
-## 1.7.3 - Unreleased
+## 1.7.3 - 2026-10-11
 
 ### Fixed
 - **Admin home.** Logging in (and logging out) redirects to `/admin/`, which
