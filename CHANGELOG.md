@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.7.4 - 2026-10-11
+
+### Fixed
+- `APP_VERSION` in `.env.example` and the version pins in
+  `tests/Unit/DependenciesTest.php` now match the release (1.7.3 shipped
+  with `APP_VERSION=1.7.2` and a test still expecting flocms-core 2.2.0).
+  
+  ### Security
+- Requires `hostkurd/flocms-core` 2.2.1: only public methods declared on your
+  own controllers can be reached from a URL. Existing sites: run
+  `composer require hostkurd/flocms-core:2.2.1`.
+  
 ## 1.7.3 - Unreleased
 
 ### Fixed
