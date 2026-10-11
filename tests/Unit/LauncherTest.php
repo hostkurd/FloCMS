@@ -87,6 +87,6 @@ final class LauncherTest extends TestCase
         $result = self::flo(['-V'], self::root() . DIRECTORY_SEPARATOR . 'views', '..' . DIRECTORY_SEPARATOR . 'flo');
 
         self::assertSame(0, $result['code'], $result['stderr']);
-        self::assertMatchesRegularExpression('/^FloCMS CLI \S+ \(core 2\.2\.0, api \S+, uploader 1\.2\.0(, app \S+)?\)$/', trim($result['stdout']));
+        self::assertMatchesRegularExpression('/^FloCMS CLI \S+ \(core 2\.2\.1, api \S+, uploader 1\.2\.0(, app \S+)?\)$/', trim($result['stdout']));
     }
 }
