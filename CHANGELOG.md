@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.7.5 - 2026-10-11
+
+### Fixed
+- Requires `hostkurd/flocms-core` 2.2.2:
+  - **Multi-word page controllers work.** `/blog-post` runs
+    `BlogPostController` and renders `views/blog-post/`, which is what
+    `php flo make:route BlogPost` generates. In 2.2.1 these URLs answered 404.
+  - **Template directives accept parentheses.** `@if(count($posts) > 0)`,
+    `@foreach(array_slice($posts, 0, 3) as $post)` and
+    `@lang('key', ['name' => strtoupper($name)])` compile correctly, and
+    `@forelse ... @empty ... @endforelse` works. Existing templates compile to
+    the same PHP as before; `views/cache/` is rebuilt automatically.
+
+### Security
+- Requires `hostkurd/flocms-captcha` 1.1.0, now pinned exactly like the other
+  framework packages: captcha codes are single-use, so `verify()` removes the
+  code on every check, right or wrong, and a code can no longer be guessed by
+  retrying or reused by submitting the form again. Set `'single_use' => false`
+  in the captcha config only if you must check the same code twice.
+
+Existing sites:
+
+```bash
+composer require hostkurd/flocms-core:2.2.2 hostkurd/flocms-captcha:1.1.0
+```
+
 ## 1.7.4 - 2026-10-11
 
 ### Fixed
