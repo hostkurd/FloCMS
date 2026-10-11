@@ -25,7 +25,7 @@
 
   "require": {
     "php": "^8.1",
-    "hostkurd/flocms-core": "2.2.0",
+    "hostkurd/flocms-core": "2.2.1",
     "hostkurd/flocms-cli": "2.0.1",
     "hostkurd/flocms-uploader": "1.2.0",
     "hostkurd/flocms-captcha": "^1.0",
