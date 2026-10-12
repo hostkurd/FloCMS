@@ -89,8 +89,8 @@ class PagesController extends Controller{
      *
      * An admin package (such as hostkurd/flocms-admin) can register its own home
      * page in Config 'admin.home': a path under /admin ('dashboard'), or a
-     * callable returning one or null. Set it in config/config.php to choose
-     * another page, or to null to keep this one.
+     * non-string callable returning one or null. Set it in config/config.php
+     * to choose another page, or to null to keep this one.
      */
     public function admin_index(): void
     {
@@ -111,15 +111,25 @@ class PagesController extends Controller{
     /**
      * The admin.home setting as a safe path under /admin, or null. Only lower
      * case letters, digits, '-' and '/' are accepted, so the setting can never
-     * send visitors to another site or outside /admin.
+     * send visitors to another site or outside /admin. Strings are paths, even
+     * when a PHP function has the same name. Login and this page are excluded
+     * because they would redirect an authenticated user back here.
      */
     public static function adminHome(mixed $home): ?string
     {
-        if (is_callable($home)) {
+        if (!is_string($home) && is_callable($home)) {
             $home = $home();
         }
 
         if (!is_string($home) || preg_match('#^[a-z0-9]+(?:[/-][a-z0-9]+)*$#', $home) !== 1) {
+            return null;
+        }
+
+        $segments = explode('/', $home);
+        $controller = str_replace('-', '', $segments[0]);
+        $action = $segments[1] ?? (string) Config::get('default_action', 'index');
+
+        if ($action === 'login' || ($controller === 'pages' && $action === 'index')) {
             return null;
         }
 

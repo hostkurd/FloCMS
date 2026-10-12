@@ -140,6 +140,36 @@ CONTROLLER);
         }
     }
 
+    public function testAdminHomeFunctionNamesAreRedirectPaths(): void
+    {
+        TestDatabase::addUser($this->pdo, 'admin@example.com', 2);
+        $this->login('admin@example.com');
+
+        foreach (['mail', 'date', 'time'] as $path) {
+            file_put_contents($this->server->root() . '/config/config.php',
+                "\nConfig::set('admin.home', " . var_export($path, true) . ");\n", FILE_APPEND);
+            $home = $this->server->get('/admin/');
+
+            self::assertSame(302, $home['status'], $home['body']);
+            self::assertStringEndsWith('/en/admin/' . $path, $home['headers']['location'] ?? '');
+        }
+    }
+
+    public function testAdminHomeRedirectLoopsFallBackToTheSkeletonPage(): void
+    {
+        TestDatabase::addUser($this->pdo, 'admin@example.com', 2);
+        $this->login('admin@example.com');
+
+        foreach (['pages', 'pages/index', 'pages/index/5', 'p-ages/index', 'users/login', 'reports/login'] as $path) {
+            file_put_contents($this->server->root() . '/config/config.php',
+                "\nConfig::set('admin.home', " . var_export($path, true) . ");\n", FILE_APPEND);
+            $home = $this->server->get('/admin/');
+
+            self::assertSame(200, $home['status'], $path . ': ' . $home['body']);
+            self::assertStringContainsString('Dashboard', $home['body']);
+        }
+    }
+
     public function testDemotedAdminLosesPermissionsOnNextRequest(): void
     {
         $id = TestDatabase::addUser($this->pdo, 'admin@example.com', 2);

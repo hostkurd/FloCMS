@@ -146,7 +146,7 @@ The skeleton gives you signing in and a protected area; the admin screens come f
 - **The admin panel:** `composer require hostkurd/flocms-admin` and `php flo admin:install` add a dashboard (which `/admin` then opens), users management, a profile page and pages for your own tables. See [flocms-admin](https://github.com/hostkurd/flocms-admin).
 - **Your own admin instead:** add `admin_` actions to your controllers (`php flo make:controller Reports --admin`), protect them with `$actionPermissions`, and use `UsersModel` and `Auth` for users. The documentation's "Build your own admin" guide shows a complete users page.
 
-`/admin` follows the `admin.home` setting when one is set: a path under `/admin` (`'dashboard'`), or a callable returning one. flocms-admin sets it; set it in `config/config.php` to choose another page, or to `null` to keep the skeleton's page.
+`/admin` follows the `admin.home` setting when one is set: a path under `/admin` (`'dashboard'`), or a non-string callable returning one. flocms-admin sets it; set it in `config/config.php` to choose another page, or to `null` to keep the skeleton's page. Strings are always paths, including names such as `'mail'`. Use a closure for a dynamic destination. Paths to the skeleton's dashboard or an admin login action are ignored to prevent redirect loops.
 
 ## Permissions (flocms-core 2.1+)
 
