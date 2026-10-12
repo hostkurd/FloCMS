@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.7.7 - 2026-10-12
+
+### Added
+- Requires `hostkurd/flocms-core` 2.3.0: packages can supply page
+  controllers with `App::resolveControllersUsing()`. Your own controllers in
+  `controllers/` always take precedence, and sites that register no
+  resolvers behave exactly as before.
+
+Existing sites:
+
+```bash
+composer require hostkurd/flocms-core:2.3.0
+```
+
 ## 1.7.6 - 2026-10-12
 
 ### Fixed
