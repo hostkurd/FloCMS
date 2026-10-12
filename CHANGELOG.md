@@ -1,5 +1,39 @@
 # Changelog
 
+## 1.8.0 - 2026-10-12
+
+The skeleton keeps signing in and the protected `/admin` area; the admin
+screens come from a package, as with Laravel and Filament or Symfony and
+EasyAdmin. flocms-core is unchanged (still 2.3.0).
+
+### Added
+- `/admin` follows the `admin.home` setting: a path under `/admin`
+  (`'dashboard'`) or a callable returning one. `hostkurd/flocms-admin` 0.2+
+  sets it, so after logging in you land on its dashboard. Set it in
+  `config/config.php` to choose another page, or to `null` to keep the
+  skeleton's page. Only lower-case paths under `/admin` are accepted.
+- `composer.json` suggests `hostkurd/flocms-admin`.
+
+### Removed
+- The half-built user pages in `controllers/UsersController.php`:
+  `admin_index` (a placeholder page), `admin_add`, `admin_edit` and
+  `admin_profile` (their views did not exist), `admin_delete` (deleted on a
+  GET request), `admin_verify` and `admin_suspend`, and the public `verify`
+  page (its view did not exist; only `admin_add` sent verification emails).
+  `views/users/admin_index.html` and the unused `Standalone_Pages` setting are
+  removed too. Manage users with flocms-admin (`/admin/accounts`), the
+  `php flo user:*` commands, or your own `admin_` actions.
+- The Users link on the `/admin` page.
+
+### Unchanged
+- Login and logout, login throttling, session refresh, `UsersModel`, the users
+  migration, roles and permissions, `php flo user:*`, and the API's
+  `/api/v1/users`.
+
+Existing sites: nothing changes unless you copy these files. To make `/admin`
+open an admin package, copy `admin_index()` and `adminHome()` from
+`controllers/PagesController.php`.
+
 ## 1.7.8 - 2026-10-12
 
 ### Fixed

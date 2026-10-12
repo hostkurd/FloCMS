@@ -1,8 +1,5 @@
 <?php
 
-    // Pathes to Bypass Default layout
-    Config::set('Standalone_Pages',array('users/verify'));
-
     // Routes. Route name => method prefix
     $routes = array(
         'default'=>'',

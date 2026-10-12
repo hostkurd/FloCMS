@@ -6,7 +6,7 @@ use FloCMS\Core\Controller;
 use FloCMS\Models\PagesModel;
 use FloCMS\Core\AppUrlValidator;
 use FloCMS\Core\Env;
-use FloCMS\Core\Auth;
+use FloCMS\Core\Router;
 use FloCMS\Core\Config;
 use FloCMS\Core\Session;
 
@@ -86,15 +86,43 @@ class PagesController extends Controller{
     /**
      * Admin home (/admin/). Login and logout redirect here, so it has to exist.
      * Access is checked by flocms-core: only roles in admin_access_roles get here.
+     *
+     * An admin package (such as hostkurd/flocms-admin) can register its own home
+     * page in Config 'admin.home': a path under /admin ('dashboard'), or a
+     * callable returning one or null. Set it in config/config.php to choose
+     * another page, or to null to keep this one.
      */
     public function admin_index(): void
     {
+        $home = self::adminHome(Config::get('admin.home'));
+        if ($home !== null) {
+            Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/' . $home);
+            return;
+        }
+
         $roles = (array) Config::get('roles', []);
         $role  = (int) Session::get('role');
 
         $this->data['fullName'] = (string) (Session::get('fullname') ?: Session::get('email'));
         $this->data['email']    = (string) Session::get('email');
         $this->data['roleName'] = (string) ($roles[$role] ?? 'Role ' . $role);
-        $this->data['canManageUsers'] = Auth::can('users.manage');
+    }
+
+    /**
+     * The admin.home setting as a safe path under /admin, or null. Only lower
+     * case letters, digits, '-' and '/' are accepted, so the setting can never
+     * send visitors to another site or outside /admin.
+     */
+    public static function adminHome(mixed $home): ?string
+    {
+        if (is_callable($home)) {
+            $home = $home();
+        }
+
+        if (!is_string($home) || preg_match('#^[a-z0-9]+(?:[/-][a-z0-9]+)*$#', $home) !== 1) {
+            return null;
+        }
+
+        return $home;
     }
 }

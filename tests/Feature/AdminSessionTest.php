@@ -23,7 +23,29 @@ final class AdminSessionTest extends TestCase
         $db = MySqlConfig::require();
         $this->pdo = TestDatabase::connect($db);
         TestDatabase::resetUsers($this->pdo);
-        $this->server = AppServer::start(MySqlConfig::env($db));
+        $this->server = AppServer::start(MySqlConfig::env($db), static function (string $root): void {
+            // A protected admin page like `php flo make:controller Reports --admin` creates
+            file_put_contents($root . '/controllers/ReportsController.php', <<<'CONTROLLER'
+<?php
+namespace FloCMS\Controllers;
+
+use FloCMS\Core\Controller;
+
+class ReportsController extends Controller
+{
+    protected array $actionPermissions = ['*' => 'users.manage'];
+
+    public function admin_index(): void
+    {
+    }
+}
+CONTROLLER);
+            mkdir($root . '/views/reports');
+            file_put_contents($root . '/views/reports/admin_index.html', '<p>Reports</p>');
+            // vendor/ is a link to the real skeleton, so Composer's autoloader looks
+            // there; load the copy's new controller explicitly
+            file_put_contents($root . '/config/config.php', "\nrequire_once ROOT . '/controllers/ReportsController.php';\n", FILE_APPEND);
+        });
     }
 
     protected function tearDown(): void
@@ -52,17 +74,17 @@ final class AdminSessionTest extends TestCase
 
         $login = $this->login('admin@example.com');
         self::assertSame(302, $login['status']);
-        self::assertSame(200, $this->server->get('/admin/users')['status']);
+        self::assertSame(200, $this->server->get('/admin/reports')['status']);
 
         $this->pdo->prepare('UPDATE users SET status = 3 WHERE id = ?')->execute([$id]);
 
-        $next = $this->server->get('/admin/users');
+        $next = $this->server->get('/admin/reports');
         self::assertSame(302, $next['status']);
         self::assertStringContainsString('admin/users/login', $next['headers']['location'] ?? '');
 
         $page = $this->server->get('/admin/users/login');
         self::assertStringContainsString('Your session has ended', $page['body']);
-        self::assertSame(302, $this->server->get('/admin/users')['status']);
+        self::assertSame(302, $this->server->get('/admin/reports')['status']);
     }
 
     public function testLoginLandsOnTheAdminDashboard(): void
@@ -77,10 +99,11 @@ final class AdminSessionTest extends TestCase
         self::assertSame(200, $home['status'], $home['body']);
         self::assertStringContainsString('Dashboard', $home['body']);
         self::assertStringContainsString('admin@example.com', $home['body']);
-        self::assertStringContainsString('admin/users"', $home['body']);
+        self::assertStringContainsString('admin/users/logout"', $home['body']);
+        self::assertStringContainsString('hostkurd/flocms-admin', $home['body']);
     }
 
-    public function testEditorDashboardHidesUserManagement(): void
+    public function testEditorDashboardShowsTheRole(): void
     {
         TestDatabase::addUser($this->pdo, 'editor@example.com', 1);
 
@@ -89,7 +112,32 @@ final class AdminSessionTest extends TestCase
 
         self::assertSame(200, $home['status'], $home['body']);
         self::assertStringContainsString('Editor', $home['body']);
-        self::assertStringNotContainsString('admin/users"', $home['body']);
+    }
+
+    public function testAdminHomeSendsTheDashboardToAnAdminPackage(): void
+    {
+        TestDatabase::addUser($this->pdo, 'admin@example.com', 2);
+        $this->login('admin@example.com');
+
+        // What an admin package (hostkurd/flocms-admin) or the site sets
+        file_put_contents($this->server->root() . '/config/config.php', "\nConfig::set('admin.home', 'reports');\n", FILE_APPEND);
+        $home = $this->server->get('/admin/');
+        self::assertSame(302, $home['status'], $home['body']);
+        self::assertStringEndsWith('/en/admin/reports', $home['headers']['location'] ?? '');
+
+        // Unsafe values are ignored: the skeleton's own page is shown
+        file_put_contents($this->server->root() . '/config/config.php', "\nConfig::set('admin.home', 'https://evil.test');\n", FILE_APPEND);
+        self::assertSame(200, $this->server->get('/admin/')['status']);
+    }
+
+    public function testRemovedUserPagesAreGone(): void
+    {
+        TestDatabase::addUser($this->pdo, 'admin@example.com', 3);
+        $this->login('admin@example.com');
+
+        foreach (['/admin/users', '/admin/users/add', '/admin/users/edit/1', '/admin/users/profile', '/users/verify?token=abc'] as $url) {
+            self::assertSame(404, $this->server->get($url)['status'], $url);
+        }
     }
 
     public function testDemotedAdminLosesPermissionsOnNextRequest(): void
@@ -97,15 +145,15 @@ final class AdminSessionTest extends TestCase
         $id = TestDatabase::addUser($this->pdo, 'admin@example.com', 2);
 
         $this->login('admin@example.com');
-        self::assertSame(200, $this->server->get('/admin/users')['status']);
+        self::assertSame(200, $this->server->get('/admin/reports')['status']);
 
         // Editors (role 1) do not have users.manage
         $this->pdo->prepare('UPDATE users SET role = 1 WHERE id = ?')->execute([$id]);
-        self::assertSame(403, $this->server->get('/admin/users')['status']);
+        self::assertSame(403, $this->server->get('/admin/reports')['status']);
 
         // Users (role 0) have no admin access at all
         $this->pdo->prepare('UPDATE users SET role = 0 WHERE id = ?')->execute([$id]);
-        self::assertSame(302, $this->server->get('/admin/users')['status']);
+        self::assertSame(302, $this->server->get('/admin/reports')['status']);
     }
 
     public function testDeletedAdminIsLoggedOut(): void
@@ -113,10 +161,10 @@ final class AdminSessionTest extends TestCase
         $id = TestDatabase::addUser($this->pdo, 'admin@example.com', 3);
 
         $this->login('admin@example.com');
-        self::assertSame(200, $this->server->get('/admin/users')['status']);
+        self::assertSame(200, $this->server->get('/admin/reports')['status']);
 
         $this->pdo->prepare('DELETE FROM users WHERE id = ?')->execute([$id]);
-        self::assertSame(302, $this->server->get('/admin/users')['status']);
+        self::assertSame(302, $this->server->get('/admin/reports')['status']);
     }
 
     public function testLoginIsThrottledPerEmail(): void
@@ -133,7 +181,7 @@ final class AdminSessionTest extends TestCase
         $blocked = $this->login('admin@example.com');
         self::assertSame(429, $blocked['status']);
         self::assertStringContainsString('Too many login attempts. Please try again in 15 minute(s).', $blocked['body']);
-        self::assertSame(302, $this->server->get('/admin/users')['status']);
+        self::assertSame(302, $this->server->get('/admin/reports')['status']);
     }
 
     public function testSuccessfulLoginResetsTheEmailCounter(): void
