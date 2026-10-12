@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.7.6 - 2026-10-12
+
+### Fixed
+- Requires `hostkurd/flocms-core` 2.2.3: the `max` validation rule no longer
+  fails on a missing or empty value. An empty required field showed
+  "must not exceed N characters" next to "is Required". `required` still
+  reports the empty field, and `min` is unchanged.
+
+Existing sites:
+
+```bash
+composer require hostkurd/flocms-core:2.2.3
+```
+
 ## 1.7.5 - 2026-10-11
 
 ### Fixed
