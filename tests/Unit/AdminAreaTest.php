@@ -31,6 +31,35 @@ final class AdminAreaTest extends TestCase
         self::assertNull(PagesController::adminHome(static fn (): string => 'https://evil.test'));
     }
 
+    public function testAdminHomeTreatsFunctionNamesAsPaths(): void
+    {
+        foreach (['mail', 'date', 'time', 'trim'] as $path) {
+            self::assertSame($path, PagesController::adminHome($path));
+        }
+
+        self::assertSame('mail', PagesController::adminHome(static fn (): string => 'mail'));
+    }
+
+    public function testAdminHomeRejectsBuiltInRedirectLoops(): void
+    {
+        foreach (['pages', 'pages/index', 'pages/index/anything', 'p-ages/index', 'users/login', 'users/login/anything', 'reports/login'] as $path) {
+            self::assertNull(PagesController::adminHome($path), $path);
+            self::assertNull(PagesController::adminHome(static fn (): string => $path), $path);
+        }
+    }
+
+    public function testAdminHomeSupportsInvokableObjects(): void
+    {
+        $resolver = new class {
+            public function __invoke(): string
+            {
+                return 'dashboard';
+            }
+        };
+
+        self::assertSame('dashboard', PagesController::adminHome($resolver));
+    }
+
     public function testUsersControllerOnlySignsInAndOut(): void
     {
         $actions = array_values(array_filter(

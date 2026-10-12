@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f4b86b16ae9c34c4a46f0c93687d83b1",
+    "content-hash": "23addf3ec1bbf3d7209ab9b29bc7eea2",
     "packages": [
         {
             "name": "hostkurd/flocms-api",
@@ -199,16 +199,16 @@
         },
         {
             "name": "hostkurd/flocms-core",
-            "version": "v2.3.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "de17dab4bff1af837132b0547a6088cbf3df0c17"
+                "reference": "4eda0a0c297ac134fb4c37868c341656fdb44fc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/de17dab4bff1af837132b0547a6088cbf3df0c17",
-                "reference": "de17dab4bff1af837132b0547a6088cbf3df0c17",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/4eda0a0c297ac134fb4c37868c341656fdb44fc2",
+                "reference": "4eda0a0c297ac134fb4c37868c341656fdb44fc2",
                 "shasum": ""
             },
             "require": {
@@ -249,9 +249,9 @@
             "description": "Core runtime for Flo Framework: application services, HTTP primitives, dependency injection, and modular architecture.",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-core/issues",
-                "source": "https://github.com/hostkurd/flocms-core/tree/v2.3.0"
+                "source": "https://github.com/hostkurd/flocms-core/tree/4eda0a0c297ac134fb4c37868c341656fdb44fc2"
             },
-            "time": "2026-10-12T07:33:35+00:00"
+            "time": "2026-10-12T20:19:45+00:00"
         },
         {
             "name": "hostkurd/flocms-uploader",
@@ -2016,15 +2016,15 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.1.0"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

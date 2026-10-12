@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.8.1 - Unreleased
+
+### Fixed
+- Requires Core 2.3.1 so authenticated users without admin access can log out
+  and sign in with another account. Guests, other admin actions and POST
+  CSRF protection remain gated.
+- `admin.home` strings are always paths, even when they match a PHP function
+  such as `mail`, `date` or `time`. Previously the function was called with
+  no arguments. Use a closure or another non-string callable for a dynamic
+  destination.
+- Admin-home destinations that lead back to this dashboard or to an admin
+  login action are ignored, preventing redirect loops. The skeleton's
+  dashboard renders instead, including for hyphenated aliases of `pages`.
+
+These changes are application files: copy the updated `adminHome()` method
+from `controllers/PagesController.php` into an existing site. Also update the
+Core dependency to 2.3.1 and run Composer after that patch release is published.
+
 ## 1.8.0 - 2026-10-12
 
 The skeleton keeps signing in and the protected `/admin` area; the admin
