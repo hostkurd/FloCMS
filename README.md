@@ -138,6 +138,16 @@ The old `/api/<controller>/<action>` route (methods prefixed `api_`) skips
 CSRF checks and has no authentication. It is off unless `LEGACY_API=true` is
 set in `.env`; move endpoints to `api/routes.php`.
 
+## The admin area
+
+The skeleton gives you signing in and a protected area; the admin screens come from a package.
+
+- **Included:** the login and logout pages (`/admin/users/login`, `/admin/users/logout`), the `users` table, roles and permissions in `config/config.php`, the `php flo user:*` commands, and a simple `/admin` page. Any controller method named `admin_...` is served under `/admin/...` and requires a logged-in user with admin access.
+- **The admin panel:** `composer require hostkurd/flocms-admin` and `php flo admin:install` add a dashboard (which `/admin` then opens), users management, a profile page and pages for your own tables. See [flocms-admin](https://github.com/hostkurd/flocms-admin).
+- **Your own admin instead:** add `admin_` actions to your controllers (`php flo make:controller Reports --admin`), protect them with `$actionPermissions`, and use `UsersModel` and `Auth` for users. The documentation's "Build your own admin" guide shows a complete users page.
+
+`/admin` follows the `admin.home` setting when one is set: a path under `/admin` (`'dashboard'`), or a callable returning one. flocms-admin sets it; set it in `config/config.php` to choose another page, or to `null` to keep the skeleton's page.
+
 ## Permissions (flocms-core 2.1+)
 
 Admin panel access is controlled by roles and permissions. `config/config.php` maps each role to its permissions:
@@ -159,13 +169,13 @@ protected array $actionPermissions = [
 ```
 
 Inside an action, use `Auth::can('settings.edit')` or `Auth::authorize('settings.edit')` (throws 403).
-User management only lets you assign roles up to your own, and only edit, delete or suspend users of a lower role (Super Admins can manage everyone).
+For user management, `Auth::canAssignRole($role)` only allows roles up to your own, and `Auth::canManageUser($role)` only lower roles (Super Admins, with `users.manage_any`, can manage everyone).
 
 ### Upgrading an existing site
 
 1. Require `hostkurd/flocms-core` `2.1.0`.
 2. Copy the `permissions` block from `config/config.php`, adjusting it to your roles.
-3. Add `$actionPermissions` to your admin controllers, and copy the `Auth` checks from `controllers/UsersController.php` (`admin_add`, `admin_edit`, `admin_delete`, `admin_suspend`).
+3. Add `$actionPermissions` to your admin controllers, and use `Auth::canAssignRole()` / `Auth::canManageUser()` where users are edited.
 4. Copy `templates/default/errors/403.html` and the `page.forbidden` strings from `lang/*.php`.
 
 Until step 2 is done, the site behaves exactly as before (any role with admin access can do everything).

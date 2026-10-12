@@ -11,11 +11,9 @@
                 <h2>Welcome, {{ $fullName }}</h2>
                 <p>{{ $email }} &middot; {{ $roleName }}</p>
                 <p>
-                    @if($canManageUsers)
-                        <a href="{{ SITE_URI . '/' . ACTIVE_LANG . '/admin/users' }}">Users</a> &middot;
-                    @endif
                     <a href="{{ SITE_URI . '/' . ACTIVE_LANG . '/admin/users/logout' }}">Log out</a>
                 </p>
+                <p class="note">For a full admin panel (users, your own content): <code>composer require hostkurd/flocms-admin</code></p>
             </div>
         </div>
     </div>

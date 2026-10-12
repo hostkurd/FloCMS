@@ -78,7 +78,7 @@ final class FreshInstallTest extends TestCase
 
     public function testDatabasePageShowsNoDbServerPage(): void
     {
-        // users/verify needs the database; the server is down
+        // Logging in needs the database; the server is down
         $this->server = AppServer::start([
             'APP_DEBUG' => 'false',
             'DB_NAME' => 'flocms',
@@ -87,7 +87,7 @@ final class FreshInstallTest extends TestCase
             'DB_PORT' => '1',
         ]);
 
-        $response = $this->server->get('/users/verify?token=abc');
+        $response = $this->loginAttempt();
 
         self::assertSame(503, $response['status']);
         self::assertStringContainsString('Database server unavailable', $response['body']);
@@ -98,7 +98,7 @@ final class FreshInstallTest extends TestCase
     {
         $this->server = AppServer::start(['APP_DEBUG' => 'false']);
 
-        $response = $this->server->get('/users/verify?token=abc');
+        $response = $this->loginAttempt();
 
         self::assertSame(500, $response['status']);
         self::assertStringContainsString('Database configuration error', $response['body']);
@@ -116,7 +116,7 @@ final class FreshInstallTest extends TestCase
         self::assertStringContainsString('Database not found.', $page['body']);
         self::assertStringContainsString('Create the database named in', $page['body']);
 
-        $error = $this->server->get('/users/verify?token=abc');
+        $error = $this->loginAttempt();
         self::assertSame(500, $error['status']);
         self::assertStringContainsString('Database configuration error', $error['body']);
         // Debug mode (.env.example): driver message included
@@ -131,5 +131,18 @@ final class FreshInstallTest extends TestCase
 
         self::assertSame(200, $response['status']);
         self::assertStringNotContainsString('db-status', preg_replace('/<style.*?<\/style>/s', '', $response['body']));
+    }
+
+    /** A login POST: the first page of a fresh site that needs the database. */
+    private function loginAttempt(): array
+    {
+        $form = $this->server->get('/admin/users/login');
+        self::assertSame(1, preg_match('/<meta name="csrf-token" content="([a-f0-9]{64})">/', $form['body'], $meta), $form['body']);
+
+        return $this->server->request('POST', '/admin/users/login', [
+            '_token' => $meta[1],
+            'email' => 'admin@example.com',
+            'password' => 'secret-password',
+        ]);
     }
 }

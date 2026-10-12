@@ -42,6 +42,10 @@
     "test": "phpunit"
   },
 
+  "suggest": {
+    "hostkurd/flocms-admin": "The admin panel: dashboard, users management, profile and your own content resources (php flo admin:install)"
+  },
+
   "require-dev": {
     "phpunit/phpunit": "^10.5 || ^11.0"
   },
