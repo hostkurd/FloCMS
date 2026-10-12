@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.7.8 - 2026-10-12
+
+### Fixed
+- **The admin pages are styled again.** `templates/default/layouts/admin.html`
+  linked its stylesheets, `config.js` and favicon under `/assets/`, which the
+  skeleton does not have, so the login page and the dashboard showed plain
+  HTML and the browser logged 404s. The layout now loads them with
+  `template_asset()`, like `layouts/default.html`, from
+  `public/themes/<template>/` (falling back to `default`).
+
+Existing sites: copy the five changed lines of
+`templates/default/layouts/admin.html` (favicon, `style.css`, `flo-core.css`,
+`config.js`, `style.rtl.css`), or replace `<?=SITE_URI;?>/assets/...` and
+`<?=jsPath;?>/config.js` with `<?= template_asset('...') ?>` yourself.
+
 ## 1.7.7 - 2026-10-12
 
 ### Added
