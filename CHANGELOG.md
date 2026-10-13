@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.8.2 - Unreleased
+
+### Changed
+- Requires Core 2.3.2. Page and package controllers can return an explicit
+  `FloCMS\Core\Http\Response` without template or layout rendering. HEAD
+  responses omit the body, and malformed CSRF tokens return 419.
+- Suggests `hostkurd/flocms-reactive` for optional interactive components.
+  The standalone skeleton does not require or load Reactive.
+
+Existing sites: run `composer require hostkurd/flocms-core:2.3.2 -W`.
+No application-file changes are required for this upgrade from 1.8.1.
+
 ## 1.8.1 - Unreleased
 
 ### Fixed
