@@ -31,6 +31,28 @@ To Create a new project, install it via Composer:
 composer create-project hostkurd/flocms
 ```
 
+### Upgrading to Core 2.3.2
+
+The skeleton pins Core 2.3.2. To update an existing project:
+
+```bash
+composer require hostkurd/flocms-core:2.3.2 -W
+```
+
+Page controllers can now return `FloCMS\Core\Http\Response` directly for
+HTML fragments, JSON or other explicit responses. Existing template and
+layout rendering continues to work. No application-file changes are needed
+when upgrading from the 1.8.1 skeleton.
+
+[flocms-reactive](https://github.com/hostkurd/flocms-reactive) is optional.
+FloCMS runs independently of it. To add reactive components:
+
+```bash
+composer require hostkurd/flocms-reactive
+```
+
+Follow the package's README to register components and include its assets.
+
 ## Command line (php flo)
 
 `php flo` runs [flocms-cli](https://github.com/hostkurd/flocms-cli). The `flo`

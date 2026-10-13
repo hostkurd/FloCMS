@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "23addf3ec1bbf3d7209ab9b29bc7eea2",
+    "content-hash": "5fe31f8838bb1be3fb9a900c52ffbfff",
     "packages": [
         {
             "name": "hostkurd/flocms-api",
@@ -199,16 +199,16 @@
         },
         {
             "name": "hostkurd/flocms-core",
-            "version": "2.3.1",
+            "version": "v2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "4eda0a0c297ac134fb4c37868c341656fdb44fc2"
+                "reference": "4a66c44db5a6b6760f7b364afcce1d506f040aa0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/4eda0a0c297ac134fb4c37868c341656fdb44fc2",
-                "reference": "4eda0a0c297ac134fb4c37868c341656fdb44fc2",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/4a66c44db5a6b6760f7b364afcce1d506f040aa0",
+                "reference": "4a66c44db5a6b6760f7b364afcce1d506f040aa0",
                 "shasum": ""
             },
             "require": {
@@ -249,9 +249,9 @@
             "description": "Core runtime for Flo Framework: application services, HTTP primitives, dependency injection, and modular architecture.",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-core/issues",
-                "source": "https://github.com/hostkurd/flocms-core/tree/4eda0a0c297ac134fb4c37868c341656fdb44fc2"
+                "source": "https://github.com/hostkurd/flocms-core/tree/v2.3.2"
             },
-            "time": "2026-10-12T20:19:45+00:00"
+            "time": "2026-10-13T08:32:22+00:00"
         },
         {
             "name": "hostkurd/flocms-uploader",
