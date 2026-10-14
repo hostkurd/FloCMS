@@ -1,6 +1,18 @@
 # Changelog
 
-## 1.8.2 - Unreleased
+## 1.8.3 - Unreleased
+
+### Added
+- Optional `auth.login_view` presentation callable in the admin login view. A nonempty string replaces the login markup; missing, disabled or empty renderers retain the standalone form.
+- Login presentation regression tests for standalone fallback, CSRF rejection, failed/successful credentials, signed-in redirects and throttling on configured MySQL/MariaDB.
+
+### Changed
+- Admin layout language and direction follow the active language, including with JavaScript disabled.
+- Authentication controllers, Core pins and standalone dependencies remain unchanged. No Admin or Reactive dependency is introduced.
+
+Existing applications: Composer does not replace application views. Copy the hook at the top of `views/users/admin_login.html` and the dynamic `lang`/`dir` attributes from `templates/default/layouts/admin.html` if enabling the optional Admin 0.5.0 theme. See README for the renderer contract.
+
+## 1.8.2 - 2026-10-13
 
 ### Changed
 - Requires Core 2.3.2. Page and package controllers can return an explicit

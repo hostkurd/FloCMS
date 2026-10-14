@@ -224,7 +224,7 @@ final class AppServer
     private static function baseEnvironment(): array
     {
         $env = [];
-        foreach (['PATH', 'HOME', 'TMPDIR'] as $key) {
+        foreach (['PATH', 'HOME', 'TMPDIR', 'PHPRC', 'PHP_INI_SCAN_DIR', 'LD_LIBRARY_PATH'] as $key) {
             $value = getenv($key);
             if ($value !== false) {
                 $env[$key] = $value;
