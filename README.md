@@ -273,3 +273,12 @@ If you discover a security vulnerability within FLoCMS, please send an e-mail to
 
 ## License
 The FloCMS framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+### Optional admin login presentation (1.8.3)
+
+The skeleton owns authentication, CSRF, throttling and sessions. `views/users/admin_login.html` optionally calls `Config::get('auth.login_view')` with no arguments. A callable may return a trusted, nonempty HTML string for presentation only; null, false, missing or empty output leaves the standalone login form intact. A custom renderer must include the same credential names (`email`, `password`) and `Csrf::field()`, escape displayed values and never echo passwords.
+
+Admin 0.5.0 registers this renderer automatically when installed and enables its theme through `'login_theme' => true` in `config/admin.php`. Without Admin the skeleton keeps its existing design and has no dependency on Admin or Reactive. Set `auth.login_view` to false to explicitly disable package rendering, or supply your own callable in application configuration.
+
+Existing sites must copy the optional hook from the top of this version's `views/users/admin_login.html`; updating Composer does not replace project files. Retain your existing markup below the hook. Also copy the active-language `lang` and `dir` expressions from `templates/default/layouts/admin.html` for correct metadata without JavaScript. Clear compiled views after editing. No authentication-controller change or database migration is required.

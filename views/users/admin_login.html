@@ -1,3 +1,14 @@
+<?php
+// Optional presentation hook. Authentication stays in UsersController.
+$loginRenderer = \FloCMS\Core\Config::get('auth.login_view');
+if (is_callable($loginRenderer)) {
+    $loginMarkup = $loginRenderer();
+    if (is_string($loginMarkup) && $loginMarkup !== '') {
+        echo $loginMarkup;
+        return;
+    }
+}
+?>
 <div class="flo-wrapper">
     <div class="flo-card width-500">
         <div class="header">
