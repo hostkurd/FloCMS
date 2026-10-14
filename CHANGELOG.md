@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.8.3 - Unreleased
+## 1.8.3 - 2026-10-14
 
 ### Added
 - Optional `auth.login_view` presentation callable in the admin login view. A nonempty string replaces the login markup; missing, disabled or empty renderers retain the standalone form.
