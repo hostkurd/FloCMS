@@ -33,9 +33,8 @@ jobs:
           coverage: none
           tools: composer:v2
 
-      # Exact pins are intended (--no-check-all)
       - name: Validate composer.json and composer.lock
-        run: composer validate --strict --no-check-all
+        run: composer validate --strict
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist

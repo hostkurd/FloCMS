@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.8.4 - 2026-10-16
+
+### Changed
+- Framework packages are required with caret ranges from their tested minimum
+  instead of exact versions: core `^2.3.2`, cli `^2.0.1`, uploader `^1.2.1`,
+  captcha `^1.1.0`, api `^1.2.0`. `composer.lock` still fixes the exact versions,
+  so new projects install the tested set and existing sites change only on
+  `composer update`. Adding flocms-admin 0.10+ no longer fails with
+  "conflicts with your root composer.json require (1.2.0)".
+- The lock installs flocms-uploader 1.2.1, whose Imagick driver no longer pads
+  resized images to a square.
+
+Existing sites: edit the versions in `composer.json` to the ranges above (or run
+`composer require "hostkurd/flocms-uploader:^1.2.1" -W`). No application-file changes.
+
 ## 1.8.3 - 2026-10-14
 
 ### Added

@@ -31,12 +31,28 @@ To Create a new project, install it via Composer:
 composer create-project hostkurd/flocms
 ```
 
-### Upgrading to Core 2.3.2
+### Package versions (1.8.4)
 
-The skeleton pins Core 2.3.2. To update an existing project:
+`composer.json` requires the framework packages with caret ranges from a tested
+minimum (`"hostkurd/flocms-core": "^2.3.2"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
+and `composer.lock` records the exact versions. A new project installs exactly the
+locked set; an existing site changes only when you run `composer update`, so each
+site still upgrades when you choose. The ranges let a package you add, such as
+flocms-admin, bring a newer release it needs.
+
+Sites created before 1.8.4 have exact versions such as `"1.2.0"`. Change them to
+ranges, or name both packages when adding the admin:
 
 ```bash
-composer require hostkurd/flocms-core:2.3.2 -W
+composer require "hostkurd/flocms-admin:^0.11" "hostkurd/flocms-uploader:^1.2.1" -W
+```
+
+### Upgrading to Core 2.3.2
+
+To update an existing project:
+
+```bash
+composer require "hostkurd/flocms-core:^2.3.2" -W
 ```
 
 Page controllers can now return `FloCMS\Core\Http\Response` directly for
@@ -205,8 +221,8 @@ Role changes take effect on the user's next login.
 
 ## Upgrading to 1.5 (flocms-core 2.2)
 
-FloCMS 1.5 requires `hostkurd/flocms-core` `2.2.0`. Versions are pinned exactly,
-so each site upgrades when you choose. Copy the changes below into an existing
+FloCMS 1.5 requires `hostkurd/flocms-core` `2.2.0` (1.5 pinned versions exactly;
+since 1.8.4 the skeleton uses ranges and `composer.lock`, see Package versions). Copy the changes below into an existing
 site as needed; see `CHANGELOG.md` for the details.
 
 ### Fresh install without a database
@@ -252,7 +268,7 @@ delete old files such as `views/cache/pages_index.php`. Set
    `public/themes/default/js/csrf.js`, and put `@csrf` in every POST form.
 
 ### Uploads (flocms-uploader 1.2)
-Require `"hostkurd/flocms-uploader": "1.2.0"`. Video uploads
+Require `"hostkurd/flocms-uploader": "^1.2.1"` (1.2.1 fixes Imagick resizing). Video uploads
 (`Uploader::video()`) and chunked uploads (`->chunked()`) are new and opt-in;
 see the uploader README for the `video` and `chunks` config sections. Keep the
 chunk directory outside `public/` (e.g. `storage/uploads/.chunks`).
