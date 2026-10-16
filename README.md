@@ -119,6 +119,11 @@ use Cron Jobs → Once Per Minute:
 **Maintenance mode.** `php flo down` makes the site and the API answer 503
 until `php flo up`. Pass `--allow=YOUR.IP` to keep access yourself.
 
+**The settings table.** `php flo migrate` creates `settings` (`param`, `value`,
+`lang`), the table core reads with `Config::getSetting()`: `php flo down`/`up`
+also switch its `offline_mode` rows, and flocms-admin keeps its settings pages
+there (one row per key, empty `lang`). Sites that already have the table keep it.
+
 See the flocms-cli README for every option.
 
 ## API (recommended: /api/v1)
