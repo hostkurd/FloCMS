@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.8.5 - 2026-10-17
+
+### Added
+- Migration `2026_10_17_000000_create_settings_table.php`: the `settings` table
+  (`param`, `value`, `lang`, primary key `param` + `lang`) that flocms-core reads
+  with `Config::getSetting()` (`offline_mode`, written by `php flo down`/`up`),
+  that flocms-api's maintenance middleware checks, and that flocms-admin 0.14+
+  uses for its settings pages (one row per key, empty `lang`, JSON value).
+  New sites get it with `php flo migrate`; `CREATE TABLE IF NOT EXISTS` leaves an
+  existing table alone.
+
+Existing sites: copy the migration into `database/migrations/` and run
+`php flo migrate` if the site has no `settings` table yet. Sites using
+flocms-admin 0.14 already have it from `php flo admin:install` (the admin skips
+its own migration when the site has this one). No other change.
+
 ## 1.8.4 - 2026-10-16
 
 ### Changed

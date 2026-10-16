@@ -28,6 +28,7 @@ final class FirstAdminTest extends TestCase
         $migrate = $this->server->flo(['migrate'], $env);
         self::assertSame(0, $migrate['exit'], $migrate['output']);
         self::assertStringContainsString('create_users_table', $migrate['output']);
+        self::assertStringContainsString('create_settings_table', $migrate['output']);
         self::assertStringContainsString('hostkurd/flocms-api:2026_10_10_000000_create_api_tables', $migrate['output']);
 
         $create = $this->server->flo(['user:create', '-n', '--name=Site Admin', '--email=admin@example.com', '--password-stdin'], $env, "correct horse battery\n");
@@ -42,5 +43,32 @@ final class FirstAdminTest extends TestCase
         $pdo = new \PDO('sqlite:' . $this->server->root() . '/storage/site.sqlite');
         $hash = (string) $pdo->query("SELECT password FROM users WHERE email = 'admin@example.com'")->fetchColumn();
         self::assertTrue(password_verify('correct horse battery', $hash));
+    }
+
+    /**
+     * Release 1.8.5: `php flo migrate` also creates the settings table that
+     * core reads for offline_mode (and flocms-admin uses for its settings pages),
+     * so `php flo down` and `up` change the database switch on a new site too.
+     */
+    public function testMigrateCreatesTheSettingsTableUsedByMaintenanceMode(): void
+    {
+        $env = ['DB_TYPE' => 'sqlite', 'DB_NAME' => 'storage/site.sqlite', 'LANGUAGES' => 'en,ar', 'DEFAULT_LANG' => 'en'];
+        $this->server = AppServer::start($env);
+        $migrate = $this->server->flo(['migrate'], $env);
+        self::assertSame(0, $migrate['exit'], $migrate['output']);
+
+        $pdo = new \PDO('sqlite:' . $this->server->root() . '/storage/site.sqlite');
+        $columns = array_column($pdo->query('PRAGMA table_info(settings)')->fetchAll(\PDO::FETCH_ASSOC), 'name');
+        self::assertSame(['param', 'value', 'lang'], $columns);
+
+        $down = $this->server->flo(['down'], $env);
+        self::assertSame(0, $down['exit'], $down['output']);
+        self::assertStringNotContainsString('was not changed', $down['output']);
+        $rows = $pdo->query("SELECT lang, value FROM settings WHERE param = 'offline_mode' ORDER BY lang")->fetchAll(\PDO::FETCH_KEY_PAIR);
+        self::assertSame(['ar' => '1', 'en' => '1'], $rows);
+
+        $up = $this->server->flo(['up'], $env);
+        self::assertSame(0, $up['exit'], $up['output']);
+        self::assertSame(['0'], array_values(array_unique($pdo->query("SELECT value FROM settings WHERE param = 'offline_mode'")->fetchAll(\PDO::FETCH_COLUMN))));
     }
 }
