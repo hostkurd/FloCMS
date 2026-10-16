@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5fe31f8838bb1be3fb9a900c52ffbfff",
+    "content-hash": "99bec07b0645741262c85db60d8bab68",
     "packages": [
         {
             "name": "hostkurd/flocms-api",
@@ -255,16 +255,16 @@
         },
         {
             "name": "hostkurd/flocms-uploader",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-uploader.git",
-                "reference": "7b0fe9ee56d156ca8e797c3d98f8ccb7a722bd48"
+                "reference": "799a6ef9c8dc19fcf8981a66b780db20f172ee19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-uploader/zipball/7b0fe9ee56d156ca8e797c3d98f8ccb7a722bd48",
-                "reference": "7b0fe9ee56d156ca8e797c3d98f8ccb7a722bd48",
+                "url": "https://api.github.com/repos/hostkurd/flocms-uploader/zipball/799a6ef9c8dc19fcf8981a66b780db20f172ee19",
+                "reference": "799a6ef9c8dc19fcf8981a66b780db20f172ee19",
                 "shasum": ""
             },
             "require": {
