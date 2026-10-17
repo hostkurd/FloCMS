@@ -51,7 +51,7 @@
     Config::set('permissions', array(
         0 => array(),
         1 => array('content.*'),
-        2 => array('content.*', 'users.manage', 'users.assign_role', 'settings.*'),
+        2 => array('content.*', 'users.manage', 'users.assign_role', 'settings.*', 'activity.view'),
         3 => array('*'),
     ));
 

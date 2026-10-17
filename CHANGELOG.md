@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.8.6 - 2026-10-18
+
+### Changed
+- The Admin role (2) gets `activity.view`, so it can open **Site → Activity**,
+  the activity log of flocms-admin 0.19+. Super Admin (`*`) already had it;
+  Editors keep only the History of the records they can edit.
+
+Existing sites: add `'activity.view'` to role 2 in `config/config.php` if your
+Admins should see the activity log. No other change.
+
 ## 1.8.5 - 2026-10-17
 
 ### Added
