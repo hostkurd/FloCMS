@@ -199,8 +199,10 @@ Admin panel access is controlled by roles and permissions. `config/config.php` m
 |------|-------------|----------------------------------------------------------|
 | 0    | User        | none                                                     |
 | 1    | Editor      | `content.*`                                              |
-| 2    | Admin       | `content.*`, `users.manage`, `users.assign_role`, `settings.*` |
+| 2    | Admin       | `content.*`, `users.manage`, `users.assign_role`, `settings.*`, `activity.view` |
 | 3    | Super Admin | `*`                                                      |
+
+`activity.view` opens the admin panel's **Site → Activity** page (flocms-admin 0.19+); without it, editors still see the History of the records they can edit.
 
 Controllers declare the permission each action needs; actions not listed fall back to `'*'`, and `null` means no check:
 
