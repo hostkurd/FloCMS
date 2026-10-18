@@ -1,6 +1,7 @@
 <?php
 namespace FloCMS\Controllers;
 
+use FloCMS\Core\Auth;
 use FloCMS\Core\App;
 use FloCMS\Core\Controller;
 use FloCMS\Models\PagesModel;
@@ -85,7 +86,7 @@ class PagesController extends Controller{
 
     /**
      * Admin home (/admin/). Login and logout redirect here, so it has to exist.
-     * Access is checked by flocms-core: only roles in admin_access_roles get here.
+     * Access is checked by flocms-core: only roles with admin access get here.
      *
      * An admin package (such as hostkurd/flocms-admin) can register its own home
      * page in Config 'admin.home': a path under /admin ('dashboard'), or a
@@ -100,7 +101,7 @@ class PagesController extends Controller{
             return;
         }
 
-        $roles = (array) Config::get('roles', []);
+        $roles = Auth::roles();
         $role  = (int) Session::get('role');
 
         $this->data['fullName'] = (string) (Session::get('fullname') ?: Session::get('email'));
