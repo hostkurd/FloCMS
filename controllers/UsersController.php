@@ -3,6 +3,7 @@
 namespace FloCMS\Controllers;
 
 use FloCMS\Core\Config;
+use FloCMS\Core\Auth;
 use FloCMS\Core\Controller;
 use FloCMS\Core\Router;
 use FloCMS\Api\Security\ClientIpResolver;
@@ -20,7 +21,8 @@ use FloCMS\Support\LoginThrottle;
  */
 class UsersController extends Controller
 {
-    // User groups which have access to admin panel
+    // Roles with access to the admin panel when neither Config 'admin_access_roles'
+    // nor a roles loader (core 2.4+, e.g. flocms-admin's Roles page) says otherwise.
     protected array $admin_access_roles = ['1', '2', '3'];
 
     // Permission required per action (checked by flocms-core before the action runs).
@@ -122,7 +124,11 @@ class UsersController extends Controller
                 Session::set('fullname', $user['fullname'] ?? '');
                 Session::set('isloggedin', true);
 
-                if (in_array((string) ($user['role'] ?? ''), $this->admin_access_roles, true)) {
+                $role = $user['role'] ?? null;
+                $access = Auth::hasAdminAccess(is_scalar($role) ? $role : null)
+                    ?? in_array((string) $role, $this->admin_access_roles, true);
+
+                if ($access) {
                     Session::set('admin_access', true);
                 }
 

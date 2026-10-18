@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.8.7 - 2026-10-18
+
+### Changed
+- Requires Core 2.4.0, whose roles loader (`Auth::loadRolesUsing()`) lets a
+  package supply roles at runtime; flocms-admin 0.21's Roles page uses it.
+- The admin login asks `Auth::hasAdminAccess()` whether a role may open the
+  admin area, and keeps its own `['1', '2', '3']` only when nothing is
+  configured. A role added on the Roles page signs in at once; a role whose
+  panel access was taken away does not.
+- The `/admin` page shows the role name from `Auth::roles()`, so roles added
+  at runtime have their names.
+
+### Added
+- `tests/Feature/RolesLoaderLoginTest.php` (MySQL/MariaDB).
+
+Existing sites: `composer require "hostkurd/flocms-core:^2.4" -W`, then copy
+the `admin_login` change from `controllers/UsersController.php` (the
+`Auth::hasAdminAccess()` lines) and `Auth::roles()` in
+`controllers/PagesController.php`. Without the copy everything still works:
+with `auth.user_loader` (the skeleton sets it) FloCMS corrects admin access on
+the next admin request.
+
 ## 1.8.6 - 2026-10-18
 
 ### Changed

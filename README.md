@@ -34,7 +34,7 @@ composer create-project hostkurd/flocms
 ### Package versions (1.8.4)
 
 `composer.json` requires the framework packages with caret ranges from a tested
-minimum (`"hostkurd/flocms-core": "^2.3.2"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
+minimum (`"hostkurd/flocms-core": "^2.4.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
 and `composer.lock` records the exact versions. A new project installs exactly the
 locked set; an existing site changes only when you run `composer update`, so each
 site still upgrades when you choose. The ranges let a package you add, such as
@@ -46,6 +46,16 @@ ranges, or name both packages when adding the admin:
 ```bash
 composer require "hostkurd/flocms-admin:^0.11" "hostkurd/flocms-uploader:^1.2.1" -W
 ```
+
+### Upgrading to Core 2.4.0
+
+```bash
+composer require "hostkurd/flocms-core:^2.4" -W
+```
+
+Core 2.4 adds a roles loader (`Auth::loadRolesUsing()`) and role levels, used
+by flocms-admin 0.21's Roles page. Nothing changes until a loader is
+registered. See the 1.8.7 notes in CHANGELOG.md for the login change.
 
 ### Upgrading to Core 2.3.2
 
