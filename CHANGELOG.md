@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.8.8 - 2026-10-21
+
+### Added
+- Ready for flocms-admin 0.30's **Pages** (Site -> Pages): the home controller
+  (`PagesController::index()`) shows the page chosen as the home page when
+  there is one, and both layouts print `page_meta()` (the page's title,
+  description, languages and social tags) on those pages and
+  `blocks_assets()` in the `<head>`. Without flocms-admin, or without pages,
+  nothing changes.
+
+Existing sites: copy the lines at the start of
+`PagesController::index()` and the `<head>` changes in
+`templates/*/layouts/default.html`. Pages need flocms-core 2.6, which
+`composer require "hostkurd/flocms-admin:^0.30" -W` brings in.
+
 ## 1.8.7 - 2026-10-18
 
 ### Changed
