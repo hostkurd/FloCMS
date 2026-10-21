@@ -23,6 +23,11 @@ class PagesController extends Controller{
     }
 
     public function index(){ 
+        // The home page chosen in the admin panel (Site -> Pages), when there is one.
+        if (function_exists('home_page') && ($page = home_page()) !== null) {
+            return $page->response();
+        }
+
         if ($this->request->isMethod('POST') && $this->request->input('action') === 'fix_app_url') {
             $this->fixAppUrl();
         }

@@ -3,10 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php if (function_exists('current_page') && current_page() !== null) { ?>
+<?= page_meta() /* a page from the admin panel's Site -> Pages: title, description, languages, social tags */ ?>
+<?php } else { ?>
 <meta name="description" content="FLOCMS - is the most lightweight PHP Framework.">
+<title><?=Env::get('SITE_NAME');?></title>
+<?php } ?>
 <meta name="keywords" content="PHP Framework, FLOCMS, Flo PHP, HOstKurd">
 <meta name="author" content="HostKurd">
-<title><?=Env::get('SITE_NAME');?></title>
 <link rel="shortcut icon" href="<?= template_asset('img/favicon/favicon-16x16.png') ?>">
 
 <link rel="stylesheet" href="<?= template_asset('css/style.css') ?>">
@@ -22,6 +26,7 @@
 
 <style type="text/css">img[onload^="SVGInject("]{visibility:hidden;}</style>
 
+<?= function_exists('blocks_assets') ? blocks_assets() : '' ?>
 </head>
 <body>
 <?=$data['content']; ?>
