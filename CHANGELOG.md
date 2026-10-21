@@ -2,6 +2,11 @@
 
 ## 1.8.8 - 2026-10-21
 
+### Changed
+- Requires Core 2.6.0 (`composer.lock` installs v2.6.0), whose fallback hook
+  (`App::fallbackUsing()`) lets flocms-admin 0.30's Pages answer their own
+  addresses.
+
 ### Added
 - Ready for flocms-admin 0.30's **Pages** (Site -> Pages): the home controller
   (`PagesController::index()`) shows the page chosen as the home page when
@@ -12,8 +17,8 @@
 
 Existing sites: copy the lines at the start of
 `PagesController::index()` and the `<head>` changes in
-`templates/*/layouts/default.html`. Pages need flocms-core 2.6, which
-`composer require "hostkurd/flocms-admin:^0.30" -W` brings in.
+`templates/*/layouts/default.html`, then
+`composer require "hostkurd/flocms-core:^2.6" -W`.
 
 ## 1.8.7 - 2026-10-18
 

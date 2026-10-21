@@ -34,7 +34,7 @@ composer create-project hostkurd/flocms
 ### Package versions (1.8.4)
 
 `composer.json` requires the framework packages with caret ranges from a tested
-minimum (`"hostkurd/flocms-core": "^2.4.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
+minimum (`"hostkurd/flocms-core": "^2.6.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
 and `composer.lock` records the exact versions. A new project installs exactly the
 locked set; an existing site changes only when you run `composer update`, so each
 site still upgrades when you choose. The ranges let a package you add, such as
@@ -44,8 +44,17 @@ Sites created before 1.8.4 have exact versions such as `"1.2.0"`. Change them to
 ranges, or name both packages when adding the admin:
 
 ```bash
-composer require "hostkurd/flocms-admin:^0.11" "hostkurd/flocms-uploader:^1.2.1" -W
+composer require "hostkurd/flocms-admin:^0.31" "hostkurd/flocms-uploader:^1.2.1" -W
 ```
+
+### Upgrading to Core 2.6.0
+
+```bash
+composer require "hostkurd/flocms-core:^2.6" -W
+```
+
+Core 2.6 lets a package answer addresses no controller answers (`App::fallbackUsing()`),
+which flocms-admin 0.30's Pages use. Nothing changes until something registers one.
 
 ### Upgrading to Core 2.4.0
 
