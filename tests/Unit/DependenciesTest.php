@@ -17,11 +17,10 @@ use PHPUnit\Framework\TestCase;
 final class DependenciesTest extends TestCase
 {
     private const MINIMUMS = [
-        'hostkurd/flocms-core' => '^2.6.0',
+        'hostkurd/flocms-core' => '^2.8.0',
         'hostkurd/flocms-cli' => '^2.0.1',
         'hostkurd/flocms-uploader' => '^1.2.1',
         'hostkurd/flocms-captcha' => '^1.1.0',
-        'hostkurd/flocms-api' => '^1.2.0',
     ];
 
     private static function composer(string $file): array
@@ -57,11 +56,32 @@ final class DependenciesTest extends TestCase
         self::assertSame('1.2.1', $locked['hostkurd/flocms-uploader']);
     }
 
-    public function testApiControllersAreAutoloaded(): void
+    /**
+     * Release 2.0.0: flocms-api is not required (website only by default);
+     * `php flo setup` or `composer require` adds it. api/ stays mapped so
+     * `php flo api:install` needs no composer.json change.
+     */
+    public function testTheApiIsOptional(): void
     {
-        $autoload = json_decode((string) file_get_contents(dirname(__DIR__, 2) . '/composer.json'), true)['autoload']['psr-4'];
+        $composer = self::composer('composer.json');
 
-        self::assertSame('api/', $autoload['App\\Api\\']);
+        self::assertArrayNotHasKey('hostkurd/flocms-api', $composer['require']);
+        self::assertArrayHasKey('hostkurd/flocms-api', $composer['suggest']);
+        self::assertArrayHasKey('hostkurd/flocms-admin', $composer['suggest']);
+        self::assertSame('api/', $composer['autoload']['psr-4']['App\\Api\\']);
+        $locked = array_column(self::composer('composer.lock')['packages'], 'name');
+        self::assertNotContains('hostkurd/flocms-api', $locked);
+        self::assertNotContains('hostkurd/flocms-admin', $locked);
+        self::assertFileDoesNotExist(dirname(__DIR__, 2) . '/public/api.php');
+        self::assertDirectoryDoesNotExist(dirname(__DIR__, 2) . '/api');
+    }
+
+    public function testCreateProjectRunsSetupLast(): void
+    {
+        $scripts = self::composer('composer.json')['scripts']['post-create-project-cmd'];
+
+        self::assertSame('@php flo setup', end($scripts));
+        self::assertSame('Composer\\Config::disableProcessTimeout', $scripts[count($scripts) - 2], 'setup may run composer require');
     }
 
     public function testUploaderProvidesVideoAndChunkedUploads(): void

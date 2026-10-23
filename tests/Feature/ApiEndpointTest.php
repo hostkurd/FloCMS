@@ -15,7 +15,7 @@ final class ApiEndpointTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::$server = AppServer::start();
+        self::$server = AppServer::startWithApi();
     }
 
     public static function tearDownAfterClass(): void
@@ -68,7 +68,7 @@ final class ApiEndpointTest extends TestCase
 
     public function testRequestsAreRateLimited(): void
     {
-        $server = AppServer::start(['API_RATE_LIMIT' => '2']);
+        $server = AppServer::startWithApi(['API_RATE_LIMIT' => '2']);
 
         try {
             self::assertSame(200, $server->get('/api/v1/health')['status']);

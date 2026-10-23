@@ -33,7 +33,7 @@ final class ApiAuthTest extends TestCase
         $suspended = TestDatabase::addUser($pdo, 'suspended@example.com', 2, 0);
 
         $env = MySqlConfig::env($db);
-        $this->server = AppServer::start($env);
+        $this->server = AppServer::startWithApi($env);
 
         $install = $this->server->flo(['api:install-schema'], $env);
         self::assertSame(0, $install['exit'], $install['output']);

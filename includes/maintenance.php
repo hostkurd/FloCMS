@@ -11,9 +11,9 @@ declare(strict_types=1);
  *     {"time": 1767225600, "message": "Back soon", "retry": 600, "allow": ["203.0.113.7"]}
  */
 
-use FloCMS\Api\Security\ClientIpResolver;
-use FloCMS\Api\Security\IpMatcher;
 use FloCMS\Core\Http\Request;
+use FloCMS\Core\Security\ClientIpResolver;
+use FloCMS\Core\Security\IpMatcher;
 
 if (!function_exists('flo_maintenance')) {
     /**

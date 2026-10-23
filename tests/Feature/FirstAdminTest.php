@@ -29,7 +29,12 @@ final class FirstAdminTest extends TestCase
         self::assertSame(0, $migrate['exit'], $migrate['output']);
         self::assertStringContainsString('create_users_table', $migrate['output']);
         self::assertStringContainsString('create_settings_table', $migrate['output']);
-        self::assertStringContainsString('hostkurd/flocms-api:2026_10_10_000000_create_api_tables', $migrate['output']);
+        // flocms-api brings its tables when it is installed (2.0: not by default)
+        if (class_exists(\FloCMS\Api\Kernel::class)) {
+            self::assertStringContainsString('hostkurd/flocms-api:2026_10_10_000000_create_api_tables', $migrate['output']);
+        } else {
+            self::assertStringNotContainsString('create_api_tables', $migrate['output']);
+        }
 
         $create = $this->server->flo(['user:create', '-n', '--name=Site Admin', '--email=admin@example.com', '--password-stdin'], $env, "correct horse battery\n");
         self::assertSame(0, $create['exit'], $create['output']);

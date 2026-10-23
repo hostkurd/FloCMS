@@ -22,7 +22,9 @@ final class MaintenanceModeTest extends TestCase
 
     public function testDownAnswers503UntilUp(): void
     {
-        $this->server = AppServer::start();
+        // With flocms-api the API answers 503 too (2.0: the API is optional)
+        $withApi = class_exists(\FloCMS\Api\Kernel::class);
+        $this->server = $withApi ? AppServer::startWithApi() : AppServer::start();
         self::assertSame(200, $this->server->get('/')['status']);
 
         $down = $this->server->flo(['down', '--message=Upgrading <now>', '--retry=120']);
@@ -33,12 +35,14 @@ final class MaintenanceModeTest extends TestCase
         self::assertSame('120', $page['headers']['retry-after'] ?? null);
         self::assertStringContainsString('Upgrading &lt;now&gt;', $page['body']);
 
-        $api = $this->server->get('/api/v1/users');
-        self::assertSame(503, $api['status']);
-        self::assertSame('120', $api['headers']['retry-after'] ?? null);
-        self::assertSame('Upgrading <now>', json_decode($api['body'], true)['message']);
-        // Health checks keep working
-        self::assertSame(200, $this->server->get('/api/v1/health')['status']);
+        if ($withApi) {
+            $api = $this->server->get('/api/v1/users');
+            self::assertSame(503, $api['status']);
+            self::assertSame('120', $api['headers']['retry-after'] ?? null);
+            self::assertSame('Upgrading <now>', json_decode($api['body'], true)['message']);
+            // Health checks keep working
+            self::assertSame(200, $this->server->get('/api/v1/health')['status']);
+        }
 
         $up = $this->server->flo(['up']);
         self::assertSame(0, $up['exit'], $up['output']);
