@@ -52,13 +52,16 @@ final class LauncherTest extends TestCase
         $result = self::flo(['list', '--no-ansi']);
 
         self::assertSame(0, $result['code'], $result['stderr']);
-        foreach (['key:generate', 'make:controller', 'migrate', 'doctor', 'api:key:create', 'api:install-schema', 'login:unlock'] as $command) {
+        foreach (['key:generate', 'make:controller', 'migrate', 'doctor', 'login:unlock', 'setup'] as $command) {
             self::assertStringContainsString($command, $result['stdout']);
         }
     }
 
     public function testApiCommandsNeedNoForwarding(): void
     {
+        if (!class_exists(\FloCMS\Api\Kernel::class)) {
+            self::markTestSkipped('flocms-api is not installed.');
+        }
         $result = self::flo(['api:list', '--no-ansi']);
 
         self::assertSame(0, $result['code'], $result['stderr']);
@@ -67,11 +70,11 @@ final class LauncherTest extends TestCase
 
     public function testUnknownCommandsFailWithASuggestion(): void
     {
-        $result = self::flo(['api:create:schema']);
+        $result = self::flo(['kye:generate']);
 
         self::assertSame(1, $result['code']);
         self::assertSame('', $result['stdout']);
-        self::assertStringContainsString('api:install-schema', $result['stderr']);
+        self::assertStringContainsString('key:generate', $result['stderr']);
     }
 
     public function testKeyGenerateComesFromTheCli(): void
@@ -82,11 +85,18 @@ final class LauncherTest extends TestCase
         self::assertMatchesRegularExpression('/^base64:[A-Za-z0-9+\/=]{44}$/', trim($result['stdout']));
     }
 
+    /**
+     * Shows the locked versions (CI's "With flocms-api" job installs other
+     * versions and leaves this group out).
+     *
+     * @group locked-versions
+     */
+    #[\PHPUnit\Framework\Attributes\Group('locked-versions')]
     public function testRunsFromASubfolder(): void
     {
         $result = self::flo(['-V'], self::root() . DIRECTORY_SEPARATOR . 'views', '..' . DIRECTORY_SEPARATOR . 'flo');
 
         self::assertSame(0, $result['code'], $result['stderr']);
-        self::assertMatchesRegularExpression('/^FloCMS CLI \S+ \(core 2\.6\.0, api \S+, uploader 1\.2\.1(, app \S+)?\)$/', trim($result['stdout']));
+        self::assertMatchesRegularExpression('/^FloCMS CLI \S+ \(core 2\.8\.0, (api \S+, )?uploader 1\.2\.1(, app \S+)?\)$/', trim($result['stdout']));
     }
 }

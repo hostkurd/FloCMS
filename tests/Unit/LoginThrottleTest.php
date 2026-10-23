@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HostKurd\Flocms\Tests\Unit;
 
-use FloCMS\Api\RateLimit\FileRateLimiter;
+use FloCMS\Core\RateLimit\FileRateLimiter;
 use FloCMS\Support\LoginThrottle;
 use PHPUnit\Framework\TestCase;
 

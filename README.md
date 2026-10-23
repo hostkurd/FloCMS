@@ -13,6 +13,7 @@ FloCMS is a web application framework with expressive, elegant syntax. We believ
 **Table of Contents**
 - [Features](#features)
 - [Installation](#installation)
+- [Choose what you build](#choose-what-you-build)
 - [Command line (php flo)](#command-line-php-flo)
 - [API](#api-recommended-apiv1)
 
@@ -31,10 +32,65 @@ To Create a new project, install it via Composer:
 composer create-project hostkurd/flocms
 ```
 
+## Choose what you build
+
+At the end of `composer create-project`, `php flo setup` asks what you are
+building and adds only what that needs:
+
+| Setup | Packages | `/` (home) | Admin "View site" | What setup does |
+|---|---|---|---|---|
+| 1 Website + admin panel (default) | skeleton, flocms-admin | the website | shown | adds flocms-admin, runs `admin:install` |
+| 2 Website only | skeleton | the website | — | nothing: this is the plain install |
+| 3 Admin panel only | skeleton, flocms-admin | goes to `/admin` | hidden | adds flocms-admin; removes the welcome page and the `dark` example template |
+| 4 API + admin panel | skeleton, flocms-admin, flocms-api | goes to `/admin` | hidden | adds both, runs `admin:install` and `api:install`; removes the welcome page and `dark` |
+| 5 API only | skeleton, flocms-api | a short JSON welcome | — | adds flocms-api, runs `api:install`; removes the welcome page and `dark` |
+
+```bash
+php flo setup                        # ask
+php flo setup --as=api-admin         # site-admin, site, admin, api-admin, api
+php flo setup --as=admin --dry-run   # print the plan only
+```
+
+- **Without a terminal** (`composer create-project -n`, CI, a host's one-click
+  installer) setup changes nothing, so the project is website only. Run
+  `php flo setup` later. **On Windows** Composer gives its scripts no
+  terminal, so there `php flo setup` always runs as a second step:
+  `cd my-site` then `php flo setup`.
+- **Going back to a website** (admin only → website + admin) writes a simple
+  `views/pages/index.html` if an earlier setup removed the welcome page.
+- **Run it again to add.** Website → website + admin, admin → API + admin.
+  It never removes a package: when one isn't part of the new setup it prints
+  the steps to remove it yourself.
+- **Example files** are removed only while they are still the skeleton's own;
+  a file you changed is kept and named. It shows every step and asks before
+  doing anything.
+- **What it sets.** `Config::set('home', 'site' | 'admin' | 'api')` in
+  `config/config.php` decides what `/` does, and `'site_link' => false` in
+  `config/admin.php` hides the panel's View site link. Both are plain settings
+  you can change later. With `home` set to `site`, a Pages home page from
+  flocms-admin still wins.
+- The login, users, roles, `user:*` commands and the minimal `/admin` page
+  are in every setup: core's sign-in serves the admin panel and the API.
+
+`commands/SetupCommand.php` belongs to your project: delete it once you are
+set up if you like.
+
+### Add an API later
+
+```bash
+composer require hostkurd/flocms-api
+php flo api:install     # public/api.php, api/routes.php, example controllers (never overwrites)
+php flo migrate         # the API tables
+```
+
+(Or `php flo setup --as=api-admin`.) `public/.htaccess` already sends
+`/api/v1` to `public/api.php`, and `composer.json` already loads `App\Api\`
+from `api/`.
+
 ### Package versions (1.8.4)
 
 `composer.json` requires the framework packages with caret ranges from a tested
-minimum (`"hostkurd/flocms-core": "^2.6.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
+minimum (`"hostkurd/flocms-core": "^2.8.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
 and `composer.lock` records the exact versions. A new project installs exactly the
 locked set; an existing site changes only when you run `composer update`, so each
 site still upgrades when you choose. The ranges let a package you add, such as
@@ -46,6 +102,21 @@ ranges, or name both packages when adding the admin:
 ```bash
 composer require "hostkurd/flocms-admin:^0.31" "hostkurd/flocms-uploader:^1.2.1" -W
 ```
+
+### Upgrading to 2.0 (Core 2.8.0)
+
+Existing sites keep working as they are: each site owns its `composer.json`,
+and flocms-api 1.3 keeps the old class names. To follow 2.0:
+
+```bash
+composer require "hostkurd/flocms-core:^2.8" "hostkurd/flocms-api:^1.3" -W
+```
+
+then change `FloCMS\Api\RateLimit\…` and `FloCMS\Api\Security\…` imports to
+`FloCMS\Core\RateLimit\…` and `FloCMS\Core\Security\…` (`support/LoginThrottle.php`,
+`controllers/UsersController.php`, `includes/maintenance.php`). A site with no
+API can then `composer remove hostkurd/flocms-api` and delete `public/api.php`
+and `api/`. See the CHANGELOG.
 
 ### Upgrading to Core 2.6.0
 
@@ -118,7 +189,8 @@ php flo route:list                        # web and /api/v1 routes with permissi
 | Translations | `lang:missing`, `lang:add` |
 | Scheduler | `schedule:run`, `schedule:list` |
 | Logs | `log:tail`, `log:clear`, `log:rotate`, `storage:check` |
-| API | `api:*`, from flocms-api |
+| Setup | `setup` (this project's `commands/SetupCommand.php`) |
+| API | `api:*`, from flocms-api when installed |
 | Other | `completion` |
 
 **Exit codes:** 0 success, 1 failure, 2 invalid usage. Errors go to STDERR,
@@ -126,7 +198,8 @@ so scripts and cron jobs can rely on them.
 
 **Your own commands.** Classes in `commands/` (namespace `App\Commands`) are
 commands too. `commands/LoginUnlockCommand.php` (`php flo login:unlock
-<email|ip>`) is an example; `php flo make:command` creates a new one.
+<email|ip>`) and `commands/SetupCommand.php` (`php flo setup`) are examples;
+`php flo make:command` creates a new one.
 
 **Scheduler.** One cron job runs the tasks in `config/schedule.php`. In cPanel,
 use Cron Jobs → Once Per Minute:
@@ -135,7 +208,7 @@ use Cron Jobs → Once Per Minute:
 * * * * * php /home/USER/site/flo schedule:run >> /dev/null 2>&1
 ```
 
-**Maintenance mode.** `php flo down` makes the site and the API answer 503
+**Maintenance mode.** `php flo down` makes the site (and the API, when installed) answer 503
 until `php flo up`. Pass `--allow=YOUR.IP` to keep access yourself.
 
 **The settings table.** `php flo migrate` creates `settings` (`param`, `value`,
@@ -147,7 +220,9 @@ See the flocms-cli README for every option.
 
 ## API (recommended: /api/v1)
 
-`public/api.php` serves the routes in `api/routes.php` under `/api` with
+Since 2.0 the API is optional: add it with `php flo setup` or
+[Add an API later](#add-an-api-later). Then `public/api.php` serves the
+routes in `api/routes.php` under `/api` with
 [hostkurd/flocms-api](https://github.com/hostkurd/flocms-api). Controllers
 and resources live in `api/` (namespace `App\Api\`):
 
@@ -205,7 +280,7 @@ set in `.env`; move endpoints to `api/routes.php`.
 The skeleton gives you signing in and a protected area; the admin screens come from a package.
 
 - **Included:** the login and logout pages (`/admin/users/login`, `/admin/users/logout`), the `users` table, roles and permissions in `config/config.php`, the `php flo user:*` commands, and a simple `/admin` page. Any controller method named `admin_...` is served under `/admin/...` and requires a logged-in user with admin access.
-- **The admin panel:** `composer require hostkurd/flocms-admin` and `php flo admin:install` add a dashboard (which `/admin` then opens), users management, a profile page and pages for your own tables. See [flocms-admin](https://github.com/hostkurd/flocms-admin).
+- **The admin panel:** `php flo setup --as=site-admin` (or `composer require hostkurd/flocms-admin` and `php flo admin:install`) add a dashboard (which `/admin` then opens), users management, a profile page and pages for your own tables. See [flocms-admin](https://github.com/hostkurd/flocms-admin).
 - **Your own admin instead:** add `admin_` actions to your controllers (`php flo make:controller Reports --admin`), protect them with `$actionPermissions`, and use `UsersModel` and `Auth` for users. The documentation's "Build your own admin" guide shows a complete users page.
 
 `/admin` follows the `admin.home` setting when one is set: a path under `/admin` (`'dashboard'`), or a non-string callable returning one. flocms-admin sets it; set it in `config/config.php` to choose another page, or to `null` to keep the skeleton's page. Strings are always paths, including names such as `'mail'`. Use a closure for a dynamic destination. Paths to the skeleton's dashboard or an admin login action are ignored to prevent redirect loops.

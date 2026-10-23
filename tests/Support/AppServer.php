@@ -41,6 +41,37 @@ final class AppServer
         return $server;
     }
 
+    /**
+     * A copy with the API added as `php flo setup` adds it (`php flo api:install`).
+     * Skips the test when flocms-api isn't installed: since 2.0 the skeleton
+     * doesn't require it (CI's "API setup" job adds it).
+     *
+     * @param array<string, string> $env
+     */
+    public static function startWithApi(array $env = []): self
+    {
+        self::requireApi();
+
+        return self::start($env, static function (string $root): void {
+            $process = proc_open([PHP_BINARY, $root . '/flo', 'api:install', '--no-ansi'], [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, $root, self::baseEnvironment());
+            fclose($pipes[0]);
+            $output = stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            if (proc_close($process) !== 0 || !is_file($root . '/public/api.php')) {
+                throw new RuntimeException('php flo api:install failed: ' . $output);
+            }
+        });
+    }
+
+    /** Skips the test unless flocms-api is installed. */
+    public static function requireApi(): void
+    {
+        if (!class_exists(\FloCMS\Api\Kernel::class)) {
+            \PHPUnit\Framework\Assert::markTestSkipped('flocms-api is not installed (composer require hostkurd/flocms-api).');
+        }
+    }
+
     public function root(): string
     {
         return $this->root;

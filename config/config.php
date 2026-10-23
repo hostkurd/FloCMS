@@ -7,13 +7,20 @@
     );
     // Legacy /api/<controller>/<action> route (api_ methods). It skips CSRF checks
     // and has no authentication, so it is off unless LEGACY_API=true in .env.
-    // New APIs belong in api/routes.php (served under /api/v1 by public/api.php).
+    // New APIs belong in api/routes.php, served under /api/v1 by public/api.php
+    // (composer require hostkurd/flocms-api, then php flo api:install).
     if (Env::get('LEGACY_API') === true) {
         $routes['api'] = 'api_';
     }
     $routes['login'] = 'login_';
     Config::set('routes', $routes);
     unset($routes);
+
+    // What the home page (/) shows (`php flo setup` sets it):
+    //   'site'  the website (the welcome page, or the Pages home page of flocms-admin)
+    //   'admin' goes to the admin panel (/admin; the login page when signed out)
+    //   'api'   a short JSON welcome that points to /api/v1
+    Config::set('home', 'site');
 
     // Defaults, Set default values
     Config::set('default_route','default');

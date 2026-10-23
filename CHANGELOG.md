@@ -1,5 +1,58 @@
 # Changelog
 
+## 2.0.0 - unreleased
+
+Requires Core 2.8.0 (`composer.lock` installs it). flocms-api is no longer
+required. Design note: "FloCMS setups: website, admin, API".
+
+### What changed for new projects
+- **`composer create-project` asks what you are building** (`php flo setup`,
+  `commands/SetupCommand.php`): website + admin panel (default), website
+  only, admin panel only, API + admin panel, or API only. It adds the packages
+  for that choice with `composer require`, runs their installers
+  (`admin:install`, `api:install`), sets `home` and, for admin-only and API
+  setups, hides the admin's View site link and removes the welcome page and
+  the `dark` example template while they are unchanged. Without a terminal it
+  changes nothing (on Windows Composer gives scripts no terminal: run
+  `php flo setup` after create-project). `--as=…` skips the question,
+  `--dry-run` prints the plan. With `-n` the commands it starts get `-n` too.
+  Running it again only adds; it never removes a package.
+- **A plain install is website only.** `hostkurd/flocms-api` moved from
+  `require` to `suggest`, and `api/` and `public/api.php` left the skeleton:
+  `php flo api:install` (flocms-api 1.3) writes them when you add the API.
+  `composer.json` still loads `App\Api\` from `api/`, and `public/.htaccess`
+  still sends `/api/v1` to `public/api.php`.
+- **`Config::set('home', 'site')`** in `config/config.php`: `admin` sends `/`
+  to `/admin`, `api` answers `{"name": …, "api": "…/api/v1"}`, `site` is the
+  website as before (a Pages home page of flocms-admin still wins). Any other
+  value means `site`.
+
+### Changed
+- The login throttle, the client IP and maintenance mode use Core 2.8's
+  `FloCMS\Core\RateLimit\FileRateLimiter`, `RateLimiterInterface`,
+  `FloCMS\Core\Security\ClientIpResolver` and `IpMatcher` instead of
+  flocms-api's (`support/LoginThrottle.php`, `controllers/UsersController.php`,
+  `includes/maintenance.php`).
+- `post-create-project-cmd` ends with
+  `Composer\Config::disableProcessTimeout` and `@php flo setup`.
+- `APP_VERSION=2.0.0` in `.env.example`.
+
+### Tests
+- `tests/Feature/SetupCommandTest.php` (every setup, the question and its
+  default, no terminal, dry run, changed example files kept, running again,
+  a failing command), `tests/Feature/HomeSettingTest.php`.
+- The API tests (`ApiEndpointTest`, `ApiFeaturesTest`, `ApiAuthTest`, the API
+  part of `MaintenanceModeTest`) run on a copy where `php flo api:install`
+  added the API, and are skipped without flocms-api. CI's new "With
+  flocms-api" job adds it and runs them.
+
+### Existing sites
+Nothing to do: your `composer.json` keeps flocms-api, and flocms-api 1.3
+keeps the old class names. To follow 2.0, see "Upgrading to 2.0" in the
+README. To add the admin panel or the API to a site, copy
+`commands/SetupCommand.php` and the `home` lines (`config/config.php`,
+`PagesController::index()`), or run the packages' installers yourself.
+
 ## 1.8.8 - 2026-10-21
 
 ### Changed

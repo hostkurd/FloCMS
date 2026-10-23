@@ -4,87 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c5d518dfcb8344de0ffcd4dd70a7376d",
+    "content-hash": "4f202317392dbdd2f391e6af78bc0569",
     "packages": [
-        {
-            "name": "hostkurd/flocms-api",
-            "version": "v1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hostkurd/flocms-api.git",
-                "reference": "b4b95f9ba71a89a1274b4fe02972f52f6593d1e5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-api/zipball/b4b95f9ba71a89a1274b4fe02972f52f6593d1e5",
-                "reference": "b4b95f9ba71a89a1274b4fe02972f52f6593d1e5",
-                "shasum": ""
-            },
-            "require": {
-                "hostkurd/flocms-cli": "^2.0",
-                "hostkurd/flocms-core": "^2.0",
-                "php": "^8.1",
-                "psr/log": "^1.1 || ^2.0 || ^3.0"
-            },
-            "require-dev": {
-                "hostkurd/flocms-uploader": "1.2.0",
-                "phpunit/phpunit": "^10.5 || ^11.0"
-            },
-            "suggest": {
-                "ext-apcu": "Faster rate limiting with ApcuRateLimiter.",
-                "hostkurd/flocms-uploader": "Uploads through the API (Uploads\\HandlesUploads), 1.2+ for chunked uploads."
-            },
-            "bin": [
-                "bin/flo-api"
-            ],
-            "type": "library",
-            "extra": {
-                "flocms": {
-                    "commands": [
-                        "FloCMS\\Api\\Console\\Commands\\ListCommand",
-                        "FloCMS\\Api\\Console\\Commands\\InstallSchemaCommand",
-                        "FloCMS\\Api\\Console\\Commands\\KeyCreateCommand",
-                        "FloCMS\\Api\\Console\\Commands\\KeyListCommand",
-                        "FloCMS\\Api\\Console\\Commands\\KeyRevokeCommand",
-                        "FloCMS\\Api\\Console\\Commands\\TokenCreateCommand",
-                        "FloCMS\\Api\\Console\\Commands\\TokenListCommand",
-                        "FloCMS\\Api\\Console\\Commands\\TokenRevokeCommand",
-                        "FloCMS\\Api\\Console\\Commands\\GcCommand",
-                        "FloCMS\\Api\\Console\\Commands\\RoutesCommand",
-                        "FloCMS\\Api\\Console\\Commands\\DocsCommand"
-                    ],
-                    "migrations": [
-                        "database/migrations"
-                    ],
-                    "route-providers": [
-                        "FloCMS\\Api\\Console\\Commands\\ApiRoutes"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-main": "1.2-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "FloCMS\\Api\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "HostKurd"
-                }
-            ],
-            "description": "Optional modern API runtime for Flo Framework: explicit routing, middleware, JSON errors, CORS, authentication contracts, and rate limiting.",
-            "support": {
-                "issues": "https://github.com/hostkurd/flocms-api/issues",
-                "source": "https://github.com/hostkurd/flocms-api/tree/v1.2.0"
-            },
-            "time": "2026-10-10T10:36:44+00:00"
-        },
         {
             "name": "hostkurd/flocms-captcha",
             "version": "v1.1.0",
@@ -199,16 +120,16 @@
         },
         {
             "name": "hostkurd/flocms-core",
-            "version": "v2.6.0",
+            "version": "v2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "b1ad50d94e68ff9c1663875201e3fca07e60e381"
+                "reference": "14e9625aa0acffa96c00f3ed4fde1d692a6fe486"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/b1ad50d94e68ff9c1663875201e3fca07e60e381",
-                "reference": "b1ad50d94e68ff9c1663875201e3fca07e60e381",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/14e9625aa0acffa96c00f3ed4fde1d692a6fe486",
+                "reference": "14e9625aa0acffa96c00f3ed4fde1d692a6fe486",
                 "shasum": ""
             },
             "require": {
@@ -226,7 +147,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.6-dev"
+                    "dev-main": "2.8-dev"
                 }
             },
             "autoload": {
@@ -249,9 +170,9 @@
             "description": "Core runtime for Flo Framework: application services, HTTP primitives, dependency injection, and modular architecture.",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-core/issues",
-                "source": "https://github.com/hostkurd/flocms-core/tree/v2.6.0"
+                "source": "https://github.com/hostkurd/flocms-core/tree/v2.8.0"
             },
-            "time": "2026-10-21T06:08:56+00:00"
+            "time": "2026-10-23T11:29:01+00:00"
         },
         {
             "name": "hostkurd/flocms-uploader",

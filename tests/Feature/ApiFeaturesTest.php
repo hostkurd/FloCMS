@@ -17,7 +17,7 @@ final class ApiFeaturesTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::$server = AppServer::start(['API_CORS_ORIGINS' => self::ORIGIN . ',https://*.example.org']);
+        self::$server = AppServer::startWithApi(['API_CORS_ORIGINS' => self::ORIGIN . ',https://*.example.org']);
     }
 
     public static function tearDownAfterClass(): void
@@ -78,7 +78,7 @@ final class ApiFeaturesTest extends TestCase
 
     public function testContactIsThrottledAndIdempotent(): void
     {
-        $server = AppServer::start();
+        $server = AppServer::startWithApi();
 
         try {
             $message = ['name' => 'Sara', 'email' => 'sara@example.com', 'message' => 'Is the sea villa still available?'];
@@ -124,7 +124,7 @@ final class ApiFeaturesTest extends TestCase
 
     public function testOpenApiIsHiddenInProduction(): void
     {
-        $server = AppServer::start(['APP_DEBUG' => 'false']);
+        $server = AppServer::startWithApi(['APP_DEBUG' => 'false']);
 
         try {
             self::assertSame(404, $server->get('/api/v1/openapi.json')['status']);

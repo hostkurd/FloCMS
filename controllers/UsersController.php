@@ -6,7 +6,7 @@ use FloCMS\Core\Config;
 use FloCMS\Core\Auth;
 use FloCMS\Core\Controller;
 use FloCMS\Core\Router;
-use FloCMS\Api\Security\ClientIpResolver;
+use FloCMS\Core\Security\ClientIpResolver;
 use FloCMS\Core\Lang;
 use FloCMS\Core\Session;
 use FloCMS\Models\UsersModel;

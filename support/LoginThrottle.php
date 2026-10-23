@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace FloCMS\Support;
 
-use FloCMS\Api\RateLimit\FileRateLimiter;
-use FloCMS\Api\RateLimit\RateLimiterInterface;
+use FloCMS\Core\RateLimit\FileRateLimiter;
+use FloCMS\Core\RateLimit\RateLimiterInterface;
 use FloCMS\Core\Config;
 
 /**

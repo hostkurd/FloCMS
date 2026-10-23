@@ -7,6 +7,7 @@ use FloCMS\Core\Controller;
 use FloCMS\Models\PagesModel;
 use FloCMS\Core\AppUrlValidator;
 use FloCMS\Core\Env;
+use FloCMS\Core\Http\Response;
 use FloCMS\Core\Router;
 use FloCMS\Core\Config;
 use FloCMS\Core\Session;
@@ -23,6 +24,15 @@ class PagesController extends Controller{
     }
 
     public function index(){ 
+        // An admin-only or API-only project has no website (config 'home').
+        $home = self::home(Config::get('home', 'site'));
+        if ($home === 'admin') {
+            return Response::make('', 302)->header('Location', rtrim((string) SITE_URI, '/') . '/' . ACTIVE_LANG . '/admin');
+        }
+        if ($home === 'api') {
+            return Response::json(['name' => (string) Env::get('APP_NAME', 'FloCMS'), 'api' => rtrim((string) SITE_URI, '/') . '/api/v1']);
+        }
+
         // The home page chosen in the admin panel (Site -> Pages), when there is one.
         if (function_exists('home_page') && ($page = home_page()) !== null) {
             return $page->response();
@@ -52,6 +62,15 @@ class PagesController extends Controller{
         // $age  = \HostKurd\Flocms\Lib\Input::int($this->request->input('age'));
         $this->data['title'] = 'The Most lightweight PHP Framework';
         $this->data['test']  = 'This is Test Parameter';
+    }
+
+    /**
+     * The config 'home' value: 'site', 'admin' or 'api'. Anything else is
+     * 'site', so a typo never hides the website.
+     */
+    public static function home(mixed $home): string
+    {
+        return is_string($home) && in_array($home, ['site', 'admin', 'api'], true) ? $home : 'site';
     }
 
     /**

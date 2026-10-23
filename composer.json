@@ -25,11 +25,10 @@
 
   "require": {
     "php": "^8.1",
-    "hostkurd/flocms-core": "^2.6.0",
+    "hostkurd/flocms-core": "^2.8.0",
     "hostkurd/flocms-cli": "^2.0.1",
     "hostkurd/flocms-uploader": "^1.2.1",
-    "hostkurd/flocms-captcha": "^1.1.0",
-    "hostkurd/flocms-api": "^1.2.0"
+    "hostkurd/flocms-captcha": "^1.1.0"
   },
 
   "scripts": {
@@ -37,13 +36,16 @@
       "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
       "@php -r \"is_dir('storage') || mkdir('storage', 0755);\"",
       "@php -r \"is_dir('storage/logs') || mkdir('storage/logs', 0755, true);\"",
-      "@php flo key:generate"
+      "@php flo key:generate",
+      "Composer\\Config::disableProcessTimeout",
+      "@php flo setup"
     ],
     "test": "phpunit"
   },
 
   "suggest": {
-    "hostkurd/flocms-admin": "The admin panel: dashboard, users management, profile and your own content resources (php flo admin:install)",
+    "hostkurd/flocms-admin": "The admin panel: dashboard, users management, profile and your own content resources (php flo setup, or php flo admin:install)",
+    "hostkurd/flocms-api": "A JSON API under /api/v1: routes, tokens, rate limits, OpenAPI (php flo setup, or php flo api:install)",
     "hostkurd/flocms-reactive": "Optional PHP reactive components for interactive pages without full-page reloads"
   },
 
