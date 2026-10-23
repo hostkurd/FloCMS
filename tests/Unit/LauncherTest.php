@@ -85,6 +85,13 @@ final class LauncherTest extends TestCase
         self::assertMatchesRegularExpression('/^base64:[A-Za-z0-9+\/=]{44}$/', trim($result['stdout']));
     }
 
+    /**
+     * Shows the locked versions (CI's "With flocms-api" job installs other
+     * versions and leaves this group out).
+     *
+     * @group locked-versions
+     */
+    #[\PHPUnit\Framework\Attributes\Group('locked-versions')]
     public function testRunsFromASubfolder(): void
     {
         $result = self::flo(['-V'], self::root() . DIRECTORY_SEPARATOR . 'views', '..' . DIRECTORY_SEPARATOR . 'flo');

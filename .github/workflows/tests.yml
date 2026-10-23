@@ -99,8 +99,9 @@ jobs:
           # The tests check the skeleton's own composer.json and composer.lock
           git checkout -- composer.json composer.lock
 
+      # locked-versions: tests of the versions composer.lock installs
       - name: Run tests
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit --exclude-group locked-versions
 
   mysql:
     name: ${{ matrix.db.name }} (PHP 8.3)
