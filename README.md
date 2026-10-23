@@ -53,7 +53,11 @@ php flo setup --as=admin --dry-run   # print the plan only
 
 - **Without a terminal** (`composer create-project -n`, CI, a host's one-click
   installer) setup changes nothing, so the project is website only. Run
-  `php flo setup` later.
+  `php flo setup` later. **On Windows** Composer gives its scripts no
+  terminal, so there `php flo setup` always runs as a second step:
+  `cd my-site` then `php flo setup`.
+- **Going back to a website** (admin only → website + admin) writes a simple
+  `views/pages/index.html` if an earlier setup removed the welcome page.
 - **Run it again to add.** Website → website + admin, admin → API + admin.
   It never removes a package: when one isn't part of the new setup it prints
   the steps to remove it yourself.

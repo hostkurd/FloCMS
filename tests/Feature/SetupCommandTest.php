@@ -40,17 +40,17 @@ final class SetupCommandTest extends TestCase
             $this->ran[] = $line;
             if (str_starts_with($line, 'composer require ')) {
                 $composer = json_decode((string) file_get_contents($cwd . '/composer.json'), true);
-                foreach (array_slice(explode(' ', $line), 2) as $package) {
+                foreach (array_diff(array_slice(explode(' ', $line), 2), ['--no-interaction']) as $package) {
                     [$name, $version] = explode(':', $package, 2);
                     $composer['require'][$name] = $version;
                 }
                 file_put_contents($cwd . '/composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
             }
-            if ($line === 'php flo admin:install' && !is_file($cwd . '/config/admin.php')) {
+            if (str_starts_with($line, 'php flo admin:install') && !is_file($cwd . '/config/admin.php')) {
                 // What flocms-admin 0.39.3's config stub says
                 file_put_contents($cwd . '/config/admin.php', "<?php\n\nreturn [\n    'path' => 'admin',\n    'site_link' => true,\n];\n");
             }
-            if ($line === 'php flo api:install') {
+            if (str_starts_with($line, 'php flo api:install')) {
                 file_put_contents($cwd . '/public/api.php', "<?php\n");
             }
 
@@ -203,7 +203,8 @@ final class SetupCommandTest extends TestCase
         $tester = $this->runSetup(['--as=api', '--no-interaction'], [], false);
 
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
-        self::assertSame(['composer require hostkurd/flocms-api:^1.3', 'php flo api:install'], $this->ran);
+        // Without questions, the commands it starts don't ask either.
+        self::assertSame(['composer require hostkurd/flocms-api:^1.3 --no-interaction', 'php flo api:install --no-interaction'], $this->ran);
         self::assertStringContainsString("Config::set('home', 'api');", $this->config());
     }
 
@@ -261,7 +262,29 @@ final class SetupCommandTest extends TestCase
         self::assertStringContainsString('composer remove hostkurd/flocms-api', $display);
         self::assertSame([], $this->ran);
         self::assertStringContainsString("Config::set('home', 'site');", $this->config());
+        // The welcome page was removed by the admin setup: the website gets a home page again.
+        self::assertStringContainsString('write views/pages/index.html (a simple home page)', $display);
+        self::assertStringContainsString('Your website starts here', (string) file_get_contents($this->root . '/views/pages/index.html'));
         self::assertArrayHasKey('hostkurd/flocms-admin', json_decode((string) file_get_contents($this->root . '/composer.json'), true)['require']);
+    }
+
+    public function testAFileReachedThroughALinkIsKept(): void
+    {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            self::markTestSkipped('symlinks need extra rights on Windows');
+        }
+        // templates/dark shared with another site
+        $shared = $this->root . '-shared-dark';
+        rename($this->root . '/templates/dark', $shared);
+        symlink($shared, $this->root . '/templates/dark');
+
+        $tester = $this->runSetup(['--as=admin'], ['y']);
+
+        self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
+        self::assertFileExists($shared . '/layouts/default.html');
+        self::assertStringContainsString('Kept templates/dark/layouts/default.html', $tester->getDisplay() . $tester->getErrorOutput());
+        self::assertFileDoesNotExist($this->root . '/views/pages/index.html');
+        self::delete($shared);
     }
 
     public function testAFailingCommandStopsWithWhatToDo(): void

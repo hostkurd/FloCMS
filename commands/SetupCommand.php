@@ -45,6 +45,9 @@ final class SetupCommand extends Command
         'public/themes/dark/css/style.css' => 'e8ea7d1d089d4c17b5d30a9c71328533ebb8decedf22825ffbf8eb157b0dcfec',
     ];
 
+    /** The view of the website's home page (PagesController::index()). */
+    public const HOME_VIEW = 'views/pages/index.html';
+
     /**
      * Runs a command and returns its exit code (tests replace it).
      *
@@ -114,7 +117,8 @@ TXT;
             }
             $setup = $keys[(int) $this->choice('What are you building?', $choices, 1) - 1];
         } else {
-            $this->note('No terminal to ask in: the project stays as it is (website only). Run `php flo setup` to choose.');
+            // Composer gives scripts no terminal on Windows, with -n, or when its output is piped.
+            $this->note('No terminal to ask in: the project stays as it is (website only). To choose, run: php flo setup');
 
             return self::SUCCESS;
         }
@@ -181,18 +185,20 @@ TXT;
                 $extra[] = $package;
             }
         }
+        // A run without questions keeps the commands it starts quiet too.
+        $quiet = $this->input->isInteractive() ? [] : ['--no-interaction'];
         if ($add !== []) {
-            $command = [...self::composer(), 'require', ...$add];
+            $command = [...self::composer(), 'require', ...$add, ...$quiet];
             $steps[] = ['show' => 'composer require ' . implode(' ', $add), 'run' => fn () => $this->runStep($command)];
         }
 
         // The installers only add what is missing, so they run every time.
         $flo = [PHP_BINARY, $project->path('flo')];
         if ($wants['hostkurd/flocms-admin']) {
-            $steps[] = ['show' => 'php flo admin:install', 'run' => fn () => $this->runStep([...$flo, 'admin:install'])];
+            $steps[] = ['show' => 'php flo admin:install', 'run' => fn () => $this->runStep([...$flo, 'admin:install', ...$quiet])];
         }
         if ($wants['hostkurd/flocms-api']) {
-            $steps[] = ['show' => 'php flo api:install', 'run' => fn () => $this->runStep([...$flo, 'api:install'])];
+            $steps[] = ['show' => 'php flo api:install', 'run' => fn () => $this->runStep([...$flo, 'api:install', ...$quiet])];
         }
 
         $kept = [];
@@ -217,6 +223,11 @@ TXT;
             if ($remove !== []) {
                 $steps[] = ['show' => 'remove ' . implode(', ', $remove), 'run' => fn () => $this->remove($remove)];
             }
+        }
+
+        // An earlier admin-only or API setup removed the welcome page: the website needs one.
+        if ($home === 'site' && !is_file($project->path(self::HOME_VIEW))) {
+            $steps[] = ['show' => 'write ' . self::HOME_VIEW . ' (a simple home page)', 'run' => fn () => $this->writeHomeView()];
         }
 
         if ($this->currentHome() !== $home) {
@@ -251,6 +262,11 @@ TXT;
     /** @param list<string> $command */
     private static function execute(array $command, string $cwd): int
     {
+        // On Windows a string goes through cmd.exe, where "^" is only literal
+        // inside quotes ("hostkurd/flocms-admin:^0.39.3"), so quote every part.
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $command = implode(' ', array_map(static fn (string $part): string => '"' . str_replace('"', '', $part) . '"', $command));
+        }
         $process = proc_open($command, [0 => STDIN, 1 => STDOUT, 2 => STDERR], $pipes, $cwd);
 
         return is_resource($process) ? proc_close($process) : 1;
@@ -264,7 +280,7 @@ TXT;
             return str_ends_with(strtolower($binary), '.bat') ? [$binary] : [PHP_BINARY, $binary];
         }
 
-        return DIRECTORY_SEPARATOR === '\\' ? ['cmd', '/c', 'composer'] : ['composer'];
+        return ['composer'];
     }
 
     /** sha256 with LF line endings, so a Windows checkout (CRLF) still matches. */
@@ -283,6 +299,10 @@ TXT;
     {
         foreach ($files as $file) {
             $path = $this->project()->path($file);
+            if ($this->throughLink($file)) {
+                $this->note('Kept ' . $file . ': it is reached through a link, which may be shared.');
+                continue;
+            }
             if (@unlink($path)) {
                 $this->success('Removed ' . $file);
             } else {
@@ -297,6 +317,36 @@ TXT;
                 }
             }
         }
+    }
+
+    /** Whether the file, or a folder on the way to it, is a symbolic link. */
+    private function throughLink(string $file): bool
+    {
+        for ($part = $file; $part !== '.' && $part !== ''; $part = dirname($part)) {
+            if (is_link($this->project()->path($part))) {
+                return true;
+            }
+            if (!str_contains($part, '/')) {
+                break;
+            }
+        }
+
+        return false;
+    }
+
+    private function writeHomeView(): void
+    {
+        $path = $this->project()->path(self::HOME_VIEW);
+        $html = "<section style=\"max-width:40rem;margin:4rem auto;padding:0 1rem;font-family:system-ui,sans-serif\">\n"
+            . "    <h1>Welcome</h1>\n"
+            . "    <p>Your website starts here. Edit " . self::HOME_VIEW . " to change this page.</p>\n"
+            . "</section>\n";
+        if ((!is_dir(dirname($path)) && !@mkdir(dirname($path), 0755, true)) || @file_put_contents($path, $html, LOCK_EX) === false) {
+            $this->warn('Could not write ' . self::HOME_VIEW . ': the home page needs it.');
+
+            return;
+        }
+        $this->success('Created ' . self::HOME_VIEW);
     }
 
     private function currentHome(): string

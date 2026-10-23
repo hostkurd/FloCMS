@@ -13,7 +13,9 @@ required. Design note: "FloCMS setups: website, admin, API".
   (`admin:install`, `api:install`), sets `home` and, for admin-only and API
   setups, hides the admin's View site link and removes the welcome page and
   the `dark` example template while they are unchanged. Without a terminal it
-  changes nothing. `--as=…` skips the question, `--dry-run` prints the plan.
+  changes nothing (on Windows Composer gives scripts no terminal: run
+  `php flo setup` after create-project). `--as=…` skips the question,
+  `--dry-run` prints the plan. With `-n` the commands it starts get `-n` too.
   Running it again only adds; it never removes a package.
 - **A plain install is website only.** `hostkurd/flocms-api` moved from
   `require` to `suggest`, and `api/` and `public/api.php` left the skeleton:
