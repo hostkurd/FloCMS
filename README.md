@@ -90,7 +90,7 @@ from `api/`.
 ### Package versions (1.8.4)
 
 `composer.json` requires the framework packages with caret ranges from a tested
-minimum (`"hostkurd/flocms-core": "^2.8.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
+minimum (`"hostkurd/flocms-core": "^2.9.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
 and `composer.lock` records the exact versions. A new project installs exactly the
 locked set; an existing site changes only when you run `composer update`, so each
 site still upgrades when you choose. The ranges let a package you add, such as
@@ -102,6 +102,16 @@ ranges, or name both packages when adding the admin:
 ```bash
 composer require "hostkurd/flocms-admin:^0.31" "hostkurd/flocms-uploader:^1.2.1" -W
 ```
+
+### Upgrading to 2.0.1 (Core 2.9.0)
+
+```bash
+composer require "hostkurd/flocms-core:^2.9" -W
+```
+
+Core 2.9.0 lets the website itself use SQLite: set `DB_TYPE=sqlite` and
+`DB_NAME` to the database file (relative to the project or a full path) in
+`.env`. MySQL sites need no change.
 
 ### Upgrading to 2.0 (Core 2.8.0)
 
