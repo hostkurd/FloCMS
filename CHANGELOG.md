@@ -1,6 +1,23 @@
 # Changelog
 
-## 2.0.0 - unreleased
+## 2.0.1 - 2026-10-29
+
+Requires Core 2.9.0 (`composer.lock` installs it).
+
+### Changed
+- `hostkurd/flocms-core` `^2.9.0` (was `^2.8.0`). Core 2.9.0 adds SQLite for
+  websites: with `DB_TYPE=sqlite` in `.env`, `DB_NAME` is the database file
+  (relative to the project or a full path), and the website connects to it
+  instead of showing "Database is not configured". MySQL sites are unchanged.
+- `composer.lock` installs core v2.9.0 from its tag commit (`e4704c6`). 2.0.0's
+  lock pointed at core 2.8.0's pull-request commit (`14e9625`), which had the
+  same files as the tag.
+- `.env.example` explains the SQLite settings; `APP_VERSION=2.0.1`.
+
+### Upgrading
+`composer require "hostkurd/flocms-core:^2.9" -W`. Nothing else changes.
+
+## 2.0.0 - 2026-10-23
 
 Requires Core 2.8.0 (`composer.lock` installs it). flocms-api is no longer
 required. Design note: "FloCMS setups: website, admin, API".

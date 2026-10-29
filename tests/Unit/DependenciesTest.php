@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 final class DependenciesTest extends TestCase
 {
     private const MINIMUMS = [
-        'hostkurd/flocms-core' => '^2.8.0',
+        'hostkurd/flocms-core' => '^2.9.0',
         'hostkurd/flocms-cli' => '^2.0.1',
         'hostkurd/flocms-uploader' => '^1.2.1',
         'hostkurd/flocms-captcha' => '^1.1.0',
