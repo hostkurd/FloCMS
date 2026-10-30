@@ -55,7 +55,8 @@ php flo setup --as=admin --dry-run   # print the plan only
   installer) setup changes nothing, so the project is website only. Run
   `php flo setup` later. **On Windows** Composer gives its scripts no
   terminal, so there `php flo setup` always runs as a second step:
-  `cd my-site` then `php flo setup`.
+  `cd my-site` then `php flo setup`. (Projects from 2.0.0 or 2.0.1: take
+  `commands/SetupCommand.php` from 2.0.2 first, see the CHANGELOG.)
 - **Going back to a website** (admin only → website + admin) writes a simple
   `views/pages/index.html` if an earlier setup removed the welcome page.
 - **Run it again to add.** Website → website + admin, admin → API + admin.
