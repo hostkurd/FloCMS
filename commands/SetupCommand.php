@@ -262,22 +262,74 @@ TXT;
     /** @param list<string> $command */
     private static function execute(array $command, string $cwd): int
     {
-        // On Windows a string goes through cmd.exe, where "^" is only literal
-        // inside quotes ("hostkurd/flocms-admin:^0.39.3"), so quote every part.
         if (DIRECTORY_SEPARATOR === '\\') {
-            $command = implode(' ', array_map(static fn (string $part): string => '"' . str_replace('"', '', $part) . '"', $command));
+            $command = self::windowsCommandLine($command);
         }
         $process = proc_open($command, [0 => STDIN, 1 => STDOUT, 2 => STDERR], $pipes, $cwd);
 
         return is_resource($process) ? proc_close($process) : 1;
     }
 
-    /** @return list<string> how to call Composer: the one running this script, else `composer` */
+    /**
+     * A command line for cmd.exe. On Windows proc_open() sends a string through
+     * cmd.exe, where "^" is only literal inside quotes
+     * ("hostkurd/flocms-admin:^0.39.3"), so parts with special characters are
+     * quoted. A bare program name is not: a batch file started as "composer"
+     * (quoted, found on PATH) gets the current folder as %~dp0, and
+     * Composer's composer.bat then looks for composer.phar in the project.
+     *
+     * @param list<string> $command
+     */
+    public static function windowsCommandLine(array $command): string
+    {
+        return implode(' ', array_map(
+            static fn (string $part): string => $part !== '' && strpbrk($part, " \t^&|<>()%!,;=\"") === false
+                ? $part
+                : '"' . str_replace('"', '', $part) . '"',
+            $command,
+        ));
+    }
+
+    /** @return list<string> how to call Composer: the one running this script, else the one on PATH */
     private static function composer(): array
     {
         $binary = getenv('COMPOSER_BINARY');
         if (is_string($binary) && $binary !== '' && is_file($binary)) {
             return str_ends_with(strtolower($binary), '.bat') ? [$binary] : [PHP_BINARY, $binary];
+        }
+        if (DIRECTORY_SEPARATOR === '\\') {
+            return self::windowsComposer((string) getenv('PATH'), ';');
+        }
+
+        return ['composer'];
+    }
+
+    /**
+     * Composer on a Windows PATH, by its full path. composer.bat or
+     * composer.cmd with composer.phar beside it (Composer-Setup, XAMPP,
+     * Laragon) runs the phar with this PHP, so no batch file is involved.
+     *
+     * @return list<string>
+     */
+    public static function windowsComposer(string $path, string $separator): array
+    {
+        foreach (explode($separator, $path) as $dir) {
+            $dir = rtrim(trim($dir, " \t\""), '\\/');
+            if ($dir === '') {
+                continue;
+            }
+            foreach (['composer.exe', 'composer.bat', 'composer.cmd'] as $name) {
+                $file = $dir . DIRECTORY_SEPARATOR . $name;
+                if (!is_file($file)) {
+                    continue;
+                }
+                $phar = $dir . DIRECTORY_SEPARATOR . 'composer.phar';
+                if ($name !== 'composer.exe' && is_file($phar)) {
+                    return [PHP_BINARY, $phar];
+                }
+
+                return [$file];
+            }
         }
 
         return ['composer'];

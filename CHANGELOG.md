@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.0.2 - 2026-10-30
+
+### Fixed
+- **`php flo setup` on Windows** stopped at `composer require` with
+  "Could not open input file: <your project>\composer.phar". It ran the
+  word `composer` in quotes through cmd.exe, and a batch file started that
+  way (Composer-Setup's `composer.bat`) looks for `composer.phar` in the
+  current folder instead of its own. Setup now finds Composer on `PATH` and
+  runs `composer.phar` with the same PHP when it sits beside
+  `composer.bat`/`composer.cmd` (Composer-Setup, XAMPP, Laragon), or calls
+  `composer.exe`/`.bat`/`.cmd` by its full path. Only arguments with spaces
+  or cmd special characters (`^` in `^0.39.3`) are quoted now.
+  `composer create-project` was not affected (Composer tells setup where it
+  is).
+
+### Upgrading
+Projects created with 2.0.0 or 2.0.1 have their own copy of
+`commands/SetupCommand.php`: replace it with this release's file, or add the
+packages by hand (`composer require "hostkurd/flocms-admin:^0.39.3"`, then
+`php flo admin:install`, then `php flo setup --as=site-admin` to finish).
+
 ## 2.0.1 - 2026-10-29
 
 Requires Core 2.9.0 (`composer.lock` installs it).
