@@ -104,23 +104,6 @@ ranges, or name both packages when adding the admin:
 composer require "hostkurd/flocms-admin:^0.31" "hostkurd/flocms-uploader:^1.2.1" -W
 ```
 
-### Upgrading to 2.1 (session cookie)
-
-New sites name their session cookie `flocms_session` instead of PHP's default
-`PHPSESSID`, the way CodeIgniter uses `ci_session`. Tools such as Wappalyzer
-recognise FloCMS sites by it. The cookie settings now live in one file,
-`includes/session.php`, used by both `public/index.php` and
-`public/captcha.php`, so the captcha always uses the site's session.
-
-`composer update` doesn't change these files. To get the new name on an existing
-site, copy `includes/session.php`, and in `public/index.php` replace the
-`$isHttps`, `session_set_cookie_params()` and `ini_set('session.*')` lines with
-`require_once ROOT . '/includes/session.php';` and `session_start();` with
-`flo_session_start();`. In `public/captcha.php`, require the same file and call
-`flo_session_start();` before `new CaptchaManager()`. Everyone signed in is
-signed out once when you deploy it. To use another name (or to hide that the
-site runs FloCMS), change `FLO_SESSION_NAME` in `includes/session.php`.
-
 ### Upgrading to 2.0.1 (Core 2.9.0)
 
 ```bash
