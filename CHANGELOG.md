@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.1.0 - 2026-11-08
+
+Requires Core 2.9.0 (unchanged). Design note: "FloCMS fingerprint".
+
+### Changed
+- **The session cookie is called `flocms_session`** (was PHP's default
+  `PHPSESSID`), the way CodeIgniter uses `ci_session` and CakePHP `CAKEPHP`.
+  Tools such as Wappalyzer can recognise FloCMS sites by it. FloCMS adds no
+  generator tag or header: nothing changes in a site's HTML.
+- The session cookie settings moved from `public/index.php` to
+  `includes/session.php` (`flo_session_start()`, `FLO_SESSION_NAME`), with the
+  same values as before (HttpOnly, SameSite=Lax, Secure on HTTPS, strict mode).
+- `APP_VERSION=2.1.0`.
+
+### Fixed
+- `public/captcha.php` started its session without the site's cookie settings
+  (no HttpOnly, SameSite or Secure). It now uses `includes/session.php` too, so
+  it always shares the site's session. Without this, renaming the cookie would
+  have saved the captcha code in a different session than the form reads.
+
+### Upgrading
+Everyone signed in is signed out once when you deploy this, because the old
+cookie is no longer read. `composer update` doesn't change `public/`: copy
+`includes/session.php` and the changed lines of `public/index.php` and
+`public/captcha.php` (README, "Upgrading to 2.1"). To use another name, change
+`FLO_SESSION_NAME` in `includes/session.php`.
+
 ## 2.0.2 - 2026-10-30
 
 ### Fixed
