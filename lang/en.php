@@ -18,5 +18,7 @@ return array(
     // Admin login
     'auth.session_ended' => 'Your session has ended. Please log in again.',
     'auth.throttled' => 'Too many login attempts. Please try again in :minutes minute(s).',
+    'auth.no_panel_access' => 'This account cannot use the admin panel. Sign in with an account that has access to it.',
+    'auth.signed_in_on_site' => 'You are signed in on the website. To use the admin panel, sign in with an account that has access to it.',
     // Put Your Translation Phraces
 );

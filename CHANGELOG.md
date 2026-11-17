@@ -1,5 +1,52 @@
 # Changelog
 
+## 2.1.0 - 2026-11-17
+
+Requires Core 2.10.0 (`composer.lock` installs it).
+
+### Added
+- **`php flo setup` offers flocms-frontend**, the website kit (components,
+  Site Style, menus, SEO, starter pages). The website setups (`site-admin`,
+  `site`) ask "Add flocms-frontend…?" (default no); `--frontend` says yes
+  without asking. It adds `hostkurd/flocms-frontend:^0.1.1` and runs
+  `php flo site:install --activate`. A project from 2.0 that requires
+  `flocms-admin:^0.39.3` gets `flocms-admin:^0.43` in the same
+  `composer require … --with-all-dependencies` (flocms-frontend needs 0.43;
+  run `php flo migrate` afterwards). Once it is installed, setup no longer
+  asks, and `--frontend` again only runs `site:install --no-template`, so the
+  active template stays as you set it. An admin-only or API-only setup lists
+  it with how to remove it.
+- **A home page hook for packages:** `Config::set('home.fallback', fn ($request) => …)`.
+  When the site has no home page of its own (no page marked as home in the
+  admin), `PagesController::index()` calls it; a returned `Response` is the
+  page, `null` keeps the welcome page. A string (a function name) is never
+  called. flocms-frontend 0.1.1 uses it for its starter picker.
+- The default layout sets `lang` and `dir` on `<html>` from the active
+  language (`dir="rtl"` for ar and ku).
+
+### Fixed
+- **Admin sign-in while signed in on the website.** A visitor signed in on
+  the website without admin access saw "You are already logged in … logout
+  first" and could not reach the form. The form is shown now, with a note
+  (`auth.signed_in_on_site`, in en, ar and ku), and signing in there ends
+  the website's session completely before the admin session starts, so
+  nothing of it carries over. A wrong password leaves it as it was. An
+  account without panel access that signs in on the admin form is told so
+  (`auth.no_panel_access`).
+
+### Changed
+- `hostkurd/flocms-core` `^2.10.0` (was `^2.9.0`): `TemplateEngine::extend()`,
+  controller resolvers and fallbacks, which flocms-admin 0.43 and
+  flocms-frontend use.
+- `php flo setup` adds `hostkurd/flocms-admin:^0.43` (was `^0.39.3`).
+
+### Upgrading
+`composer require "hostkurd/flocms-core:^2.10" -W`. Your own copies of
+`controllers/UsersController.php`, `controllers/PagesController.php`,
+`templates/default/layouts/default.html` and `commands/SetupCommand.php` keep
+working; take this release's files for the changes above. The `dark`
+template's layout is unchanged.
+
 ## 2.0.2 - 2026-10-30
 
 ### Fixed

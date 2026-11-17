@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04b3b101766fa5c122e67710a9a62a91",
+    "content-hash": "1babe3a9da4bf77abb7e5074a6f4b09b",
     "packages": [
         {
             "name": "hostkurd/flocms-captcha",
@@ -120,16 +120,16 @@
         },
         {
             "name": "hostkurd/flocms-core",
-            "version": "v2.9.0",
+            "version": "v2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hostkurd/flocms-core.git",
-                "reference": "e4704c657eb697664a17a1693897247384bb5b4d"
+                "reference": "2128dd73d5c650da47233941df144fec826a46b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/e4704c657eb697664a17a1693897247384bb5b4d",
-                "reference": "e4704c657eb697664a17a1693897247384bb5b4d",
+                "url": "https://api.github.com/repos/hostkurd/flocms-core/zipball/2128dd73d5c650da47233941df144fec826a46b9",
+                "reference": "2128dd73d5c650da47233941df144fec826a46b9",
                 "shasum": ""
             },
             "require": {
@@ -141,13 +141,14 @@
                 "phpunit/phpunit": "^10.5 || ^11.0"
             },
             "suggest": {
+                "ext-mbstring": "Used by the Validator and by email (encoded names and subjects).",
                 "ext-pdo_mysql": "Required by the bundled MySQL connection and module state/migration implementations.",
                 "hostkurd/flocms-api": "Adds the explicit API router, middleware pipeline, JSON exception handling, CORS, and rate limiting."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.9-dev"
+                    "dev-main": "2.10-dev"
                 }
             },
             "autoload": {
@@ -170,9 +171,9 @@
             "description": "Core runtime for Flo Framework: application services, HTTP primitives, dependency injection, and modular architecture.",
             "support": {
                 "issues": "https://github.com/hostkurd/flocms-core/issues",
-                "source": "https://github.com/hostkurd/flocms-core/tree/v2.9.0"
+                "source": "https://github.com/hostkurd/flocms-core/tree/v2.10.0"
             },
-            "time": "2026-10-23T22:06:13+00:00"
+            "time": "2026-11-12T22:15:40+00:00"
         },
         {
             "name": "hostkurd/flocms-uploader",

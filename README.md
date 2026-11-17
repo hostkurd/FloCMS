@@ -45,10 +45,16 @@ building and adds only what that needs:
 | 4 API + admin panel | skeleton, flocms-admin, flocms-api | goes to `/admin` | hidden | adds both, runs `admin:install` and `api:install`; removes the welcome page and `dark` |
 | 5 API only | skeleton, flocms-api | a short JSON welcome | — | adds flocms-api, runs `api:install`; removes the welcome page and `dark` |
 
+The two website setups then ask whether to add **flocms-frontend**, the
+website kit (components, Site Style, menus, SEO, starter pages). Yes, or
+`--frontend`, adds it and runs `php flo site:install --activate`. The answer
+defaults to no.
+
 ```bash
 php flo setup                        # ask
 php flo setup --as=api-admin         # site-admin, site, admin, api-admin, api
 php flo setup --as=admin --dry-run   # print the plan only
+php flo setup --as=site --frontend   # website + flocms-frontend, no questions
 ```
 
 - **Without a terminal** (`composer create-project -n`, CI, a host's one-click
@@ -91,7 +97,7 @@ from `api/`.
 ### Package versions (1.8.4)
 
 `composer.json` requires the framework packages with caret ranges from a tested
-minimum (`"hostkurd/flocms-core": "^2.9.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
+minimum (`"hostkurd/flocms-core": "^2.10.0"`, `"hostkurd/flocms-uploader": "^1.2.1"`, …),
 and `composer.lock` records the exact versions. A new project installs exactly the
 locked set; an existing site changes only when you run `composer update`, so each
 site still upgrades when you choose. The ranges let a package you add, such as
@@ -101,8 +107,21 @@ Sites created before 1.8.4 have exact versions such as `"1.2.0"`. Change them to
 ranges, or name both packages when adding the admin:
 
 ```bash
-composer require "hostkurd/flocms-admin:^0.31" "hostkurd/flocms-uploader:^1.2.1" -W
+composer require "hostkurd/flocms-admin:^0.43" "hostkurd/flocms-uploader:^1.2.1" -W
 ```
+
+### Upgrading to 2.1.0 (Core 2.10.0)
+
+```bash
+composer require "hostkurd/flocms-core:^2.10" -W
+```
+
+Then take these files from 2.1.0 if your copies are still the skeleton's:
+`controllers/UsersController.php` (admin sign-in while signed in on the
+website), `controllers/PagesController.php` (the `home.fallback` hook),
+`templates/default/layouts/default.html` (`lang` and `dir`) and
+`commands/SetupCommand.php`. Add `auth.signed_in_on_site` to your `lang/`
+files. See the CHANGELOG.
 
 ### Upgrading to 2.0.1 (Core 2.9.0)
 

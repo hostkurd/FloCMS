@@ -38,6 +38,16 @@ class PagesController extends Controller{
             return $page->response();
         }
 
+        // A package's home page while the site has none of its own (config 'home.fallback',
+        // a function that returns a Response or null), e.g. flocms-frontend's starter picker.
+        $fallback = Config::get('home.fallback');
+        if (is_callable($fallback) && !is_string($fallback)) {
+            $response = $fallback($this->request);
+            if ($response instanceof Response) {
+                return $response;
+            }
+        }
+
         if ($this->request->isMethod('POST') && $this->request->input('action') === 'fix_app_url') {
             $this->fixAppUrl();
         }
