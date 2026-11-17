@@ -29,9 +29,13 @@ final class SetupCommand extends Command
 
     /** The packages each setup adds, with the version each one needs. */
     public const PACKAGES = [
-        'hostkurd/flocms-admin' => '^0.39.3',
+        'hostkurd/flocms-admin' => '^0.43',
         'hostkurd/flocms-api' => '^1.3',
+        'hostkurd/flocms-frontend' => '^0.1.1',
     ];
+
+    /** The setups that have a website, where flocms-frontend can be added. */
+    public const WEBSITE_SETUPS = ['site-admin', 'site'];
 
     /**
      * The skeleton's example files an admin-only or API-only project removes,
@@ -76,10 +80,16 @@ Asks "What are you building?" and sets the project up for it:
   api-admin   API + admin panel       adds flocms-admin and flocms-api
   api         API only                adds flocms-api; / answers JSON
 
+A website setup (site-admin, site) also asks whether to add flocms-frontend,
+the website kit: components, Site Style, menus, SEO and starter pages. Say
+yes, or pass --frontend, and it runs `composer require` and
+`php flo site:install --activate`.
+
 Packages are added with `composer require`, then their installers run
-(`php flo admin:install`, `php flo api:install`). An admin-only or API-only
-project also gets 'home' in config/config.php and, when they are still the
-skeleton's own files, loses the welcome page and the dark example template.
+(`php flo admin:install`, `php flo api:install`, `php flo site:install`).
+An admin-only or API-only project also gets 'home' in config/config.php
+and, when they are still the skeleton's own files, loses the welcome page
+and the dark example template.
 
 Without a terminal (no --as) nothing changes: the project stays website
 only. Run it again later to add the admin panel or the API. It never
@@ -89,6 +99,7 @@ TXT;
     protected array $examples = [
         'php flo setup',
         'php flo setup --as=admin',
+        'php flo setup --as=site-admin --frontend',
         'php flo setup --as=api-admin --dry-run',
     ];
 
@@ -96,6 +107,7 @@ TXT;
     {
         $definition
             ->option('as', null, Option::VALUE_REQUIRED, 'The setup: ' . implode(', ', array_keys(self::SETUPS)))
+            ->option('frontend', null, Option::VALUE_NONE, 'Also add flocms-frontend, the website kit (site-admin and site only)')
             ->option('dry-run', null, Option::VALUE_NONE, 'Print the plan, change nothing');
     }
 
@@ -123,7 +135,16 @@ TXT;
             return self::SUCCESS;
         }
 
-        $plan = $this->plan($setup);
+        $frontend = (bool) $this->option('frontend');
+        if ($frontend && !in_array($setup, self::WEBSITE_SETUPS, true)) {
+            $this->invalid('--frontend is for a setup with a website: ' . implode(', ', self::WEBSITE_SETUPS) . '.');
+        }
+        if (!$frontend && $canAsk && in_array($setup, self::WEBSITE_SETUPS, true)
+            && !in_array('hostkurd/flocms-frontend', $this->requiredPackages(), true)) {
+            $frontend = $this->confirm('Add flocms-frontend, the website kit (components, Site Style, menus, SEO, starter pages)?', false);
+        }
+
+        $plan = $this->plan($setup, $frontend);
         $this->line('');
         $this->line(self::SETUPS[$setup] . ':');
         if ($plan['steps'] === []) {
@@ -166,14 +187,19 @@ TXT;
      *
      * @return array{steps: list<array{show: string, run: \Closure(): void}>, kept: list<string>, extra: list<string>}
      */
-    private function plan(string $setup): array
+    private function plan(string $setup, bool $frontend = false): array
     {
         $project = $this->project();
+        $required = $this->requiredPackages();
         $wants = [
             'hostkurd/flocms-admin' => in_array($setup, ['site-admin', 'admin', 'api-admin'], true),
             'hostkurd/flocms-api' => in_array($setup, ['api-admin', 'api'], true),
         ];
-        $required = $this->requiredPackages();
+        // flocms-frontend is optional for a website: one already there is not "extra".
+        $website = in_array($setup, self::WEBSITE_SETUPS, true);
+        if ($frontend || !$website || !in_array('hostkurd/flocms-frontend', $required, true)) {
+            $wants['hostkurd/flocms-frontend'] = $frontend;
+        }
         $steps = [];
         $extra = [];
 
@@ -185,17 +211,30 @@ TXT;
                 $extra[] = $package;
             }
         }
+        // flocms-frontend needs flocms-admin 0.43: an older range (2.0's ^0.39.3) is raised with it.
+        $addingFrontend = in_array('hostkurd/flocms-frontend:' . self::PACKAGES['hostkurd/flocms-frontend'], $add, true);
+        $with = [];
+        if ($addingFrontend && in_array('hostkurd/flocms-admin', $required, true)
+            && self::belowAdmin043($this->requiredConstraint('hostkurd/flocms-admin'))) {
+            array_unshift($add, 'hostkurd/flocms-admin:' . self::PACKAGES['hostkurd/flocms-admin']);
+            $with = ['--with-all-dependencies'];
+        }
         // A run without questions keeps the commands it starts quiet too.
         $quiet = $this->input->isInteractive() ? [] : ['--no-interaction'];
         if ($add !== []) {
-            $command = [...self::composer(), 'require', ...$add, ...$quiet];
-            $steps[] = ['show' => 'composer require ' . implode(' ', $add), 'run' => fn () => $this->runStep($command)];
+            $command = [...self::composer(), 'require', ...$add, ...$with, ...$quiet];
+            $steps[] = ['show' => 'composer require ' . implode(' ', [...$add, ...$with]), 'run' => fn () => $this->runStep($command)];
         }
 
         // The installers only add what is missing, so they run every time.
         $flo = [PHP_BINARY, $project->path('flo')];
         if ($wants['hostkurd/flocms-admin']) {
             $steps[] = ['show' => 'php flo admin:install', 'run' => fn () => $this->runStep([...$flo, 'admin:install', ...$quiet])];
+        }
+        if ($wants['hostkurd/flocms-frontend'] ?? false) {
+            // Its template is made the active one only when it is new: a later run leaves the templates alone.
+            $install = $addingFrontend ? ['site:install', '--activate'] : ['site:install', '--no-template'];
+            $steps[] = ['show' => 'php flo ' . implode(' ', $install), 'run' => fn () => $this->runStep([...$flo, ...$install, ...$quiet])];
         }
         if ($wants['hostkurd/flocms-api']) {
             $steps[] = ['show' => 'php flo api:install', 'run' => fn () => $this->runStep([...$flo, 'api:install', ...$quiet])];
@@ -240,6 +279,25 @@ TXT;
         return ['steps' => $steps, 'kept' => $kept, 'extra' => $extra];
     }
 
+    /** The version range composer.json requires for a package ('' when it doesn't). */
+    private function requiredConstraint(string $package): string
+    {
+        $composer = json_decode((string) @file_get_contents($this->project()->path('composer.json')), true);
+        $constraint = $composer['require'][$package] ?? $composer['require-dev'][$package] ?? '';
+
+        return is_string($constraint) ? $constraint : '';
+    }
+
+    /** Whether a flocms-admin range like "^0.39.3" stops below 0.43 (any 0.x range starting lower). */
+    public static function belowAdmin043(string $constraint): bool
+    {
+        if (preg_match('/^\s*[\^~]?\s*v?0\.(\d+)/', $constraint, $match) !== 1) {
+            return false;
+        }
+
+        return (int) $match[1] < 43;
+    }
+
     /** @return list<string> the hostkurd packages composer.json requires */
     private function requiredPackages(): array
     {
@@ -273,7 +331,7 @@ TXT;
     /**
      * A command line for cmd.exe. On Windows proc_open() sends a string through
      * cmd.exe, where "^" is only literal inside quotes
-     * ("hostkurd/flocms-admin:^0.39.3"), so parts with special characters are
+     * ("hostkurd/flocms-admin:^0.43"), so parts with special characters are
      * quoted. A bare program name is not: a batch file started as "composer"
      * (quoted, found on PATH) gets the current folder as %~dp0, and
      * Composer's composer.bat then looks for composer.phar in the project.
@@ -448,6 +506,10 @@ TXT;
             'hostkurd/flocms-api' => [
                 'composer remove hostkurd/flocms-api',
                 'then delete public/api.php and api/ (your routes and controllers), and drop the api_* tables',
+            ],
+            'hostkurd/flocms-frontend' => [
+                'composer remove hostkurd/flocms-frontend',
+                'then delete config/frontend.php, components/ and templates/site/, and set APP_TEMPLATE back in .env',
             ],
             default => ['composer remove ' . $package],
         };

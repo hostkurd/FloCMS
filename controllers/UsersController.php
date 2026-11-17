@@ -41,21 +41,22 @@ class UsersController extends Controller
 
     public function admin_login(): void
     {
-        if (Session::get('isloggedin')) {
-            if (!Session::get('admin_access')) {
-                Session::setFlash(
-                    '<strong>You are already logged in.</strong><br>Your account does not have permission to access this area. Please <a href="' . SITE_URI . '/admin/users/logout">logout</a> first.',
-                    'warning'
-                );
-            } else {
-                Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/');
-                return;
-            }
-
+        // Signed in with admin access: straight to the panel
+        if (Session::get('isloggedin') && Session::get('admin_access')) {
+            Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/');
             return;
         }
 
+        // Signed in on the website (a visitor account, or a site sign-in that never opens
+        // the panel): the form is shown, and signing in here replaces that session.
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            // (A note already waiting, e.g. "no access" after signing in here, is kept.)
+            if (Session::get('isloggedin') && !Session::hasFlash()) {
+                Session::setFlash(
+                    Lang::get('auth.signed_in_on_site', 'You are signed in on the website. To use the admin panel, sign in with an account that has access to it.'),
+                    'info'
+                );
+            }
             return;
         }
 
@@ -114,6 +115,11 @@ class UsersController extends Controller
 
             case 1:
                 $throttle->clear($email);
+                if (Session::get('isloggedin')) {
+                    // The website's session ends completely, so nothing of it (its role,
+                    // or that its sign-in was already checked) carries over to the panel.
+                    Auth::endSession();
+                }
                 session_regenerate_id(true);
 
                 Session::set('admin_access', false);
@@ -130,6 +136,8 @@ class UsersController extends Controller
 
                 if ($access) {
                     Session::set('admin_access', true);
+                } else {
+                    Session::setFlash(Lang::get('auth.no_panel_access', 'This account cannot use the admin panel. Sign in with an account that has access to it.'), 'warning');
                 }
 
                 Router::redirect(SITE_URI . DS . ACTIVE_LANG . DS . 'admin/');

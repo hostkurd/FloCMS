@@ -40,14 +40,17 @@ final class SetupCommandTest extends TestCase
             $this->ran[] = $line;
             if (str_starts_with($line, 'composer require ')) {
                 $composer = json_decode((string) file_get_contents($cwd . '/composer.json'), true);
-                foreach (array_diff(array_slice(explode(' ', $line), 2), ['--no-interaction']) as $package) {
+                foreach (array_slice(explode(' ', $line), 2) as $package) {
+                    if (str_starts_with($package, '--')) {
+                        continue;
+                    }
                     [$name, $version] = explode(':', $package, 2);
                     $composer['require'][$name] = $version;
                 }
                 file_put_contents($cwd . '/composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
             }
             if (str_starts_with($line, 'php flo admin:install') && !is_file($cwd . '/config/admin.php')) {
-                // What flocms-admin 0.39.3's config stub says
+                // What flocms-admin 0.43's config stub says
                 file_put_contents($cwd . '/config/admin.php', "<?php\n\nreturn [\n    'path' => 'admin',\n    'site_link' => true,\n];\n");
             }
             if (str_starts_with($line, 'php flo api:install')) {
@@ -124,11 +127,13 @@ final class SetupCommandTest extends TestCase
 
     public function testTheQuestionDefaultsToWebsiteAndAdmin(): void
     {
-        $tester = $this->runSetup([], ['', 'y']);
+        // Website + admin (default), no flocms-frontend (default), go ahead
+        $tester = $this->runSetup([], ['', '', 'y']);
 
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
         self::assertStringContainsString('What are you building?', $tester->getErrorOutput());
-        self::assertSame(['composer require hostkurd/flocms-admin:^0.39.3', 'php flo admin:install'], $this->ran);
+        self::assertStringContainsString('Add flocms-frontend', $tester->getErrorOutput());
+        self::assertSame(['composer require hostkurd/flocms-admin:^0.43', 'php flo admin:install'], $this->ran);
         self::assertStringContainsString("Config::set('home', 'site');", $this->config());
         self::assertFileExists($this->root . '/views/pages/index.html');
         self::assertStringContainsString("'site_link' => true", (string) file_get_contents($this->root . '/config/admin.php'));
@@ -160,7 +165,7 @@ final class SetupCommandTest extends TestCase
         $tester = $this->runSetup(['--as=admin'], ['y']);
 
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
-        self::assertSame(['composer require hostkurd/flocms-admin:^0.39.3', 'php flo admin:install'], $this->ran);
+        self::assertSame(['composer require hostkurd/flocms-admin:^0.43', 'php flo admin:install'], $this->ran);
         self::assertStringContainsString("Config::set('home', 'admin');", $this->config());
         self::assertStringContainsString("'site_link' => false", (string) file_get_contents($this->root . '/config/admin.php'));
         self::assertFileDoesNotExist($this->root . '/views/pages/index.html');
@@ -176,7 +181,7 @@ final class SetupCommandTest extends TestCase
 
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
         self::assertSame([
-            'composer require hostkurd/flocms-admin:^0.39.3 hostkurd/flocms-api:^1.3',
+            'composer require hostkurd/flocms-admin:^0.43 hostkurd/flocms-api:^1.3',
             'php flo admin:install',
             'php flo api:install',
         ], $this->ran);
@@ -217,7 +222,7 @@ final class SetupCommandTest extends TestCase
         self::assertSame(0, $tester->getStatusCode());
         $display = $tester->getDisplay();
         foreach ([
-            'composer require hostkurd/flocms-admin:^0.39.3 hostkurd/flocms-api:^1.3',
+            'composer require hostkurd/flocms-admin:^0.43 hostkurd/flocms-api:^1.3',
             'php flo admin:install',
             'php flo api:install',
             'remove views/pages/index.html, templates/dark/layouts/default.html, public/themes/dark/css/style.css',
@@ -255,7 +260,7 @@ final class SetupCommandTest extends TestCase
         $this->ran = [];
 
         // API + admin -> website only: nothing is removed, the steps are printed.
-        $tester = $this->runSetup(['--as=site'], ['y']);
+        $tester = $this->runSetup(['--as=site'], ['n', 'y']);
         self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
         $display = $tester->getDisplay() . $tester->getErrorOutput();
         self::assertStringContainsString('hostkurd/flocms-admin is installed but not part of this setup', $display);
@@ -299,8 +304,104 @@ final class SetupCommandTest extends TestCase
 
         self::assertSame(1, $tester->getStatusCode());
         self::assertStringContainsString('run `php flo setup` again', $tester->getDisplay() . $tester->getErrorOutput());
-        self::assertSame(['composer require hostkurd/flocms-admin:^0.39.3'], $this->ran, 'stops at the first failure');
+        self::assertSame(['composer require hostkurd/flocms-admin:^0.43'], $this->ran, 'stops at the first failure');
         self::assertFileExists($this->root . '/views/pages/index.html');
+    }
+
+    public function testAWebsiteCanAddTheFrontend(): void
+    {
+        $tester = $this->runSetup([], ['', 'y', 'y']);
+
+        self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
+        self::assertSame([
+            'composer require hostkurd/flocms-admin:^0.43 hostkurd/flocms-frontend:^0.1.1',
+            'php flo admin:install',
+            'php flo site:install --activate',
+        ], $this->ran);
+        self::assertStringContainsString("Config::set('home', 'site');", $this->config());
+        self::assertFileExists($this->root . '/views/pages/index.html', 'the welcome page stays: flocms-frontend replaces it with a starter');
+    }
+
+    public function testFrontendWithoutATerminal(): void
+    {
+        SetupCommand::$terminal = static fn (): bool => false;
+
+        $tester = $this->runSetup(['--as=site', '--frontend', '--no-interaction'], [], false);
+
+        self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
+        self::assertSame([
+            'composer require hostkurd/flocms-frontend:^0.1.1 --no-interaction',
+            'php flo site:install --activate --no-interaction',
+        ], $this->ran);
+    }
+
+    public function testFrontendIsOnlyForAWebsite(): void
+    {
+        $tester = $this->runSetup(['--as=api', '--frontend']);
+
+        self::assertSame(2, $tester->getStatusCode());
+        self::assertStringContainsString('--frontend is for a setup with a website', $tester->getDisplay() . $tester->getErrorOutput());
+        self::assertSame([], $this->ran);
+    }
+
+    public function testAnInstalledFrontendIsKeptQuietly(): void
+    {
+        $this->runSetup(['--as=site', '--frontend'], ['y']);
+        $this->ran = [];
+
+        // Not asked again, and nothing to do.
+        $tester = $this->runSetup(['--as=site']);
+        self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
+        self::assertStringNotContainsString('Add flocms-frontend', $tester->getErrorOutput());
+        self::assertStringContainsString('nothing to change', $tester->getDisplay());
+        self::assertStringNotContainsString('not part of this setup', $tester->getDisplay() . $tester->getErrorOutput());
+
+        // An API-only project lists it as extra, with how to remove it.
+        $tester = $this->runSetup(['--as=api', '--dry-run']);
+        $display = $tester->getDisplay() . $tester->getErrorOutput();
+        self::assertStringContainsString('hostkurd/flocms-frontend is installed but not part of this setup', $display);
+        self::assertStringContainsString('composer remove hostkurd/flocms-frontend', $display);
+        self::assertSame([], $this->ran);
+    }
+
+    public function testAnOlderAdminRangeIsRaisedWithTheFrontend(): void
+    {
+        // A site-admin project from skeleton 2.0
+        $this->runSetup(['--as=site-admin'], ['n', 'y']);
+        $composer = json_decode((string) file_get_contents($this->root . '/composer.json'), true);
+        $composer['require']['hostkurd/flocms-admin'] = '^0.39.3';
+        file_put_contents($this->root . '/composer.json', json_encode($composer));
+        $this->ran = [];
+
+        $tester = $this->runSetup(['--as=site-admin', '--frontend'], ['y']);
+
+        self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
+        self::assertSame([
+            'composer require hostkurd/flocms-admin:^0.43 hostkurd/flocms-frontend:^0.1.1 --with-all-dependencies',
+            'php flo admin:install',
+            'php flo site:install --activate',
+        ], $this->ran);
+    }
+
+    public function testFrontendAgainLeavesTheTemplatesAlone(): void
+    {
+        $this->runSetup(['--as=site', '--frontend'], ['y']);
+        $this->ran = [];
+
+        $tester = $this->runSetup(['--as=site', '--frontend'], ['y']);
+
+        self::assertSame(0, $tester->getStatusCode(), $tester->getDisplay() . $tester->getErrorOutput());
+        self::assertSame(['php flo site:install --no-template'], $this->ran);
+    }
+
+    public function testWhichAdminRangesAreBelow043(): void
+    {
+        foreach (['^0.39.3', '^0.42', '~0.40.1', '0.31.0', 'v0.9'] as $old) {
+            self::assertTrue(SetupCommand::belowAdmin043($old), $old);
+        }
+        foreach (['^0.43', '^0.43.0', '^0.50', '^1.0', '*', 'dev-main', ''] as $new) {
+            self::assertFalse(SetupCommand::belowAdmin043($new), $new);
+        }
     }
 
     public function testAnUnknownSetupIsInvalidUsage(): void
